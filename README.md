@@ -28,20 +28,29 @@ demo.py
 
 ```bash
 python demo.py
-python tests/test_evoseed.py
+python tests/test_evoseed.py     # 18 项测试
 ```
 
 核心仅依赖 Python 标准库；`biopython` 为可选依赖（仅 `score_pair_align` 使用）。
+
+## 评分与负向排斥语义
+
+- 计数评分：`search_with_keys()` / `candidate_rank()` 返回共享键数；
+- SWPN 加权评分：`contrastive_weights()` 学习 `ln((f_pos+1)/(f_neg+1))`，
+  `candidate_rank_weighted()`（或 `search_weighted()`）按权重和排序；
+- 负向排斥：`max_reject` 为**允许命中的负向键数量上限**，命中数 > max_reject 才剔除；
+  若传入 `negative_keys` 却未提供候选键集 `db_keys`，API 直接报错，不会静默失效。
 
 ## 已报告的关键结果
 
 在由系统发育推导标签的 [NiFe] 氢化酶大亚基基准（177 条序列；留属五折交叉验证；权重仅在训练折学习）上：
 
-- 直系 vs 旁系（Task 3）：EvoSeed-SWPN **AUPRC 0.904（95% CI 0.881–0.940）**，与 strobemer（0.906）相当，
-  高于 DIAMOND（0.822）、k-mer（0.820）与 BLASTp（0.812）；
-- 但 **MCC 0.426**，低于间隔种子（0.556）与 BLASTp（0.546）；
-- 直系 vs 其他亚群硬负（Task 4）：BLASTp/DIAMOND（0.995）优于 EvoSeed-SWPN（0.944）；
-- 索引成本较高：约 **1472 个键/序列**、168 个候选/查询（strobemer 为 104 与 7.2）。
+- 直系 vs 旁系（Task 3）：EvoSeed-SWPN **AUPRC 0.911（95% CI 0.877–0.951）**，
+  高于 strobemer（0.885）、DIAMOND（0.822）、k-mer（0.820）与 BLASTp（0.812）；
+- **MCC 0.573**，高于间隔种子（0.556）与 BLASTp（0.546）；AUROC 0.899 略低于 strobemer（0.910）；
+- 直系 vs 其他亚群硬负（Task 4）：BLASTp/DIAMOND（0.995）优于 EvoSeed-SWPN（0.945）；
+- 索引成本较高：约 **1461 个键/序列**、171 个候选/查询（strobemer 为 103 与 13）；
+- 同口径消融：无权 0.806 / 仅负向 0.793 / 泄漏 0.772 / **正负对比 0.911**。
 
 完整表格、消融与局限见论文。
 
