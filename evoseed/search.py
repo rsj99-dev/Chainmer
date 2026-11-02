@@ -8,7 +8,7 @@
 """
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, defaultdict
 
 from . import generator as gen
 from . import scoring
@@ -33,6 +33,29 @@ def search(query_seq: str, index: dict[int, list[str]], min_shared: int = 1,
     if negative_keys:
         hits = [(sid, c) for sid, c in hits
                 if scoring.reject_score(db_keys[sid], negative_keys) <= max_reject]
+    hits.sort(key=lambda x: -x[1])
+    return hits
+
+
+def search_weighted_index(query_seq: str, index: dict[int, list[str]],
+                          weights: dict[int, float],
+                          min_score: float | None = None, **params
+                          ) -> list[tuple[str, float]]:
+    """**基于倒排索引**的 SWPN 加权检索（不遍历全库）。
+
+    对查询的每个键 k，仅遍历 index[k] 的 postings，并累加 weights[k]。
+    权重必须由训练折学习；本函数不拟合权重。
+    """
+    qk = gen.generate(query_seq, **params)
+    votes: defaultdict = defaultdict(float)
+    for k in qk:
+        w = weights.get(k, 0.0)
+        if w == 0.0:
+            continue
+        for sid in index.get(k, ()):
+            votes[sid] += w
+    hits = [(sid, sc) for sid, sc in votes.items()
+            if min_score is None or sc >= min_score]
     hits.sort(key=lambda x: -x[1])
     return hits
 

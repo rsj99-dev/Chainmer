@@ -2,7 +2,8 @@
 
 对通过种子一致性的候选做精修打分。原型提供两种：
   1) alignment-free：直接使用共享锚点对键数（默认，快）；
-  2) banded Smith-Waterman：Biopython PairwiseAligner(BLOSUM62) 复核（可选，精）。
+  2) **全局比对**（Needleman–Wunsch，Biopython PairwiseAligner + BLOSUM62）复核（可选，精）。
+     注意：这是 global alignment，不是 banded Smith-Waterman。
 延伸仅提升排序/候选质量，仍不等同于直系同源最终判定（需交系统发育层）。
 """
 from __future__ import annotations

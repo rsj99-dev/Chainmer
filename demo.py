@@ -22,6 +22,7 @@ def main():
         print(f"  {sid:14s} shared_anchor_pairs={shared:3d} "
               f"BLOSUM62={('%.0f' % al) if al else 'NA'}")
     print("A hit is a candidate only; orthology requires phylogeny.")
+    print("NOTE: synthetic illustrative sequences, not biological evidence.")
 
 if __name__ == "__main__":
     main()

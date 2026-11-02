@@ -55,8 +55,22 @@ strobes = anchors
 
 def evoseed_keys(seq: str, kc: int = 5, gmin: int = 30, gmax: int = 300,
                  delta: int = 15, use_class: bool = True, use_gap: bool = True,
+                 gap_filter: bool | None = None, gap_bucket: bool | None = None,
                  w1: int = 6, max_pairs_per_strobe: int = 12) -> set[int]:
-    """返回该序列的锚点对种子键集合（128-bit 键）。"""
+    """返回该序列的锚点对种子键集合（128-bit 键）。
+
+    间距消融有三个**可区分**的模式：
+      - full（默认）      : gap_filter=True,  gap_bucket=True   （距离过滤 + 间距桶）
+      - filter_only      : gap_filter=True,  gap_bucket=False  （只去桶，保留距离过滤）
+      - no_gap           : gap_filter=False, gap_bucket=False  （两者都去除）
+      - bucket_only      : gap_filter=False, gap_bucket=True   （只去过滤，保留桶；不推荐）
+    `use_gap` 为兼容旧接口的简写：gap_filter/gap_bucket 为 None 时均取 use_gap。
+    注意：max_pairs_per_strobe 对每个 anchor 独立生效，在所有模式下一致。
+    """
+    if gap_bucket is None:
+        gap_bucket = use_gap
+    if gap_filter is None:
+        gap_filter = use_gap
     st = anchors(seq, kc, w1, use_class)
     keys = set()
     m = len(st)
@@ -66,11 +80,12 @@ def evoseed_keys(seq: str, kc: int = 5, gmin: int = 30, gmax: int = 300,
         for j in range(i + 1, m):
             p2, h2 = st[j]
             d = p2 - p1
-            if d < gmin:
-                continue
-            if d > gmax:
-                break
-            bkt = (d // delta) if use_gap else 0
+            if gap_filter:
+                if d < gmin:
+                    continue
+                if d > gmax:
+                    break
+            bkt = (d // delta) if gap_bucket else 0
             keys.add(seedlib.hash_kmer([h1, h2, bkt], salt=0xE05EED))
             cnt += 1
             if cnt >= max_pairs_per_strobe:
@@ -79,6 +94,7 @@ def evoseed_keys(seq: str, kc: int = 5, gmin: int = 30, gmax: int = 300,
 
 
 def build_index(sequences: dict[str, str], **kw) -> dict[int, list[str]]:
+    """倒排索引：key -> postings（序列 ID 列表）。"""
     idx: dict[int, list[str]] = {}
     for sid, s in sequences.items():
         for k in evoseed_keys(s, **kw):

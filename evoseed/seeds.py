@@ -201,7 +201,12 @@ _strobes = _anchors
 
 
 def strobemers(seq: str, k: int, w1: int, w2: int, t: int = 2) -> set[int]:
-    """strobemer：把第 i 个 anchor 与其后第 t 个、距离落在 [w1, w2] 的 anchor 组合哈希。"""
+    """**简化 strobemer 基线（fixed-offset anchor pair）**。
+
+    取 minimizer anchors，把第 i 个 anchor 与其后第 t 个（距离在 [w1,w2]）配对。
+    这不是标准的 randstrobe/minstrobe（后者在窗口内按哈希/随机选择第二 anchor），
+    仅作为“固定偏移”对照基线；论文与 README 均按此标注。
+    """
     anchors = _anchors(seq, k, w1)
     out = set()
     m = len(anchors)

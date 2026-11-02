@@ -14,7 +14,8 @@ from evoseed import seeds as seedlib
 from evoseed import core as evos_seed
 from evoseed import generator as gen
 from evoseed import index as sidx
-from evoseed.search import search as search_candidates, search_with_keys
+from evoseed.search import (search as search_candidates, search_with_keys,
+                            search_weighted_index)
 from evoseed import scoring
 
 LONG = ("MVKAVLAVLAKGGTIAAQLSPEHMPVRMRMLDNNEAAELKALGVPFGRIRLPGGQVAEPIKVDANG"
@@ -123,6 +124,51 @@ def test_gap_ablation_changes_keys():
     assert with_gap != no_gap
 
 
+def test_gap_modes_distinct():
+    full = evos_seed.evoseed_keys(LONG, use_gap=True)
+    filter_only = evos_seed.evoseed_keys(LONG, gap_filter=True, gap_bucket=False)
+    no_gap = evos_seed.evoseed_keys(LONG, use_gap=False)
+    assert len(full) > 0 and len(filter_only) > 0 and len(no_gap) > 0
+    assert full != filter_only          # 去掉桶，保留距离过滤
+    assert filter_only != no_gap        # 去掉距离过滤
+    assert full != no_gap
+
+
+def test_amino_mapping_complete():
+    assert len(seedlib.AA20) == 20
+    for aa in seedlib.AA20:
+        assert aa in seedlib.AA_CLASS
+    # 每个标准氨基酸恰好一个类；特殊字符归 f
+    assert len({seedlib.AA_CLASS[a] for a in seedlib.AA20}) == 5
+    for ch in "XBZJO":
+        assert seedlib.AA_CLASS[ch] == "f"
+
+
+def test_index_matches_brute_force():
+    db = {"a": LONG, "b": LONG[:60] + "W" + LONG[61:], "c": LONG[::-1]}
+    idx = sidx.build(db, class_map=seedlib.AA_CLASS)
+    dbk = {k: gen.generate(v) for k, v in db.items()}
+    for q in (LONG, db["b"]):
+        hit_idx = dict(search_candidates(q, idx, min_shared=1))
+        hit_brute = dict(search_with_keys(q, dbk, min_shared=1))
+        assert hit_idx == hit_brute
+
+
+def test_weighted_index_matches_brute_force():
+    db = {"a": LONG, "b": LONG[:60] + "W" + LONG[61:], "c": LONG[::-1]}
+    idx = sidx.build(db, class_map=seedlib.AA_CLASS)
+    dbk = {k: gen.generate(v) for k, v in db.items()}
+    qk = gen.generate(LONG)
+    key = sorted(qk)[0]
+    w = {key: 2.5}
+    hit_idx = dict(search_weighted_index(LONG, idx, w, min_score=1e-9))
+    hit_brute = dict(scoring.candidate_rank_weighted(LONG, dbk, w, min_shared=1,
+                                                     min_score=1e-9))
+    assert set(hit_idx) == set(hit_brute)
+    for sid in hit_idx:
+        assert abs(hit_idx[sid] - hit_brute[sid]) < 1e-9
+
+
 def test_negative_rejection_filters_candidate():
     qk = gen.generate(LONG)
     keys_a = set(qk)                       # 与查询完全相同
@@ -185,15 +231,24 @@ def test_weighted_search_orders_positive_enriched_first():
 
 def test_index_save_load_roundtrip():
     db = {"a": LONG, "b": LONG}
-    idx = sidx.build(db)
+    idx = sidx.build(db, class_map=seedlib.AA_CLASS)
+    assert idx.meta["algorithm"] == "EvoSeed"
+    assert idx.meta["hash_scheme"].endswith("/128")
+    assert idx.meta["db"]["n_sequences"] == 2
+    assert idx.meta["params"]["kc"] == 5
+    assert idx.meta["params"]["gap_filter"] is True
+    assert idx.meta["class_map"]["G"] == "b"
     with tempfile.TemporaryDirectory() as td:
         p = Path(td) / "idx.json"
         sidx.save(idx, p)
         idx2 = sidx.load(p)
     assert idx2 == idx
+    assert idx2.meta == idx.meta
     r1 = search_with_keys(LONG, {k: gen.generate(v) for k, v in db.items()})
     r2 = search_with_keys(LONG, {k: gen.generate(v) for k, v in db.items()})
     assert [x[0] for x in r1] == [x[0] for x in r2]
+    # 从加载后的索引检索，结果与内存索引一致
+    assert dict(search_candidates(LONG, idx)) == dict(search_candidates(LONG, idx2))
 
 
 def test_edge_cases():

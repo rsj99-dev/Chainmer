@@ -8,13 +8,23 @@ from __future__ import annotations
 from . import core as evos_seed
 
 DEFAULT_PARAMS = dict(kc=5, gmin=30, gmax=300, delta=15,
-                      use_class=True, use_gap=True, w1=6)
+                      use_class=True, use_gap=True,
+                      gap_filter=True, gap_bucket=True,
+                      w1=6, max_pairs_per_strobe=12)
 
 
 def generate(seed: str, **params) -> set[int]:
-    """由一条蛋白序列生成 EvoSeed 锚点对种子键集合。"""
+    """由一条蛋白序列生成 EvoSeed 锚点对种子键集合。
+
+    `use_gap` 为兼容简写：若显式传入且未传 gap_filter/gap_bucket，则同时置两者。
+    """
     kw = dict(DEFAULT_PARAMS)
     kw.update(params)
+    if "use_gap" in params:
+        if "gap_filter" not in params:
+            kw["gap_filter"] = params["use_gap"]
+        if "gap_bucket" not in params:
+            kw["gap_bucket"] = params["use_gap"]
     return evos_seed.evoseed_keys(seed, **kw)
 
 

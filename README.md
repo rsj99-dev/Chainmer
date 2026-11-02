@@ -24,14 +24,48 @@ tests/test_evoseed.py
 demo.py
 ```
 
+## 安装
+
+```bash
+pip install -e .
+```
+
 ## 快速开始
 
 ```bash
 python demo.py
-python tests/test_evoseed.py     # 18 项测试
+python tests/test_evoseed.py     # 22 项测试
 ```
 
 核心仅依赖 Python 标准库；`biopython` 为可选依赖（仅 `score_pair_align` 使用）。
+
+## CLI
+
+```bash
+evoseed seed  -i db.faa
+evoseed index -d db.faa -o db.evoseed.json
+evoseed search -d db.faa -x db.evoseed.json -q query.faa --top 5
+evoseed demo
+```
+
+## 索引与可复现性
+
+索引文件保存 format、算法版本、generate 参数、六类映射、哈希方案与数据库摘要
+（序列数 + ID 列表 SHA256）；保存后重新加载可复现相同检索结果（有单测）。
+
+## 间距消融
+
+`gap_filter`（距离范围过滤）与 `gap_bucket`（间距分桶）为**独立开关**；
+`use_gap` 仅为同时置两者的兼容简写，不应把“去桶”与“去过滤”混为一谈。
+
+## 基线说明
+
+`simplified strobemer` 是 fixed-offset anchor-pair 基线，不是标准 randstrobe/minstrobe。
+
+## 示例数据
+
+`demo.py` 与 CLI demo 中的序列为**合成示例**，仅用于演示 API，不构成生物学验证证据。
+完整基准与数据说明见 `BENCHMARK.md`。
 
 ## 评分与负向排斥语义
 
@@ -46,11 +80,12 @@ python tests/test_evoseed.py     # 18 项测试
 在由系统发育推导标签的 [NiFe] 氢化酶大亚基基准（177 条序列；留属五折交叉验证；权重仅在训练折学习）上：
 
 - 直系 vs 旁系（Task 3）：EvoSeed-SWPN **AUPRC 0.911（95% CI 0.877–0.951）**，
-  高于 strobemer（0.885）、DIAMOND（0.822）、k-mer（0.820）与 BLASTp（0.812）；
-- **MCC 0.573**，高于间隔种子（0.556）与 BLASTp（0.546）；AUROC 0.899 略低于 strobemer（0.910）；
+  高于简化 strobemer（0.885）、DIAMOND（0.822）、k-mer（0.820）与 BLASTp（0.812）；
+- **MCC 0.573**，高于间隔种子（0.556）与 BLASTp（0.546）；AUROC 0.899 略低于简化 strobemer（0.910）；
 - 直系 vs 其他亚群硬负（Task 4）：BLASTp/DIAMOND（0.995）优于 EvoSeed-SWPN（0.945）；
-- 索引成本较高：约 **1461 个键/序列**、171 个候选/查询（strobemer 为 103 与 13）；
-- 同口径消融：无权 0.806 / 仅负向 0.793 / 泄漏 0.772 / **正负对比 0.911**。
+- 索引成本较高：约 **1461 个键/序列**、171 个候选/查询（简化 strobemer 为 103 与 13）；
+- 同口径消融：无权 0.806 / 仅负向 0.793 / 泄漏 0.772 / **正负对比 0.911**；
+- 间距消融：full 0.806 / filter_only 0.779 / no_gap 0.762 / bucket_only 0.786。
 
 完整表格、消融与局限见论文。
 

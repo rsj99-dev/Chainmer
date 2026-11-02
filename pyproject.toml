@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evoseed"
+version = "0.2.0"
+description = "Ortholog-oriented substitution-class ordered anchor-pair seeds"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Shijie Ren"}]
+[project.optional-dependencies]
+align = ["biopython>=1.83"]
+[project.scripts]
+evoseed = "evoseed.cli:main"
+[tool.setuptools.packages.find]
+include = ["evoseed*"]
