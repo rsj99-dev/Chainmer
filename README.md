@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="OrthoChain_Logo.png" alt="OrthoChain Logo" width="420">
+</p>
+
 # OrthoChain v0.5.0
 
 OrthoChain 是一个用于**蛋白同源/直系同源候选召回与排序**的 Rust 库和命令行工具。v0.5 将原来的“单通道类等价键计数”替换为 **raw/class 双通道位置种子、数据库 IDF 校准和共线链评分**；旧计数与 SWPN 接口保留作消融对照。
