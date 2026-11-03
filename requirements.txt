@@ -1,3 +1,0 @@
-# EvoSeed core is pure Python (standard library only).
-# Optional, only for the BLOSUM62 extension demo:
-biopython>=1.83

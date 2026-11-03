@@ -1,98 +1,93 @@
-# EvoSeed（直系同源导向的蛋白种子）
+# EvoSeed v0.4.0
 
-EvoSeed 构建**面向直系同源候选检索**的蛋白种子，由三部分组成：
+EvoSeed 是一个用于**蛋白同源/直系同源候选召回与排序**的 Rust 库和命令行工具。它组合替换等价类、类 minimizer 锚点、有序锚点对、间距过滤与分桶，并支持仅由训练数据拟合的 SW/SWPN 权重。
 
-1. **六类氨基酸替换等价编码**：把 20 种氨基酸映射到 6 个物理化学类别，容忍保守替换；
-2. **有序锚点对（anchor pair）**：在类串上取 minimizer 作为锚点，把两锚点的**相对间距分桶**写入哈希键；
-3. **可选的正负对比特异性权重**：仅在训练折学习，`w(k) = ln((f_pos+1)/(f_neg+1))`。
+> Seed Hit 只表示候选共享种子，不构成同源或直系同源判定。直系同源需要基因树—物种树协调等后续分析；HydDB 亚群标签也不等同于直系同源群。
 
-> 重要：一次命中只是候选（Seed Hit）。直系同源**不能**由种子判定，必须由基因树—物种树协调确定。
-> HydDB 亚群是分类参照，不等同于直系同源群。
+## 核心组成
 
-## 目录结构
+1. **替换等价类**：20 种标准氨基酸分入 5 个互斥类，特殊或未知残基进入第 6 类；
+2. **有序锚点对**：在类串或原始氨基酸串上选择 minimizer 锚点，组合有序锚点对；
+3. **间距约束**：可分别控制距离过滤和间距分桶；
+4. **对比加权**：SWPN 为 `ln((f_pos + 1) / (f_neg + 1))`，未出现的键默认权重为 0；
+5. **可复现索引**：记录实际参数、类别映射、算法版本、哈希方案和数据库内容 BLAKE3 摘要。
 
-```
-evoseed/
-  seeds.py      替换类、哈希、k-mer/间隔/minimizer/syncmer/strobemer 工具
-  core.py       evoseed_keys()：类锚点 -> 有序间距分桶锚点对键
-  generator.py  generate()/generate_from_fasta()
-  index.py      倒排索引构建/保存/读取
-  search.py     候选检索（共享键计数）
-  scoring.py    一致性得分、特异性权重、加权得分、负向键集
-  extend.py     可选 BLOSUM62 复核打分
-tests/test_evoseed.py
-demo.py
-```
+## 安装与验证
 
-## 安装
+需要 Rust 1.85 或更高版本（与锁定依赖的最低要求一致）。
 
 ```bash
-pip install -e .
+cargo install --path . --locked
+cargo test
+cargo clippy --all-targets -- -D warnings
+cargo fmt --check
 ```
+
+发布目录只包含 Rust 实现，不需要 Python 或 Biopython。
 
 ## 快速开始
 
 ```bash
-python demo.py
-python tests/test_evoseed.py     # 22 项测试
-```
-
-核心仅依赖 Python 标准库；`biopython` 为可选依赖（仅 `score_pair_align` 使用）。
-
-## CLI
-
-```bash
-evoseed seed  -i db.faa
-evoseed index -d db.faa -o db.evoseed.json
-evoseed search -d db.faa -x db.evoseed.json -q query.faa --top 5
+# 合成序列演示，不是生物学验证证据
 evoseed demo
+
+# 统计每条序列的唯一种子键
+evoseed seed -i db.faa -m evoseed
+
+# 导出 TSV：序列 ID + 32 位十六进制键
+evoseed seed -i db.faa -m subseqhash2 --keys -o subseqhash2.tsv
+
+# 构建索引并使用索引中保存的参数检索
+evoseed index -d db.faa -o db.evoseed.json --kc 5 --gmin 30 --gmax 300
+evoseed search -d db.faa -q query.faa -x db.evoseed.json --top 5
+
+# 同一 Rust 二进制内的种子数量与单次提取耗时比较
+evoseed compare -i db.faa -o seed_compare.tsv
 ```
 
-## 索引与可复现性
+支持的 `seed --method`：`evoseed`、`kmer`、`spaced`、`minimizer`、`syncmer`、`strobemer`、`ckmer`、`subseqhash2`。传统基线的固定参数见 `src/cli.rs`；`simplified-strobemer` 是 fixed-offset anchor-pair，不是标准 randstrobe/minstrobe。
 
-索引文件保存 format、算法版本、generate 参数、六类映射、哈希方案与数据库摘要
-（序列数 + ID 列表 SHA256）；保存后重新加载可复现相同检索结果（有单测）。
+加权检索的 `--weights` JSON 以 32 位十六进制键为字段名、有限浮点数为值。`min_shared` 必须至少为 1；零权重共享键仍形成中性候选。加载已有索引时会校验数据库完整内容，而不是只比较序列 ID。
 
-## 间距消融
+## Rust API
 
-`gap_filter`（距离范围过滤）与 `gap_bucket`（间距分桶）为**独立开关**；
-`use_gap` 仅为同时置两者的兼容简写，不应把“去桶”与“去过滤”混为一谈。
+主要入口：
 
-## 基线说明
+- `evoseed_keys` / `anchors` / `EvoParams`：EvoSeed 键生成；
+- `SeedIndex`：索引构建、保存、加载和数据库校验；
+- `search` / `search_with_keys`：倒排与穷举计数检索；
+- `search_weighted_index` / `search_weighted_with_keys`：加权检索；
+- `contrastive_weights` / `specificity_weights` / `weighted_score`：训练折权重与评分；
+- `subseqhash2_keys` / `SubseqHash2Params`：SubseqHash2 蛋白标量适配。
 
-`simplified strobemer` 是 fixed-offset anchor-pair 基线，不是标准 randstrobe/minstrobe。
+所有索引查询都会检查查询参数与索引元数据是否一致。`gap_filter` 与 `gap_bucket` 是独立开关；`set_use_gap` 只是同时设置两者的简写。
 
-## 示例数据
+## SubseqHash2 适配边界
 
-`demo.py` 与 CLI demo 中的序列为**合成示例**，仅用于演示 API，不构成生物学验证证据。
-完整基准与数据说明见 `BENCHMARK.md`。
+本包依据 [Shao-Group 官方 SubseqHash2 实现](https://github.com/Shao-Group/subseqhash2)的 ABCk orders、前向/反向动态规划和 pivot 合并思路，提供 **20 种标准氨基酸 + X 的标量 Rust 适配**。默认参数为 `window=25, subseq=11, d=5, repeats=11, table_seed=42, chunk_size=500`，未在 EvoSeed 测试标签上调优。
 
-## 评分与负向排斥语义
+它不是官方四字符核酸 SIMD 二进制，不能与官方实现的运行时间直接等同。包含 X 的窗口不产种子。前向和反向 DP 均有朴素子序列枚举对照测试，分块与整段处理有一致性测试。
 
-- 计数评分：`search_with_keys()` / `candidate_rank()` 返回共享键数；
-- SWPN 加权评分：`contrastive_weights()` 学习 `ln((f_pos+1)/(f_neg+1))`，
-  `candidate_rank_weighted()`（或 `search_weighted()`）按权重和排序；
-- 负向排斥：`max_reject` 为**允许命中的负向键数量上限**，命中数 > max_reject 才剔除；
-  若传入 `negative_keys` 却未提供候选键集 `db_keys`，API 直接报错，不会静默失效。
+## 哈希与兼容性
 
-## 已报告的关键结果
+为保持已有 EvoSeed 基准可比，v0.4.0 保留原型的键输出。哈希以 `u128` 存储，但两个 64 位分量来自同一个 64 位滚动状态，因此**有效状态最多 64 bit**，不得宣称具有 128-bit 熵或碰撞保证。索引格式为 `evoseed-index/2`，不兼容旧版无完整元数据的索引。
 
-在由系统发育推导标签的 [NiFe] 氢化酶大亚基基准（177 条序列；留属五折交叉验证；权重仅在训练折学习）上：
+177 条基准序列、258,610 个 EvoSeed 键已逐项核对，Rust 与 Python 原型不一致的序列数为 0。
 
-- 直系 vs 旁系（Task 3）：EvoSeed-SWPN **AUPRC 0.911（95% CI 0.877–0.951）**，
-  高于简化 strobemer（0.885）、DIAMOND（0.822）、k-mer（0.820）与 BLASTp（0.812）；
-- **MCC 0.573**，高于间隔种子（0.556）与 BLASTp（0.546）；AUROC 0.899 略低于简化 strobemer（0.910）；
-- 直系 vs 其他亚群硬负（Task 4）：BLASTp/DIAMOND（0.995）优于 EvoSeed-SWPN（0.945）；
-- 索引成本较高：约 **1461 个键/序列**、171 个候选/查询（简化 strobemer 为 103 与 13）；
-- 同口径消融：无权 0.806 / 仅负向 0.793 / 泄漏 0.772 / **正负对比 0.911**；
-- 间距消融：full 0.806 / filter_only 0.779 / no_gap 0.762 / bucket_only 0.786。
+## 基准摘要
 
-完整表格、消融与局限见论文。
+同一 177 条 [NiFe] 氢化酶大亚基数据、留属划分、无向去重配对和训练折阈值流程下：
 
-## 引用
+| 方法 | Task3 AUPRC（5 折） | Task4 AUPRC（4 折） |
+|---|---:|---:|
+| EvoSeed-SWPN | 0.916 ± 0.045 | 0.949 ± 0.045 |
+| EvoSeed 计数 | 0.802 ± 0.059 | 0.919 ± 0.050 |
+| SubseqHash2 蛋白标量适配 | 0.719 ± 0.043 | 0.867 ± 0.087 |
 
-若使用本代码，请引用随附论文（EvoSeed：面向直系同源候选检索的替换等价类有序锚点对种子）。
+AUPRC 使用按同分组的非插值平均精度（AP），AUROC 同样按同分组计算。此数据上 EvoSeed-SWPN 在 Task3 最高，BLASTp 在 Task4 最高（0.990）；SubseqHash2 适配在两个任务上均未超过 EvoSeed 计数或 EvoSeed-SWPN。该结果不支持脱离数据集的普遍排名。
+
+本次 Rust release 单次顺序提取中，EvoSeed 为 1461.1 键/序列、29.3 ms/177 序列；SubseqHash2 为 2776.3 键/序列、5388.0 ms。后者候选数较少，但键数和标量提取成本更高。完整口径、命令与限制见 [BENCHMARK.md](BENCHMARK.md)。
 
 ## 许可
 
-MIT（见 LICENSE）。
+MIT，见 [LICENSE](LICENSE)。
