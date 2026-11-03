@@ -1,3 +1,3 @@
 fn main() -> anyhow::Result<()> {
-    evoseed::cli::run()
+    orthochain::cli::run()
 }

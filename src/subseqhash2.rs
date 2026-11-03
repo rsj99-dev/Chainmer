@@ -24,7 +24,7 @@ pub struct SubseqHash2Params {
 
 impl Default for SubseqHash2Params {
     fn default() -> Self {
-        // 固定、未在 EvoSeed 测试标签上调优的蛋白适配参数。
+        // 固定、未在 OrthoChain 测试标签上调优的蛋白适配参数。
         Self {
             window: 25,
             subseq: 11,

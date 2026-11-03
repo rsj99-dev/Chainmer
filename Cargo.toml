@@ -1,5 +1,5 @@
 [package]
-name = "evoseed"
+name = "orthochain"
 version = "0.5.0"
 edition = "2021"
 rust-version = "1.85"
@@ -7,17 +7,17 @@ authors = ["Shijie Ren"]
 description = "Dual-track protein candidate retrieval with positional seed chaining and database-calibrated scoring"
 license = "MIT"
 readme = "README.md"
-documentation = "https://docs.rs/evoseed"
+documentation = "https://docs.rs/orthochain"
 include = ["src/**", "tests/**", "Cargo.toml", "Cargo.lock", "README.md", "BENCHMARK.md", "LICENSE", "MANIFEST.tsv"]
 keywords = ["bioinformatics", "protein", "ortholog", "seed", "sequence"]
 categories = ["science", "command-line-utilities"]
 
 [lib]
-name = "evoseed"
+name = "orthochain"
 path = "src/lib.rs"
 
 [[bin]]
-name = "evoseed"
+name = "orthochain"
 path = "src/main.rs"
 
 [dependencies]

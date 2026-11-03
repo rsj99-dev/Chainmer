@@ -1,4 +1,4 @@
-use crate::core::{evoseed_seeds, EvoParams, PositionedSeed};
+use crate::core::{orthochain_seeds, OrthoParams, PositionedSeed};
 use crate::seeds::class_map;
 use crate::{HASH_SCHEME, INDEX_FORMAT, VERSION};
 use anyhow::{bail, Context, Result};
@@ -18,7 +18,7 @@ pub struct IndexMeta {
     pub format: String,
     pub algorithm: String,
     pub version: String,
-    pub params: EvoParams,
+    pub params: OrthoParams,
     pub class_map: BTreeMap<String, String>,
     pub hash_scheme: String,
     pub db: DatabaseMeta,
@@ -80,17 +80,17 @@ pub fn database_meta(sequences: &BTreeMap<String, String>) -> DatabaseMeta {
 
 pub fn database_seeds(
     sequences: &BTreeMap<String, String>,
-    params: &EvoParams,
+    params: &OrthoParams,
 ) -> Result<BTreeMap<String, BTreeSet<PositionedSeed>>> {
     sequences
         .iter()
-        .map(|(id, seq)| Ok((id.clone(), evoseed_seeds(seq, params)?)))
+        .map(|(id, seq)| Ok((id.clone(), orthochain_seeds(seq, params)?)))
         .collect()
 }
 
 pub fn database_keys(
     sequences: &BTreeMap<String, String>,
-    params: &EvoParams,
+    params: &OrthoParams,
 ) -> Result<BTreeMap<String, BTreeSet<u128>>> {
     Ok(database_seeds(sequences, params)?
         .into_iter()
@@ -99,7 +99,7 @@ pub fn database_keys(
 }
 
 impl SeedIndex {
-    pub fn build(sequences: &BTreeMap<String, String>, params: EvoParams) -> Result<Self> {
+    pub fn build(sequences: &BTreeMap<String, String>, params: OrthoParams) -> Result<Self> {
         params.validate()?;
         if sequences.is_empty() {
             bail!("空数据库不能建立索引");
@@ -145,7 +145,7 @@ impl SeedIndex {
         Ok(Self {
             meta: IndexMeta {
                 format: INDEX_FORMAT.into(),
-                algorithm: "EvoSeed-dual-chain".into(),
+                algorithm: "OrthoChain-dual-chain".into(),
                 version: VERSION.into(),
                 params,
                 class_map: class_map(),
@@ -175,7 +175,7 @@ impl SeedIndex {
         if self.meta.format != INDEX_FORMAT {
             bail!("不支持的索引格式：{}", self.meta.format);
         }
-        if self.meta.algorithm != "EvoSeed-dual-chain" || self.meta.version != VERSION {
+        if self.meta.algorithm != "OrthoChain-dual-chain" || self.meta.version != VERSION {
             bail!(
                 "索引算法或版本不兼容：{}/{}",
                 self.meta.algorithm,
@@ -253,8 +253,8 @@ impl SeedIndex {
 
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self> {
         let text = fs::read_to_string(path.as_ref())?;
-        let file: IndexFile =
-            serde_json::from_str(&text).context("索引必须符合 evoseed-index/3；旧版索引需重建")?;
+        let file: IndexFile = serde_json::from_str(&text)
+            .context("索引必须符合 orthochain-index/3；旧版索引需重建")?;
         let mut postings = BTreeMap::new();
         for (key, hits) in file.index {
             let parsed = parse_key_hex(&key)?;
@@ -290,7 +290,7 @@ mod tests {
 
     #[test]
     fn metadata_database_digest_and_positional_stats_are_real() {
-        let mut params = EvoParams::default();
+        let mut params = OrthoParams::default();
         params.set_use_gap(false);
         let index = SeedIndex::build(&db(), params).unwrap();
         assert!(!index.meta.params.gap_filter && !index.meta.params.gap_bucket);

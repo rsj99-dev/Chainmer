@@ -28,7 +28,7 @@ pub struct PositionedSeed {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(default)]
-pub struct EvoParams {
+pub struct OrthoParams {
     pub kc: usize,
     pub class_kc: usize,
     pub gmin: usize,
@@ -44,7 +44,7 @@ pub struct EvoParams {
     pub sec_policy: String,
 }
 
-impl Default for EvoParams {
+impl Default for OrthoParams {
     fn default() -> Self {
         Self {
             kc: 5,
@@ -64,7 +64,7 @@ impl Default for EvoParams {
     }
 }
 
-impl EvoParams {
+impl OrthoParams {
     pub fn validate(&self) -> Result<()> {
         if self.kc == 0
             || self.class_kc == 0
@@ -135,8 +135,8 @@ fn track_anchors(
     out
 }
 
-/// 兼容旧的单通道锚点接口；新检索使用 `evoseed_seeds` 的双通道位置种子。
-pub fn anchors(seq: &str, params: &EvoParams) -> Result<Vec<(usize, u128)>> {
+/// 兼容旧的单通道锚点接口；新检索使用 `orthochain_seeds` 的双通道位置种子。
+pub fn anchors(seq: &str, params: &OrthoParams) -> Result<Vec<(usize, u128)>> {
     params.validate()?;
     let track = if params.use_class {
         SeedTrack::Class
@@ -152,9 +152,9 @@ pub fn anchors(seq: &str, params: &EvoParams) -> Result<Vec<(usize, u128)>> {
     ))
 }
 
-pub fn evoseed_track_seeds(
+pub fn orthochain_track_seeds(
     seq: &str,
-    params: &EvoParams,
+    params: &OrthoParams,
     track: SeedTrack,
 ) -> Result<BTreeSet<PositionedSeed>> {
     params.validate()?;
@@ -197,32 +197,32 @@ pub fn evoseed_track_seeds(
 }
 
 /// 生成 raw/class 双通道位置种子；`dual_track=false` 时按 `use_class` 选择单通道。
-pub fn evoseed_seeds(seq: &str, params: &EvoParams) -> Result<BTreeSet<PositionedSeed>> {
+pub fn orthochain_seeds(seq: &str, params: &OrthoParams) -> Result<BTreeSet<PositionedSeed>> {
     params.validate()?;
     let mut out = BTreeSet::new();
     if params.dual_track {
-        out.extend(evoseed_track_seeds(seq, params, SeedTrack::Raw)?);
-        out.extend(evoseed_track_seeds(seq, params, SeedTrack::Class)?);
+        out.extend(orthochain_track_seeds(seq, params, SeedTrack::Raw)?);
+        out.extend(orthochain_track_seeds(seq, params, SeedTrack::Class)?);
     } else {
         let track = if params.use_class {
             SeedTrack::Class
         } else {
             SeedTrack::Raw
         };
-        out.extend(evoseed_track_seeds(seq, params, track)?);
+        out.extend(orthochain_track_seeds(seq, params, track)?);
     }
     Ok(out)
 }
 
-pub fn evoseed_keys(seq: &str, params: &EvoParams) -> Result<BTreeSet<u128>> {
-    Ok(evoseed_seeds(seq, params)?
+pub fn orthochain_keys(seq: &str, params: &OrthoParams) -> Result<BTreeSet<u128>> {
+    Ok(orthochain_seeds(seq, params)?
         .into_iter()
         .map(|seed| seed.key)
         .collect())
 }
 
 /// v0.4 单通道键生成，仅用于历史对照，不参与新索引和默认检索。
-pub fn evoseed_keys_legacy(seq: &str, params: &EvoParams) -> Result<BTreeSet<u128>> {
+pub fn orthochain_keys_legacy(seq: &str, params: &OrthoParams) -> Result<BTreeSet<u128>> {
     params.validate()?;
     let track = if params.use_class {
         SeedTrack::Class
@@ -266,9 +266,9 @@ mod tests {
 
     #[test]
     fn dual_track_has_disjoint_keys_and_real_positions() {
-        let p = EvoParams::default();
-        let raw = evoseed_track_seeds(LONG, &p, SeedTrack::Raw).unwrap();
-        let class = evoseed_track_seeds(LONG, &p, SeedTrack::Class).unwrap();
+        let p = OrthoParams::default();
+        let raw = orthochain_track_seeds(LONG, &p, SeedTrack::Raw).unwrap();
+        let class = orthochain_track_seeds(LONG, &p, SeedTrack::Class).unwrap();
         assert!(!raw.is_empty() && !class.is_empty());
         assert!(raw.iter().all(|s| s.track == SeedTrack::Raw && s.p2 > s.p1));
         assert!(class.iter().all(|s| s.track == SeedTrack::Class));
@@ -277,49 +277,49 @@ mod tests {
             .map(|s| s.key)
             .collect::<BTreeSet<_>>()
             .is_disjoint(&class.iter().map(|s| s.key).collect::<BTreeSet<_>>()));
-        let both = evoseed_seeds(LONG, &p).unwrap();
+        let both = orthochain_seeds(LONG, &p).unwrap();
         assert_eq!(both.len(), raw.len() + class.len());
     }
 
     #[test]
     fn gap_modes_pair_limit_and_class_length_are_real() {
-        let mut p = EvoParams::default();
-        let full = evoseed_keys(LONG, &p).unwrap();
+        let mut p = OrthoParams::default();
+        let full = orthochain_keys(LONG, &p).unwrap();
         p.gap_bucket = false;
-        let filter_only = evoseed_keys(LONG, &p).unwrap();
+        let filter_only = orthochain_keys(LONG, &p).unwrap();
         p.set_use_gap(false);
-        let no_gap = evoseed_keys(LONG, &p).unwrap();
+        let no_gap = orthochain_keys(LONG, &p).unwrap();
         assert_ne!(full, filter_only);
         assert_ne!(filter_only, no_gap);
         p.max_pairs_per_anchor = 0;
-        assert!(evoseed_keys(LONG, &p).is_err());
+        assert!(orthochain_keys(LONG, &p).is_err());
         p.max_pairs_per_anchor = 1;
-        assert!(evoseed_keys(LONG, &p).unwrap().len() < no_gap.len());
-        let mut p = EvoParams::default();
-        let long_class = evoseed_track_seeds(LONG, &p, SeedTrack::Class).unwrap();
+        assert!(orthochain_keys(LONG, &p).unwrap().len() < no_gap.len());
+        let mut p = OrthoParams::default();
+        let long_class = orthochain_track_seeds(LONG, &p, SeedTrack::Class).unwrap();
         p.class_kc = 5;
         assert_ne!(
             long_class,
-            evoseed_track_seeds(LONG, &p, SeedTrack::Class).unwrap()
+            orthochain_track_seeds(LONG, &p, SeedTrack::Class).unwrap()
         );
     }
 
     #[test]
     fn invalid_parameters_fail_early() {
-        let mut p = EvoParams {
+        let mut p = OrthoParams {
             delta: 0,
-            ..EvoParams::default()
+            ..OrthoParams::default()
         };
-        assert!(evoseed_keys(LONG, &p).is_err());
-        p = EvoParams::default();
+        assert!(orthochain_keys(LONG, &p).is_err());
+        p = OrthoParams::default();
         p.w1 = 0;
-        assert!(evoseed_keys(LONG, &p).is_err());
-        p = EvoParams::default();
+        assert!(orthochain_keys(LONG, &p).is_err());
+        p = OrthoParams::default();
         p.gmin = 20;
         p.gmax = 10;
-        assert!(evoseed_keys(LONG, &p).is_err());
-        p = EvoParams::default();
+        assert!(orthochain_keys(LONG, &p).is_err());
+        p = OrthoParams::default();
         p.chain_band = 0;
-        assert!(evoseed_keys(LONG, &p).is_err());
+        assert!(orthochain_keys(LONG, &p).is_err());
     }
 }

@@ -1,90 +1,88 @@
 # Benchmark 与复现说明
 
-> 本文件数值均为 v0.4 历史结果。v0.5 已替换为双通道位置种子和共线链评分，尚未在本基准上重新评估；以下结果不得作为 v0.5 性能证据。
+本文件区分 **OrthoChain v0.5 当前结果**和 **v0.4 历史结果**。v0.5 数值来自 177 条 [NiFe] 氢化酶大亚基序列的真实留属评估；数据不随代码包分发。
 
 ## 数据与评估口径
 
-- 数据：177 条 [NiFe] 氢化酶大亚基序列；标签来自初步系统发育推断，不是直接的直系同源真值。
-- 划分：按属哈希分配五折；任何触及测试属的配对均不进入该折训练集。
-- 配对：无向去重，每对只评估一次。
-- Task3：直系候选对 vs 旁系对，5 折；Task4：直系候选对 vs 跨亚群硬负，实际有 4 个有效折。
-- SW/SWPN 权重和分类阈值仅由训练折拟合。下表 `Recall@FPR10%` 是测试 ROC 上 FPR 不超过 10% 的工作点，不是训练阈值迁移后的召回。
-- AUPRC 为按同分组的非插值平均精度（AP），AUROC 也按同分组计算；全部同分时 AP=prevalence、AUROC=0.5。实现已与 scikit-learn 做随机并列分数对照。
-- 数据不随代码包分发。以下数值来自实际运行，不包含官方 SubseqHash2 SIMD 结果。
+- 数据：177 条序列，85 个属；标签来自初步系统发育推断，不是直系同源真值。
+- 无向序列对去重；Task 3 为直系 vs 旁系（5 折），Task 4 为直系 vs 跨亚群硬负（4 个非空折）。
+- v0.5 对完整数据库建立一次索引。IDF 只使用无标签序列键频率，包含测试属序列，属于**转导式数据库评估**。
+- v0.5 无向对分数为两个查询方向分数的算术均值，未命中方向记为 0。
+- 分类阈值仅由训练折确定；测试属标签不参与阈值选择或权重拟合。
+- AP 为按同分组非插值平均精度，AUROC 也按同分组计算；Recall@FPR10% 只使用实际 FPR 不超过 10% 的唯一测试阈值。
+- v0.4 的 SWPN 使用训练折标签权重，仅作历史对照，不是 v0.5 默认模型。
 
-## 判别性能
+## v0.5 判别性能
 
-### Task3（均值 ± 折间 SD）
+均值 ± 折间标准差：
 
-| 方法 | AUPRC | AUROC | MCC（训练折阈值） | Recall@FPR10% |
-|---|---:|---:|---:|---:|
-| EvoSeed-SWPN | 0.916 ± 0.045 | 0.897 ± 0.050 | 0.573 ± 0.167 | 0.748 ± 0.096 |
-| EvoSeed 计数 | 0.802 ± 0.059 | 0.728 ± 0.065 | 0.353 ± 0.128 | 0.407 ± 0.149 |
-| SubseqHash2 蛋白标量适配 | 0.719 ± 0.043 | 0.656 ± 0.027 | 0.300 ± 0.043 | 0.281 ± 0.033 |
-| simplified strobemer | 0.684 ± 0.048 | 0.598 ± 0.058 | 0.219 | 0.244 |
-| DIAMOND | 0.770 ± 0.042 | 0.727 | 0.405 | 0.308 |
-| BLASTp | 0.818 ± 0.057 | 0.780 | 0.546 | 0.343 |
+| 方法 | Task3 AP | Task3 AUROC | Task3 MCC | Task3 Recall@FPR10% | Task4 AP | Task4 AUROC | Task4 MCC | Task4 Recall@FPR10% |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| **双通道 raw + class** | **0.817 ± 0.047** | **0.778 ± 0.036** | **0.477 ± 0.041** | **0.481 ± 0.121** | **0.913 ± 0.058** | **0.818 ± 0.007** | **0.439 ± 0.134** | **0.647 ± 0.066** |
+| class 单通道 | 0.801 ± 0.035 | 0.755 ± 0.025 | 0.386 ± 0.058 | 0.464 ± 0.103 | 0.901 ± 0.071 | 0.792 ± 0.019 | 0.417 ± 0.133 | 0.595 ± 0.053 |
+| raw 单通道 | 0.737 ± 0.042 | 0.677 ± 0.032 | 0.346 ± 0.066 | 0.409 ± 0.065 | 0.863 ± 0.085 | 0.688 ± 0.022 | 0.295 ± 0.125 | 0.411 ± 0.050 |
 
-### Task4（均值 ± 折间 SD）
+双通道在两个任务上均优于两个单通道消融。双通道 Task3 AP 的属分组 bootstrap 95% 置信区间为 0.742–0.876。
 
-| 方法 | AUPRC | AUROC | MCC（训练折阈值） | Recall@FPR10% |
-|---|---:|---:|---:|---:|
-| EvoSeed-SWPN | 0.949 ± 0.045 | 0.900 ± 0.045 | 0.482 ± 0.094 | 0.740 ± 0.108 |
-| EvoSeed 计数 | 0.919 ± 0.050 | 0.760 ± 0.051 | 0.332 ± 0.137 | 0.532 ± 0.079 |
-| SubseqHash2 蛋白标量适配 | 0.867 ± 0.087 | 0.705 ± 0.029 | 0.316 ± 0.108 | 0.440 ± 0.070 |
-| BLASTp | 0.990 ± 0.010 | 0.983 ± 0.012 | 0.531 | 0.966 |
-| DIAMOND | 0.931 ± 0.051 | 0.843 ± 0.013 | 0.443 | 0.685 |
-| simplified strobemer | 0.837 ± 0.112 | 0.637 ± 0.033 | 0.186 ± 0.064 | 0.318 ± 0.096 |
+相对历史对照：
 
-EvoSeed-SWPN 在 Task3 最高，BLASTp 在 Task4 最高。SubseqHash2 适配在两个任务上均未超过 EvoSeed 计数或 EvoSeed-SWPN；其 AUPRC/AUROC、训练阈值 MCC 和实际 FPR≤10% 召回均不领先 EvoSeed-SWPN。该单数据集结果不支持普遍性能排名。
+- v0.4 SWPN 为 Task3 AP 0.916 ± 0.045、Task4 AP 0.949 ± 0.045；该模型使用训练折标签权重，不能作为 v0.5 默认性能。
+- BLASTp 在 Task4 的 AP 为 0.990 ± 0.010，仍高于 v0.5 双通道。
+- 当前结果不支持“v0.5 已全面超过旧版或比对工具”的结论。
 
-## 种子数量、候选与提取成本
+## 单次运行成本
 
-`rust_seed_compare.tsv` 来自同一 Windows 主机、同一 Rust release 二进制、177 条序列的一次顺序提取；耗时不是多次重复测量，不包含官方 C++ SIMD 对照，也未测量内存。
+同一 Windows 主机、同一 Rust v0.5 release 二进制、177 条序列的单次顺序运行；非多次统计，未做内存剖析：
 
-| 方法 | 键/序列 | 候选/查询（前 40 个查询） | 177 序列提取耗时 |
+| 通道 | 建索引耗时（s） | 全部 177 查询耗时（s） | directed hits |
 |---|---:|---:|---:|
-| EvoSeed | 1461.1 | 171.4 | 29.260 ms |
-| SubseqHash2 蛋白标量适配 | 2776.3 | 18.5 | 5387.955 ms |
-| simplified strobemer | 102.9 | 13.2 | 9.139 ms |
+| raw + class | 1.221 | 1.923 | 5,033 |
+| raw | 0.545 | 0.859 | 2,631 |
+| class | 0.586 | 0.883 | 4,597 |
 
-SubseqHash2 的候选数明显少于 EvoSeed，但唯一键更多，且当前标量 DP 提取更慢。候选数来自统一研究评估脚本，提取耗时来自 Rust `compare`，两列不表示端到端检索时间。
+训练折按 FPR = 10% 选择阈值后，双通道 Task3 测试折实际 FPR 平均为 0.099，范围 0.009–0.200；最后一折仍出现明显校准漂移。
 
-## SubseqHash2 参数与实现边界
+## v0.5 反馈子集 smoke test
 
-默认参数：`window=25, subseq=11, d=5, repeats=11, table_seed=42, chunk_size=500`。这些参数固定在代码中，未使用 EvoSeed 测试标签调优。
+四个展示树子集实际运行新默认检索，排除 QUERY 自身后：古菌 7/7、细菌 18/19、真菌 17/17、病毒 1/1。细菌弱参照 `WP_407854620.1` 未召回。这些文件不是原始全库，不是 AP、FP/FN 或性能结论。
 
-实现依据 Shao-Group 官方 C++ 的 ABCk 动态规划与 pivot 合并思路，字母表改为 20 种标准氨基酸 + X，使用标量 Rust。X 类似官方 N，包含 X 的窗口不产种子。它不是官方四字符核酸 SIMD 实现，不能把这里的耗时解释为官方 SubseqHash2 的性能。
+## 历史 v0.4 结果
 
-## 复现命令
+v0.4 使用单通道类编码、无序共享键和可选 SWPN 权重，与 v0.5 的位置化双通道和链评分不是同一模型。历史主结果：
 
-在发布目录构建：
+| 方法 | Task3 AP（5 折） | Task4 AP（4 折） |
+|---|---:|---:|
+| v0.4 SWPN | 0.916 ± 0.045 | 0.949 ± 0.045 |
+| v0.4 计数 | 0.802 ± 0.059 | 0.919 ± 0.050 |
+| SubseqHash2 蛋白标量适配 | 0.719 ± 0.043 | 0.867 ± 0.087 |
+
+## 复现
+
+构建与测试：
 
 ```bash
-cargo build --release
-cargo test
+cargo build --release --locked
+cargo test --locked --all-targets
 ```
 
-在研究仓库中生成键集与种子层比较（路径按实际检出位置调整）：
-
-```bash
-evoseed seed -i analysis/alignment/nife_global_input.faa -m subseqhash2 --keys -o benchmark/orthology_tasks/subseqhash2_keys.tsv
-evoseed compare -i analysis/alignment/nife_global_input.faa -o benchmark/orthology_tasks/rust_seed_compare.tsv
-```
-
-`rev_evoseed_eval.py` 支持通过 `EVOSEED_SUBSEQHASH2_KEYS` 环境变量读取上述 TSV，并沿用原有折、样本、权重和阈值流程。PowerShell 示例：
+在当前研究中重新运行 v0.5：
 
 ```powershell
-$env:EVOSEED_SUBSEQHASH2_KEYS="benchmark/orthology_tasks/subseqhash2_keys.tsv"
-python scripts/rev_evoseed_eval.py
+$env:ORTHOCHAIN_BIN="<仓库根>/OrthoChain_code_release/target/release/orthochain.exe"
+python OrthologySeed/scripts/rev_v05_eval.py
 ```
 
-主要输出：`evoseed_eval_folds.tsv`、`evoseed_eval_summary.tsv`、`seed_layer_comparison.tsv`、`rust_seed_compare.tsv`。
+主要输出位于研究仓库 `benchmark/orthology_tasks/`：
+
+- `orthochain_v05_eval_folds.tsv`
+- `orthochain_v05_eval_summary.tsv`
+- `orthochain_v05_*_directed_scores.tsv`
+- `orthochain_v05_run_metadata.json`
 
 ## 验证与限制
 
-- Rust/Python v0.4 EvoSeed 全键集核验：177 条序列、258,610 个键、不一致序列数 0；v0.5 仅通过 `evoseed_keys_legacy` 保留该历史对照。
-- v0.5 Rust 测试覆盖双通道位置种子、IDF 高频降权、目标额外键长度偏倚、共线链与散乱命中对照、位置索引存取、旧计数/穷举一致性、零权重候选、`min_shared`、负向排斥、重复 FASTA ID、参数错误，以及 SubseqHash2 DP 对照。
+- v0.5 Rust 测试覆盖双通道位置、IDF 高频降权、重复贡献、目标额外键长度偏倚、共线链与散乱命中、索引往返、旧计数/穷举一致性、零权重候选、负向排斥、重复 FASTA ID、参数错误和 SubseqHash2 DP 对照。
 - 哈希只是 128-bit 存储，最多 64-bit 有效状态；不得宣称 128-bit 熵。
-- 训练阈值迁移在其他分析中显示实际测试 FPR 可明显高于 10%，因此不能把训练 FPR 直接当作测试 FPR。
-- 未做多次耗时统计、内存剖析或官方 SIMD 运行比较；MMseqs2 旧构建曾在结果导出阶段崩溃，未纳入本次比较。
+- 全库 IDF 是转导式口径；外部新数据库上的完全归纳式评估尚未完成。
+- 未做多次耗时统计、内存剖析、跨家族验证或链化/IDF 的完整逐项消融。
+- SubseqHash2 是蛋白标量适配，不是官方四字符核酸 SIMD 实现。
