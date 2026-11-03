@@ -19,7 +19,7 @@ use std::time::Instant;
 #[command(
     name = "evoseed",
     version,
-    about = "EvoSeed v0.4.0：蛋白候选种子、索引与检索"
+    about = "EvoSeed v0.5.0：双通道位置种子、共线链与检索"
 )]
 pub struct Cli {
     #[command(subcommand)]
@@ -142,6 +142,8 @@ struct CompareArgs {
 struct EvoCliParams {
     #[arg(long, default_value_t = 5)]
     kc: usize,
+    #[arg(long, default_value_t = 8)]
+    class_kc: usize,
     #[arg(long, default_value_t = 30)]
     gmin: usize,
     #[arg(long, default_value_t = 300)]
@@ -152,9 +154,14 @@ struct EvoCliParams {
     w1: usize,
     #[arg(long, default_value_t = 12)]
     max_pairs_per_anchor: usize,
-    /// 不使用替换等价类
-    #[arg(long)]
+    #[arg(long, default_value_t = 30)]
+    chain_band: usize,
+    /// 只使用原始氨基酸通道
+    #[arg(long, conflicts_with = "class_only")]
     raw: bool,
+    /// 只使用替换等价类通道，用于消融
+    #[arg(long)]
+    class_only: bool,
     /// 同时关闭距离过滤和间距分桶
     #[arg(long)]
     no_gap: bool,
@@ -170,12 +177,15 @@ impl EvoCliParams {
     fn build(self) -> EvoParams {
         let mut p = EvoParams {
             kc: self.kc,
+            class_kc: self.class_kc,
             gmin: self.gmin,
             gmax: self.gmax,
             delta: self.delta,
             w1: self.w1,
             max_pairs_per_anchor: self.max_pairs_per_anchor,
+            chain_band: self.chain_band,
             use_class: !self.raw,
+            dual_track: !self.raw && !self.class_only,
             sec_policy: self.sec_policy,
             ..EvoParams::default()
         };
@@ -315,8 +325,8 @@ fn cmd_search(args: SearchArgs) -> Result<()> {
                 0,
                 None,
             )?;
-            for (id, score) in hits.into_iter().take(args.top) {
-                println!("{id}\t{score}");
+            for hit in hits.into_iter().take(args.top) {
+                println!("{}\t{:.8}", hit.id, hit.score);
             }
         }
     }

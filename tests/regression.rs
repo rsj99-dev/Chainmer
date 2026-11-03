@@ -1,7 +1,7 @@
-use evoseed::core::{evoseed_keys, EvoParams};
+use evoseed::core::{evoseed_keys, evoseed_keys_legacy, EvoParams};
 use evoseed::index::{database_keys, SeedIndex};
 use evoseed::scoring::weighted_score;
-use evoseed::search::{search, search_with_keys};
+use evoseed::search::{search, search_count, search_with_keys};
 use evoseed::seeds::{
     class_map, clean_protein, encode, hash_kmer, kmers, strobemers, syncmers, to_class_string,
     SecPolicy, AA20,
@@ -20,7 +20,7 @@ fn coded(text: &str) -> Vec<u64> {
 fn python_prototype_hash_and_key_parity() {
     let hash = hash_kmer(&coded("ACDEFGH"), 0xABCDEF);
     assert_eq!(hash, 0xd4c2adf8a9645bcc77bdedcf9999e8d2);
-    let keys = evoseed_keys(LONG, &EvoParams::default()).unwrap();
+    let keys = evoseed_keys_legacy(LONG, &EvoParams::default()).unwrap();
     assert_eq!(keys.len(), 306);
     assert_eq!(keys.first(), Some(&0x0a1cbb4e9e2bd0adfd911785526697d));
     assert_eq!(keys.last(), Some(&0xffc7a9e54c658efa18c5b069a279c357));
@@ -140,7 +140,40 @@ fn index_roundtrip_preserves_metadata_postings_and_results() {
     assert_eq!(loaded.meta.class_map["G"], "b");
     assert!(loaded.meta.hash_scheme.contains("64-effective"));
     let keys = database_keys(&db, &params).unwrap();
-    let indexed = search(LONG, &loaded, &params, 1, &BTreeSet::new(), 0, None).unwrap();
+    let indexed = search_count(LONG, &loaded, &params, 1).unwrap();
     let brute = search_with_keys(LONG, &keys, &params, 1, &BTreeSet::new(), 0).unwrap();
     assert_eq!(indexed, brute);
+}
+
+#[test]
+fn chain_score_penalizes_extra_unrelated_target_keys() {
+    let elongated = format!("{LONG}{FRH}");
+    let db = BTreeMap::from([
+        ("self".to_string(), LONG.to_string()),
+        ("elongated".to_string(), elongated),
+        ("other".to_string(), FRH.to_string()),
+    ]);
+    let params = EvoParams::default();
+    let index = SeedIndex::build(&db, params.clone()).unwrap();
+    let hits = search(LONG, &index, &params, 1, &BTreeSet::new(), 0, None).unwrap();
+    let own = hits.iter().find(|hit| hit.id == "self").unwrap();
+    let long = hits.iter().find(|hit| hit.id == "elongated").unwrap();
+    assert_eq!(own.shared, long.shared);
+    assert!(own.weighted_jaccard > long.weighted_jaccard);
+    assert!(own.score > long.score);
+}
+
+#[test]
+fn database_frequency_downweights_common_keys() {
+    let db = BTreeMap::from([
+        ("a".to_string(), LONG.to_string()),
+        ("b".to_string(), FRH.to_string()),
+    ]);
+    let params = EvoParams::default();
+    let index = SeedIndex::build(&db, params.clone()).unwrap();
+    let a = evoseed_keys(LONG, &params).unwrap();
+    let b = evoseed_keys(FRH, &params).unwrap();
+    let common = a.intersection(&b).next().unwrap();
+    let rare = a.difference(&b).next().unwrap();
+    assert!(index.idf(common) < index.idf(rare));
 }

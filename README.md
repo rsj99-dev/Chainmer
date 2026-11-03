@@ -1,16 +1,17 @@
-# EvoSeed v0.4.0
+# EvoSeed v0.5.0
 
-EvoSeed 是一个用于**蛋白同源/直系同源候选召回与排序**的 Rust 库和命令行工具。它组合替换等价类、类 minimizer 锚点、有序锚点对、间距过滤与分桶，并支持仅由训练数据拟合的 SW/SWPN 权重。
+EvoSeed 是一个用于**蛋白同源/直系同源候选召回与排序**的 Rust 库和命令行工具。v0.5 将原来的“单通道类等价键计数”替换为 **raw/class 双通道位置种子、数据库 IDF 校准和共线链评分**；旧计数与 SWPN 接口保留作消融对照。
 
 > Seed Hit 只表示候选共享种子，不构成同源或直系同源判定。直系同源需要基因树—物种树协调等后续分析；HydDB 亚群标签也不等同于直系同源群。
 
 ## 核心组成
 
-1. **替换等价类**：20 种标准氨基酸分入 5 个互斥类，特殊或未知残基进入第 6 类；
-2. **有序锚点对**：在类串或原始氨基酸串上选择 minimizer 锚点，组合有序锚点对；
-3. **间距约束**：可分别控制距离过滤和间距分桶；
-4. **对比加权**：SWPN 为 `ln((f_pos + 1) / (f_neg + 1))`，未出现的键默认权重为 0；
-5. **可复现索引**：记录实际参数、类别映射、算法版本、哈希方案和数据库内容 BLAKE3 摘要。
+1. **双通道召回**：raw 通道使用原始氨基酸 `kc=5`，class 通道使用替换等价类 `class_kc=8`，两种键使用不同哈希盐；
+2. **位置化锚点对**：保存查询与目标的双锚点位置，不再把种子仅视为无序键集合；
+3. **数据库频率校准**：以当前数据库 document frequency 计算 IDF，高频键自动降权；
+4. **重复贡献约束**：同一键在一个候选中的全部位置命中分摊一份 IDF 权重，并限制每键位置配对数；
+5. **共线链评分**：在错开的对角线分桶内求单调最优链，最终分数为“raw/class 最优链权重之和 ÷ 查询与目标的加权键集并集”；
+6. **可复现索引**：记录实际参数、位置 postings、键频率、序列 IDF 权重、算法版本和数据库 BLAKE3 摘要。
 
 ## 安装与验证
 
@@ -38,7 +39,7 @@ evoseed seed -i db.faa -m evoseed
 evoseed seed -i db.faa -m subseqhash2 --keys -o subseqhash2.tsv
 
 # 构建索引并使用索引中保存的参数检索
-evoseed index -d db.faa -o db.evoseed.json --kc 5 --gmin 30 --gmax 300
+evoseed index -d db.faa -o db.evoseed.json --kc 5 --class-kc 8 --gmin 30 --gmax 300
 evoseed search -d db.faa -q query.faa -x db.evoseed.json --top 5
 
 # 同一 Rust 二进制内的种子数量与单次提取耗时比较
@@ -47,15 +48,16 @@ evoseed compare -i db.faa -o seed_compare.tsv
 
 支持的 `seed --method`：`evoseed`、`kmer`、`spaced`、`minimizer`、`syncmer`、`strobemer`、`ckmer`、`subseqhash2`。传统基线的固定参数见 `src/cli.rs`；`simplified-strobemer` 是 fixed-offset anchor-pair，不是标准 randstrobe/minstrobe。
 
-加权检索的 `--weights` JSON 以 32 位十六进制键为字段名、有限浮点数为值。`min_shared` 必须至少为 1；零权重共享键仍形成中性候选。加载已有索引时会校验数据库完整内容，而不是只比较序列 ID。
+默认 `search` 输出新的共线链归一化分数。`--raw` 和 `--class-only` 分别执行单通道消融。加权检索的 `--weights` JSON 沿用旧式加权重叠评分，以 32 位十六进制键为字段名、有限浮点数为值；它不是新的链化模型。`min_shared` 必须至少为 1；零权重共享键仍形成中性候选。加载已有索引时会校验数据库完整内容，而不是只比较序列 ID。
 
 ## Rust API
 
 主要入口：
 
-- `evoseed_keys` / `anchors` / `EvoParams`：EvoSeed 键生成；
-- `SeedIndex`：索引构建、保存、加载和数据库校验；
-- `search` / `search_with_keys`：倒排与穷举计数检索；
+- `evoseed_seeds` / `evoseed_keys` / `EvoParams`：双通道位置种子与键生成；
+- `SeedIndex`：位置索引、频率统计、保存、加载和数据库校验；
+- `search` / `CandidateScore`：IDF 归一化的共线链检索及分通道诊断分；
+- `search_count` / `search_with_keys`：旧式倒排与穷举计数对照；
 - `search_weighted_index` / `search_weighted_with_keys`：加权检索；
 - `contrastive_weights` / `specificity_weights` / `weighted_score`：训练折权重与评分；
 - `subseqhash2_keys` / `SubseqHash2Params`：SubseqHash2 蛋白标量适配。
@@ -70,11 +72,17 @@ evoseed compare -i db.faa -o seed_compare.tsv
 
 ## 哈希与兼容性
 
-为保持已有 EvoSeed 基准可比，v0.4.0 保留原型的键输出。哈希以 `u128` 存储，但两个 64 位分量来自同一个 64 位滚动状态，因此**有效状态最多 64 bit**，不得宣称具有 128-bit 熵或碰撞保证。索引格式为 `evoseed-index/2`，不兼容旧版无完整元数据的索引。
+哈希以 `u128` 存储，但两个 64 位分量来自同一个 64 位滚动状态，因此**有效状态最多 64 bit**，不得宣称具有 128-bit 熵或碰撞保证。v0.5 索引格式为 `evoseed-index/3`，旧版索引必须重建。`evoseed_keys_legacy` 仅保留 v0.4 单通道键输出用于历史核对，不参与新索引和默认检索。
 
-177 条基准序列、258,610 个 EvoSeed 键已逐项核对，Rust 与 Python 原型不一致的序列数为 0。
+177 条基准序列、258,610 个 v0.4 EvoSeed 键已逐项核对，Rust 与 Python 原型不一致的序列数为 0；该兼容性不代表 v0.5 与旧版产生相同键集或排名。
+
+## v0.5 反馈子集 smoke test
+
+使用反馈包四个 `tree_input.fa` 展示树子集实际运行新默认检索，排除 QUERY 自身后：古菌 7/7 参照全部进入候选且未报出其他候选；细菌 18/19；真菌 17/17 位于前 17；病毒 1/1。细菌弱参照 `WP_407854620.1` 仍未召回。**这些文件不是原始全库，结果只验证真实序列上的运行和排序行为，不是全库 AP、FP/FN 或性能结论。**
 
 ## 基准摘要
+
+以下数值均为 **v0.4 历史结果**，尚未用 v0.5 双通道链化算法重跑，不得用于宣称新算法性能。
 
 同一 177 条 [NiFe] 氢化酶大亚基数据、留属划分、无向去重配对和训练折阈值流程下：
 
@@ -84,7 +92,7 @@ evoseed compare -i db.faa -o seed_compare.tsv
 | EvoSeed 计数 | 0.802 ± 0.059 | 0.919 ± 0.050 |
 | SubseqHash2 蛋白标量适配 | 0.719 ± 0.043 | 0.867 ± 0.087 |
 
-AUPRC 使用按同分组的非插值平均精度（AP），AUROC 同样按同分组计算。此数据上 EvoSeed-SWPN 在 Task3 最高，BLASTp 在 Task4 最高（0.990）；SubseqHash2 适配在两个任务上均未超过 EvoSeed 计数或 EvoSeed-SWPN。该结果不支持脱离数据集的普遍排名。
+AUPRC 使用按同分组的非插值平均精度（AP），AUROC 同样按同分组计算。此数据上 v0.4 EvoSeed-SWPN 在 Task3 最高，BLASTp 在 Task4 最高（0.990）；SubseqHash2 适配在两个任务上均未超过 v0.4 EvoSeed 计数或 EvoSeed-SWPN。该结果不支持脱离数据集的普遍排名，也不代表 v0.5。
 
 本次 Rust release 单次顺序提取中，EvoSeed 为 1461.1 键/序列、29.3 ms/177 序列；SubseqHash2 为 2776.3 键/序列、5388.0 ms。后者候选数较少，但键数和标量提取成本更高。完整口径、命令与限制见 [BENCHMARK.md](BENCHMARK.md)。
 

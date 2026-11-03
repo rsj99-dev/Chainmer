@@ -13,12 +13,13 @@ pub mod search;
 pub mod seeds;
 pub mod subseqhash2;
 
-pub use core::{anchors, evoseed_keys, EvoParams};
+pub use core::{anchors, evoseed_keys, evoseed_seeds, EvoParams, PositionedSeed, SeedTrack};
 pub use index::SeedIndex;
 pub use scoring::{contrastive_weights, specificity_weights, weighted_score};
+pub use search::CandidateScore;
 
 /// 包版本；索引元数据与此常量保持一致。
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// 兼容历史输出：128-bit 存储宽度，但有效状态最多 64 bit。
 pub const HASH_SCHEME: &str = "dual-splitmix64/64-effective-in-u128";
-pub const INDEX_FORMAT: &str = "evoseed-index/2";
+pub const INDEX_FORMAT: &str = "evoseed-index/3";

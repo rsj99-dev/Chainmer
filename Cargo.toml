@@ -1,10 +1,10 @@
 [package]
 name = "evoseed"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 rust-version = "1.85"
 authors = ["Shijie Ren"]
-description = "Ortholog-oriented candidate retrieval seeds with substitution classes and contrastive weighting"
+description = "Dual-track protein candidate retrieval with positional seed chaining and database-calibrated scoring"
 license = "MIT"
 readme = "README.md"
 documentation = "https://docs.rs/evoseed"
