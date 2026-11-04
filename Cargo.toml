@@ -1,6 +1,6 @@
 [package]
 name = "chainmer"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2021"
 rust-version = "1.85"
 authors = ["Shijie Ren"]
@@ -8,7 +8,7 @@ description = "Dual-track protein candidate retrieval with positional seed chain
 license = "MIT"
 readme = "README.md"
 documentation = "https://docs.rs/chainmer"
-include = ["src/**", "tests/**", "Cargo.toml", "Cargo.lock", "README.md", "BENCHMARK.md", "LICENSE", "MANIFEST.tsv", "Chainmer_Logo.png"]
+include = ["src/**", "tests/**", "Cargo.toml", "Cargo.lock", "README.md", "BENCHMARK.md", "CHANGELOG.md", "LICENSE", "MANIFEST.tsv", "Chainmer_Logo.png"]
 keywords = ["bioinformatics", "protein", "homology", "seed", "sequence"]
 categories = ["science", "command-line-utilities"]
 

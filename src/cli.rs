@@ -3,8 +3,8 @@ use crate::fasta::read_fasta;
 use crate::index::{database_keys, key_hex, parse_key_hex, SeedIndex};
 use crate::search::{search, search_weighted_index};
 use crate::seeds::{
-    clean_protein, kmers, minimizers, spaced_kmers, strobemers, syncmers, to_class_string,
-    SecPolicy,
+    clean_protein, kmers, minimizers, spaced_kmers, strobemers, syncmers_with_mode,
+    to_class_string, SecPolicy, SyncmerMode,
 };
 use crate::subseqhash2::{subseqhash2_keys, SubseqHash2Params};
 use anyhow::{bail, Context, Result};
@@ -19,7 +19,7 @@ use std::time::Instant;
 #[command(
     name = "chainmer",
     version,
-    about = "Chainmer v0.5.0：双通道位置种子、共线链与检索"
+    about = "Chainmer v0.5.1：双通道位置种子、共线链与检索"
 )]
 pub struct Cli {
     #[command(subcommand)]
@@ -60,7 +60,7 @@ impl Method {
             Self::Kmer => "k-mer(k=5)",
             Self::Spaced => "spaced(11101101)",
             Self::Minimizer => "minimizer(k5w8)",
-            Self::Syncmer => "syncmer(k5s2,open)",
+            Self::Syncmer => "syncmer(k5s2,closed)",
             Self::Strobemer => "simplified-strobemer(k4)",
             Self::Ckmer => "ck-mer(k=5)",
             Self::Subseqhash2 => "SubseqHash2-protein-scalar(n25k11d5r11)",
@@ -78,7 +78,7 @@ fn extract(method: Method, sequence: &str) -> Result<BTreeSet<u128>> {
             .map(|x| x.1)
             .collect()),
         Method::Minimizer => minimizers(&cleaned(), 5, 8),
-        Method::Syncmer => syncmers(&cleaned(), 5, 2, false),
+        Method::Syncmer => syncmers_with_mode(&cleaned(), 5, 2, SyncmerMode::Closed),
         Method::Strobemer => strobemers(&cleaned(), 4, 6, 30, 2),
         Method::Ckmer => Ok(kmers(&to_class_string(&cleaned()), 5)?
             .into_iter()

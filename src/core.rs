@@ -13,7 +13,7 @@ impl SeedTrack {
     fn salt(self) -> u64 {
         match self {
             Self::Raw => 0xE05EED,
-            Self::Class => 0xE05EED ^ 0xC1A55_7AAC,
+            Self::Class => 0xE05EED ^ 0x000C_1A55_7AAC,
         }
     }
 }
@@ -98,14 +98,16 @@ impl ChainmerParams {
     }
 }
 
-fn track_anchors(
+fn track_anchors_impl(
     seq: &str,
     kc: usize,
     w1: usize,
     track: SeedTrack,
     sec_policy: SecPolicy,
+    mask_unknown: bool,
 ) -> Vec<(usize, u128)> {
     let cleaned = clean_protein(seq, sec_policy);
+    let valid: Vec<bool> = cleaned.bytes().map(|residue| residue != b'X').collect();
     let transformed = match track {
         SeedTrack::Raw => cleaned,
         SeedTrack::Class => to_class_string(&cleaned),
@@ -115,6 +117,7 @@ fn track_anchors(
         return Vec::new();
     }
     let km: Vec<(usize, u128)> = (0..=codes.len() - kc)
+        .filter(|i| !mask_unknown || valid[*i..*i + kc].iter().all(|value| *value))
         .map(|i| {
             let part: Vec<u64> = codes[i..i + kc].iter().map(|x| *x as u64).collect();
             (i, hash_kmer(&part, 0xABCDEF))
@@ -135,6 +138,16 @@ fn track_anchors(
     out
 }
 
+fn track_anchors(
+    seq: &str,
+    kc: usize,
+    w1: usize,
+    track: SeedTrack,
+    sec_policy: SecPolicy,
+) -> Vec<(usize, u128)> {
+    track_anchors_impl(seq, kc, w1, track, sec_policy, false)
+}
+
 /// 兼容旧的单通道锚点接口；新检索使用 `chainmer_seeds` 的双通道位置种子。
 pub fn anchors(seq: &str, params: &ChainmerParams) -> Result<Vec<(usize, u128)>> {
     params.validate()?;
@@ -152,17 +165,27 @@ pub fn anchors(seq: &str, params: &ChainmerParams) -> Result<Vec<(usize, u128)>>
     ))
 }
 
+/// 新主通道默认屏蔽所有覆盖 X/非标准残基的锚点窗口。
 pub fn chainmer_track_seeds(
     seq: &str,
     params: &ChainmerParams,
     track: SeedTrack,
+) -> Result<BTreeSet<PositionedSeed>> {
+    chainmer_track_seeds_impl(seq, params, track, true)
+}
+
+fn chainmer_track_seeds_impl(
+    seq: &str,
+    params: &ChainmerParams,
+    track: SeedTrack,
+    mask_unknown: bool,
 ) -> Result<BTreeSet<PositionedSeed>> {
     params.validate()?;
     let kc = match track {
         SeedTrack::Raw => params.kc,
         SeedTrack::Class => params.class_kc,
     };
-    let anchors = track_anchors(seq, kc, params.w1, track, params.sec_policy());
+    let anchors = track_anchors_impl(seq, kc, params.w1, track, params.sec_policy(), mask_unknown);
     let mut seeds = BTreeSet::new();
     for (i, &(p1, h1)) in anchors.iter().enumerate() {
         let mut count = 0;
@@ -302,6 +325,63 @@ mod tests {
             long_class,
             chainmer_track_seeds(LONG, &p, SeedTrack::Class).unwrap()
         );
+    }
+
+    #[test]
+    fn unknown_residues_are_masked_only_in_the_current_channel() {
+        let p = ChainmerParams::default();
+        let standard_raw = chainmer_track_seeds(LONG, &p, SeedTrack::Raw).unwrap();
+        let reference_raw = chainmer_track_seeds_impl(LONG, &p, SeedTrack::Raw, false).unwrap();
+        assert_eq!(standard_raw, reference_raw);
+        assert!(chainmer_seeds(&"X".repeat(400), &p).unwrap().is_empty());
+        assert!(chainmer_seeds(&"BZJO*".repeat(80), &p).unwrap().is_empty());
+        let with_x = format!("{}X{}", &LONG[..80], &LONG[81..]);
+        let raw = track_anchors_impl(&with_x, p.kc, p.w1, SeedTrack::Raw, SecPolicy::C, true);
+        let class = track_anchors_impl(
+            &with_x,
+            p.class_kc,
+            p.w1,
+            SeedTrack::Class,
+            SecPolicy::C,
+            true,
+        );
+        assert!(raw
+            .iter()
+            .all(|(position, _)| *position + p.kc <= 80 || *position >= 81));
+        assert!(class
+            .iter()
+            .all(|(position, _)| *position + p.class_kc <= 80 || *position >= 81));
+        let legacy = chainmer_keys_legacy(&with_x, &p).unwrap();
+        assert!(!legacy.is_empty());
+        let u_as_c = track_anchors_impl("ACDU", 2, 1, SeedTrack::Raw, SecPolicy::C, true);
+        let u_as_x = track_anchors_impl("ACDU", 2, 1, SeedTrack::Raw, SecPolicy::X, true);
+        assert_eq!(u_as_c.len(), 3);
+        assert_eq!(u_as_x.len(), 2);
+    }
+
+    #[test]
+    fn extreme_parameters_return_without_arithmetic_panics() {
+        let mut p = ChainmerParams {
+            kc: usize::MAX,
+            class_kc: usize::MAX,
+            ..ChainmerParams::default()
+        };
+        assert!(chainmer_seeds(LONG, &p).unwrap().is_empty());
+        p = ChainmerParams {
+            w1: usize::MAX,
+            ..ChainmerParams::default()
+        };
+        assert!(chainmer_seeds(LONG, &p).unwrap().is_empty());
+        p = ChainmerParams {
+            gmin: usize::MAX,
+            gmax: usize::MAX,
+            delta: usize::MAX,
+            max_pairs_per_anchor: usize::MAX,
+            chain_band: usize::MAX,
+            ..ChainmerParams::default()
+        };
+        p.validate().unwrap();
+        assert!(chainmer_seeds(LONG, &p).unwrap().is_empty());
     }
 
     #[test]

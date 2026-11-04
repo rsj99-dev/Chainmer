@@ -10,6 +10,12 @@ pub enum SecPolicy {
     X,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SyncmerMode {
+    Closed,
+    Open { offset: usize },
+}
+
 pub fn clean_protein(seq: &str, sec_policy: SecPolicy) -> String {
     seq.chars()
         .filter_map(|raw| {
@@ -113,6 +119,9 @@ pub fn spaced_kmers(seq: &str, pattern: &str, k: usize) -> Result<Vec<(usize, u1
         bail!("spaced pattern 必须是非空 0/1 字符串");
     }
     let ones: Vec<usize> = pattern.match_indices('1').map(|x| x.0).collect();
+    if ones.is_empty() {
+        bail!("spaced pattern 必须至少包含一个 1");
+    }
     if k != ones.len() {
         bail!("k 必须等于 pattern 中 1 的数量");
     }
@@ -141,9 +150,20 @@ pub fn minimizers(seq: &str, k: usize, w: usize) -> Result<BTreeSet<u128>> {
         .collect())
 }
 
-pub fn syncmers(seq: &str, k: usize, s: usize, closed: bool) -> Result<BTreeSet<u128>> {
+/// 按显式 Open/Closed 定义提取 syncmer；哈希平局采用 first-min。
+pub fn syncmers_with_mode(
+    seq: &str,
+    k: usize,
+    s: usize,
+    mode: SyncmerMode,
+) -> Result<BTreeSet<u128>> {
     if k == 0 || s == 0 || s >= k {
         bail!("要求 0 < s < k");
+    }
+    if let SyncmerMode::Open { offset } = mode {
+        if offset > k - s {
+            bail!("open syncmer offset 不能超过 k-s");
+        }
     }
     let codes = encode(seq);
     if codes.len() < k {
@@ -159,12 +179,27 @@ pub fn syncmers(seq: &str, k: usize, s: usize, closed: bool) -> Result<BTreeSet<
             .collect();
         let min = *smers.iter().min().unwrap();
         let t = smers.iter().position(|x| *x == min).unwrap();
-        if t == 0 || (!closed && t == k - s) {
+        let selected = match mode {
+            SyncmerMode::Closed => t == 0 || t == k - s,
+            SyncmerMode::Open { offset } => t == offset,
+        };
+        if selected {
             let part: Vec<u64> = codes[i..i + k].iter().map(|x| *x as u64).collect();
             out.insert(hash_kmer(&part, 0xABCDEF));
         }
     }
     Ok(out)
+}
+
+/// 兼容历史布尔接口：false 为 Closed，true 为 Open(offset=0)。
+#[deprecated(note = "请改用 syncmers_with_mode 和显式 SyncmerMode")]
+pub fn syncmers(seq: &str, k: usize, s: usize, closed: bool) -> Result<BTreeSet<u128>> {
+    let mode = if closed {
+        SyncmerMode::Open { offset: 0 }
+    } else {
+        SyncmerMode::Closed
+    };
+    syncmers_with_mode(seq, k, s, mode)
 }
 
 pub fn anchor_candidates(seq: &str, k: usize, w1: usize) -> Result<Vec<(usize, u128)>> {
@@ -234,7 +269,8 @@ mod tests {
         assert!(spaced_kmers("ACD", "", 0).is_err());
         assert!(spaced_kmers("ACD", "101", 2).is_ok());
         assert!(spaced_kmers("ACD", "101", 3).is_err());
-        assert!(syncmers("ACD", 3, 3, false).is_err());
+        assert!(spaced_kmers("ACDE", "0000", 0).is_err());
+        assert!(syncmers_with_mode("ACD", 3, 3, SyncmerMode::Closed).is_err());
         assert!(strobemers("ACD", 2, 1, 5, 0).is_err());
     }
 }

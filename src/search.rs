@@ -1,7 +1,8 @@
 use crate::core::{chainmer_keys, chainmer_seeds, ChainmerParams, SeedTrack};
 use crate::index::SeedIndex;
 use crate::scoring::{reject_score, weighted_score};
-use anyhow::{bail, Result};
+use crate::seeds::hash_kmer;
+use anyhow::{bail, Context, Result};
 use std::collections::{BTreeMap, BTreeSet};
 
 const MAX_POSITION_PAIRS_PER_KEY: usize = 64;
@@ -15,6 +16,9 @@ pub struct CandidateScore {
     pub weighted_jaccard: f64,
     pub raw_chain_score: f64,
     pub class_chain_score: f64,
+    pub position_hits_total: usize,
+    pub position_hits_retained: usize,
+    pub truncated_keys: usize,
 }
 
 #[derive(Clone, Debug)]
@@ -29,98 +33,121 @@ struct SeedHit {
 }
 
 impl SeedHit {
-    fn q_center2(&self) -> i64 {
-        (self.q1 + self.q2) as i64
+    fn q_center2(&self) -> i128 {
+        self.q1 as i128 + self.q2 as i128
     }
 
-    fn t_center2(&self) -> i64 {
-        (self.t1 + self.t2) as i64
+    fn t_center2(&self) -> i128 {
+        self.t1 as i128 + self.t2 as i128
     }
 
-    fn diagonal2(&self) -> i64 {
+    fn diagonal2(&self) -> i128 {
         self.q_center2() - self.t_center2()
+    }
+}
+
+/// 四个端点必须在两条序列中沿相同方向严格前进；禁止同角色端点重复和交叉映射。
+fn can_chain(previous: &SeedHit, current: &SeedHit) -> bool {
+    previous.q1 < current.q1
+        && previous.q2 < current.q2
+        && previous.t1 < current.t1
+        && previous.t2 < current.t2
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+struct HitOrder {
+    rank: u128,
+    q1: usize,
+    q2: usize,
+    t1: usize,
+    t2: usize,
+}
+
+impl HitOrder {
+    fn new(hit: &SeedHit) -> Self {
+        let rank = hash_kmer(
+            &[
+                (hit.key >> 64) as u64,
+                hit.key as u64,
+                hit.q1 as u64,
+                hit.q2 as u64,
+                hit.t1 as u64,
+                hit.t2 as u64,
+            ],
+            0xC1A1_9EED,
+        );
+        Self {
+            rank,
+            q1: hit.q1,
+            q2: hit.q2,
+            t1: hit.t1,
+            t2: hit.t2,
+        }
+    }
+}
+
+/// 稳定哈希 bottom-k：保留集合与 posting 遍历顺序无关，且不偏向序列任一端。
+#[derive(Default)]
+struct RetainedHits {
+    total: usize,
+    ordered: BTreeMap<HitOrder, SeedHit>,
+}
+
+impl RetainedHits {
+    fn offer(&mut self, hit: SeedHit) -> Result<()> {
+        self.total = self
+            .total
+            .checked_add(1)
+            .context("位置命中计数超出 usize 范围")?;
+        let order = HitOrder::new(&hit);
+        if self.ordered.len() < MAX_POSITION_PAIRS_PER_KEY {
+            self.ordered.insert(order, hit);
+        } else if self
+            .ordered
+            .last_key_value()
+            .map(|(last, _)| order < *last)
+            .unwrap_or(true)
+        {
+            self.ordered.pop_last();
+            self.ordered.insert(order, hit);
+        }
+        Ok(())
     }
 }
 
 #[derive(Default)]
 struct Candidate {
     shared: BTreeSet<u128>,
-    hits: Vec<SeedHit>,
-    hit_counts: BTreeMap<u128, usize>,
+    hits: BTreeMap<u128, RetainedHits>,
 }
 
-struct Fenwick {
-    tree: Vec<f64>,
-}
-
-impl Fenwick {
-    fn new(n: usize) -> Self {
-        Self {
-            tree: vec![0.0; n + 1],
-        }
-    }
-
-    /// 返回前 `end` 个元素的最大值，`end=0` 表示空前缀。
-    fn prefix_max(&self, end: usize) -> f64 {
-        let mut i = end;
-        let mut best = 0.0_f64;
-        while i > 0 {
-            best = best.max(self.tree[i]);
-            i -= i & (!i + 1);
-        }
-        best
-    }
-
-    fn update(&mut self, index: usize, value: f64) {
-        let mut i = index;
-        while i < self.tree.len() {
-            self.tree[i] = self.tree[i].max(value);
-            i += i & (!i + 1);
-        }
-    }
-}
-
-fn chain_on_offset(hits: &[SeedHit], track: SeedTrack, band: usize, offset: i64) -> f64 {
-    let width = 2 * band as i64;
-    let mut buckets: BTreeMap<i64, Vec<SeedHit>> = BTreeMap::new();
+fn chain_on_offset(hits: &[SeedHit], track: SeedTrack, band: usize, offset: i128) -> f64 {
+    let width = 2 * band as i128;
+    let mut buckets: BTreeMap<i128, Vec<SeedHit>> = BTreeMap::new();
     for hit in hits.iter().filter(|hit| hit.track == track) {
         let bucket = (hit.diagonal2() + offset).div_euclid(width);
         buckets.entry(bucket).or_default().push(hit.clone());
     }
     let mut global_best = 0.0_f64;
     for mut bucket in buckets.into_values() {
-        bucket.sort_by_key(|hit| (hit.q_center2(), hit.t_center2(), hit.key));
-        let mut target_centers: Vec<i64> = bucket.iter().map(SeedHit::t_center2).collect();
-        target_centers.sort_unstable();
-        target_centers.dedup();
-        let mut tree = Fenwick::new(target_centers.len());
-        let mut start = 0;
-        while start < bucket.len() {
-            let q = bucket[start].q_center2();
-            let mut end = start + 1;
-            while end < bucket.len() && bucket[end].q_center2() == q {
-                end += 1;
+        bucket.sort_by_key(|hit| (hit.q1, hit.q2, hit.t1, hit.t2, hit.key));
+        let mut dp = vec![0.0_f64; bucket.len()];
+        for i in 0..bucket.len() {
+            dp[i] = bucket[i].weight;
+            for j in 0..i {
+                if can_chain(&bucket[j], &bucket[i]) {
+                    dp[i] = dp[i].max(dp[j] + bucket[i].weight);
+                }
             }
-            let mut updates = Vec::new();
-            for hit in &bucket[start..end] {
-                let t_index = target_centers.binary_search(&hit.t_center2()).unwrap();
-                // 只查询严格更小的目标中心；同一查询中心稍后统一更新。
-                let value = tree.prefix_max(t_index) + hit.weight;
-                updates.push((t_index + 1, value));
-                global_best = global_best.max(value);
-            }
-            for (index, value) in updates {
-                tree.update(index, value);
-            }
-            start = end;
+            global_best = global_best.max(dp[i]);
         }
     }
     global_best
 }
 
-/// 用两套错开的对角线分桶减轻硬桶边界影响，并在桶内求单调递增最优链。
+/// 两套对角线桶仅用于容差筛选；桶内以严格端点对应关系求最优链。
 fn best_chain(hits: &[SeedHit], track: SeedTrack, band: usize) -> f64 {
-    chain_on_offset(hits, track, band, 0).max(chain_on_offset(hits, track, band, band as i64))
+    chain_on_offset(hits, track, band, 0).max(chain_on_offset(hits, track, band, band as i128))
 }
 
 fn validate_min_shared(min_shared: usize) -> Result<()> {
@@ -143,7 +170,7 @@ fn check_rejection<'a>(
 /// 双通道、IDF 归一化的位置共线链检索。
 ///
 /// 最终分数为 `最优链权重 / 查询与目标的加权键集并集`。每个唯一键在单个
-/// 候选中的全部位置命中分摊一份 IDF 权重，限制重复序列刷分。
+/// 候选中的保留代表命中共同分摊一份 IDF 权重，限制重复序列刷分。
 pub fn search(
     query: &str,
     index: &SeedIndex,
@@ -169,19 +196,15 @@ pub fn search(
         for posting in postings {
             let candidate = candidates.entry(posting.id.clone()).or_default();
             candidate.shared.insert(seed.key);
-            let count = candidate.hit_counts.get(&seed.key).copied().unwrap_or(0);
-            if count < MAX_POSITION_PAIRS_PER_KEY {
-                candidate.hits.push(SeedHit {
-                    key: seed.key,
-                    track: seed.track,
-                    q1: seed.p1,
-                    q2: seed.p2,
-                    t1: posting.p1,
-                    t2: posting.p2,
-                    weight: 0.0,
-                });
-                candidate.hit_counts.insert(seed.key, count + 1);
-            }
+            candidate.hits.entry(seed.key).or_default().offer(SeedHit {
+                key: seed.key,
+                track: seed.track,
+                q1: seed.p1,
+                q2: seed.p2,
+                t1: posting.p1,
+                t2: posting.p2,
+                weight: 0.0,
+            })?;
         }
     }
 
@@ -208,12 +231,23 @@ pub fn search(
         let weighted_jaccard = if union > 0.0 { overlap / union } else { 0.0 };
         let Candidate {
             shared,
-            hits: mut chain_hits,
-            hit_counts,
+            hits: retained_by_key,
         } = candidate;
-        for hit in &mut chain_hits {
-            hit.weight = index.idf(&hit.key) / hit_counts[&hit.key] as f64;
+        let position_hits_total = retained_by_key.values().map(|hits| hits.total).sum();
+        let truncated_keys = retained_by_key
+            .values()
+            .filter(|hits| hits.total > hits.ordered.len())
+            .count();
+        let mut chain_hits = Vec::new();
+        for (key, retained) in retained_by_key {
+            let retained_count = retained.ordered.len();
+            let weight = index.idf(&key) / retained_count as f64;
+            chain_hits.extend(retained.ordered.into_values().map(|mut hit| {
+                hit.weight = weight;
+                hit
+            }));
         }
+        let position_hits_retained = chain_hits.len();
         let raw_chain_score = best_chain(&chain_hits, SeedTrack::Raw, params.chain_band);
         let class_chain_score = best_chain(&chain_hits, SeedTrack::Class, params.chain_band);
         let chain_score = (raw_chain_score + class_chain_score).min(overlap);
@@ -230,6 +264,9 @@ pub fn search(
             weighted_jaccard,
             raw_chain_score,
             class_chain_score,
+            position_hits_total,
+            position_hits_retained,
+            truncated_keys,
         });
     }
     hits.sort_by(|a, b| {
@@ -402,6 +439,110 @@ mod tests {
         }
     }
 
+    fn endpoint_hit(q1: usize, q2: usize, t1: usize, t2: usize) -> SeedHit {
+        SeedHit {
+            key: 1,
+            track: SeedTrack::Raw,
+            q1,
+            q2,
+            t1,
+            t2,
+            weight: 1.0,
+        }
+    }
+
+    fn reference_chain_on_offset(
+        hits: &[SeedHit],
+        track: SeedTrack,
+        band: usize,
+        offset: i128,
+    ) -> f64 {
+        let width = 2 * band as i128;
+        let mut buckets: BTreeMap<i128, Vec<SeedHit>> = BTreeMap::new();
+        for hit in hits.iter().filter(|hit| hit.track == track) {
+            let bucket = (hit.diagonal2() + offset).div_euclid(width);
+            buckets.entry(bucket).or_default().push(hit.clone());
+        }
+        let mut global_best = 0.0_f64;
+        for bucket in buckets.into_values() {
+            assert!(bucket.len() <= 8);
+            for mask in 1_usize..(1 << bucket.len()) {
+                let mut selected: Vec<SeedHit> = (0..bucket.len())
+                    .filter(|i| mask & (1 << i) != 0)
+                    .map(|i| bucket[i].clone())
+                    .collect();
+                selected.sort_by_key(|hit| (hit.q1, hit.q2, hit.t1, hit.t2, hit.key));
+                if selected
+                    .windows(2)
+                    .all(|pair| can_chain(&pair[0], &pair[1]))
+                {
+                    global_best = global_best.max(selected.iter().map(|hit| hit.weight).sum());
+                }
+            }
+        }
+        global_best
+    }
+
+    #[test]
+    fn endpoint_geometry_rejects_crossed_and_repeated_anchors() {
+        let a = endpoint_hit(0, 100, 0, 100);
+        let crossed = endpoint_hit(25, 90, 36, 101);
+        let compatible = endpoint_hit(25, 110, 36, 120);
+        let hits = vec![a.clone(), crossed];
+        assert_eq!(chain_on_offset(&hits, SeedTrack::Raw, 30, 30), 1.0);
+        let hits = vec![a.clone(), compatible];
+        assert_eq!(chain_on_offset(&hits, SeedTrack::Raw, 30, 30), 2.0);
+        let same_role_shared = endpoint_hit(0, 120, 0, 120);
+        assert!(!can_chain(&a, &same_role_shared));
+        let touching = endpoint_hit(100, 120, 100, 120);
+        assert!(can_chain(&a, &touching));
+        let same_center = endpoint_hit(25, 75, 25, 75);
+        assert!(!can_chain(&a, &same_center));
+    }
+
+    #[test]
+    fn diagonal_bucket_boundaries_and_extreme_band_are_defined() {
+        let a = endpoint_hit(0, 100, 0, 100);
+        let inside = endpoint_hit(200, 300, 171, 271);
+        assert_eq!(
+            chain_on_offset(&[a.clone(), inside], SeedTrack::Raw, 30, 0),
+            2.0
+        );
+        let boundary = endpoint_hit(200, 300, 170, 270);
+        assert_eq!(
+            chain_on_offset(&[a.clone(), boundary], SeedTrack::Raw, 30, 0),
+            1.0
+        );
+        assert_eq!(best_chain(&[a], SeedTrack::Raw, usize::MAX), 1.0);
+    }
+
+    #[test]
+    fn chain_dp_matches_independent_subset_oracle() {
+        let mut state = 17_u64;
+        for _ in 0..40 {
+            let mut hits = Vec::new();
+            for _ in 0..7 {
+                let mut next = || {
+                    state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                    (state % 45) as usize
+                };
+                let q1 = next();
+                let q2 = q1 + 1 + next() % 15;
+                let t1 = next();
+                let t2 = t1 + 1 + next() % 15;
+                hits.push(endpoint_hit(q1, q2, t1, t2));
+            }
+            for band in [3, 10, 30] {
+                for offset in [0, band as i128] {
+                    assert_eq!(
+                        chain_on_offset(&hits, SeedTrack::Raw, band, offset),
+                        reference_chain_on_offset(&hits, SeedTrack::Raw, band, offset)
+                    );
+                }
+            }
+        }
+    }
+
     #[test]
     fn collinear_chain_beats_scattered_hits() {
         let collinear = vec![
@@ -416,6 +557,62 @@ mod tests {
         ];
         assert_eq!(best_chain(&collinear, SeedTrack::Raw, 10), 3.0);
         assert_eq!(best_chain(&scattered, SeedTrack::Raw, 10), 1.0);
+    }
+
+    #[test]
+    fn position_retention_is_order_independent_and_reports_truncation() {
+        let query = "ACDEFGHIKLMNPQRSTVWY".repeat(40);
+        let db = BTreeMap::from([("a".into(), query.clone())]);
+        let params = ChainmerParams {
+            dual_track: false,
+            use_class: false,
+            ..ChainmerParams::default()
+        };
+        let index = SeedIndex::build(&db, params.clone()).unwrap();
+        let baseline = search(&query, &index, &params, 1, &BTreeSet::new(), 0, None).unwrap();
+        assert!(baseline.iter().any(|hit| {
+            hit.position_hits_total > hit.position_hits_retained && hit.truncated_keys > 0
+        }));
+        assert!(baseline
+            .iter()
+            .all(|hit| hit.position_hits_retained <= 64 * hit.shared));
+        let mut reversed = index;
+        for postings in reversed.postings.values_mut() {
+            postings.reverse();
+        }
+        let shuffled = search(&query, &reversed, &params, 1, &BTreeSet::new(), 0, None).unwrap();
+        assert_eq!(shuffled, baseline);
+    }
+
+    #[test]
+    fn representative_retention_can_preserve_a_late_optimal_chain() {
+        let early: Vec<_> = (0..80)
+            .map(|i| endpoint_hit(i * 10, i * 10 + 5, 1_000_000 - i * 20, 1_000_005 - i * 20))
+            .collect();
+        for start in (10_000..20_000).step_by(100) {
+            let late = vec![
+                endpoint_hit(start, start + 5, start, start + 5),
+                endpoint_hit(start + 20, start + 25, start + 20, start + 25),
+            ];
+            let mut all = early.clone();
+            all.extend(late.clone());
+            let mut retained = RetainedHits::default();
+            for hit in &all {
+                retained.offer(hit.clone()).unwrap();
+            }
+            let selected: Vec<_> = retained.ordered.into_values().collect();
+            if late.iter().all(|late_hit| {
+                selected.iter().any(|hit| {
+                    (hit.q1, hit.q2, hit.t1, hit.t2)
+                        == (late_hit.q1, late_hit.q2, late_hit.t1, late_hit.t2)
+                })
+            }) {
+                assert_eq!(best_chain(&all, SeedTrack::Raw, 30), 2.0);
+                assert_eq!(best_chain(&selected, SeedTrack::Raw, 30), 2.0);
+                return;
+            }
+        }
+        panic!("代表保留在所有测试位置上都丢失了后段最优链");
     }
 
     #[test]

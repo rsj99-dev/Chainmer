@@ -3,8 +3,8 @@ use chainmer::index::{database_keys, SeedIndex};
 use chainmer::scoring::weighted_score;
 use chainmer::search::{search, search_count, search_with_keys};
 use chainmer::seeds::{
-    class_map, clean_protein, encode, hash_kmer, kmers, strobemers, syncmers, to_class_string,
-    SecPolicy, AA20,
+    class_map, clean_protein, encode, hash_kmer, kmers, strobemers, syncmers_with_mode,
+    to_class_string, SecPolicy, SyncmerMode, AA20,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -39,13 +39,15 @@ fn classes_cleaning_and_short_inputs_are_consistent() {
     assert_eq!(clean_protein("ACDUFG", SecPolicy::X), "ACDXFG");
     assert!(kmers("", 5).unwrap().is_empty());
     assert!(kmers("ACD", 5).unwrap().is_empty());
-    assert!(syncmers("ACD", 5, 2, false).unwrap().is_empty());
+    assert!(syncmers_with_mode("ACD", 5, 2, SyncmerMode::Closed)
+        .unwrap()
+        .is_empty());
     assert!(chainmer_keys("ACD", &ChainmerParams::default())
         .unwrap()
         .is_empty());
 }
 
-fn reference_syncmers(seq: &str, k: usize, s: usize, closed: bool) -> BTreeSet<u128> {
+fn reference_syncmers(seq: &str, k: usize, s: usize, mode: SyncmerMode) -> BTreeSet<u128> {
     let codes = coded(seq);
     let mut expected = BTreeSet::new();
     for i in 0..=codes.len() - k {
@@ -53,8 +55,12 @@ fn reference_syncmers(seq: &str, k: usize, s: usize, closed: bool) -> BTreeSet<u
             .map(|j| hash_kmer(&codes[i + j..i + j + s], 0xABCDEF))
             .collect();
         let minimum = *smers.iter().min().unwrap();
-        let position = smers.iter().position(|value| *value == minimum).unwrap();
-        if position == 0 || (!closed && position == k - s) {
+        let first_position = smers.iter().position(|value| *value == minimum).unwrap();
+        let selected = match mode {
+            SyncmerMode::Closed => first_position == 0 || first_position == k - s,
+            SyncmerMode::Open { offset } => first_position == offset,
+        };
+        if selected {
             expected.insert(hash_kmer(&codes[i..i + k], 0xABCDEF));
         }
     }
@@ -62,14 +68,56 @@ fn reference_syncmers(seq: &str, k: usize, s: usize, closed: bool) -> BTreeSet<u
 }
 
 #[test]
-fn syncmer_open_and_closed_match_definitions() {
+#[allow(deprecated)]
+fn syncmer_open_and_closed_match_independent_definitions() {
+    for mode in [SyncmerMode::Closed, SyncmerMode::Open { offset: 1 }] {
+        assert_eq!(
+            syncmers_with_mode(LONG, 5, 2, mode).unwrap(),
+            reference_syncmers(LONG, 5, 2, mode)
+        );
+    }
+    let full = |text| hash_kmer(&coded(text), 0xABCDEF);
+    // 哈希最小值分别位于内部、左端和右端，不能按氨基酸字典序推断。
+    assert!(syncmers_with_mode("AACCC", 5, 2, SyncmerMode::Closed)
+        .unwrap()
+        .is_empty());
     assert_eq!(
-        syncmers(LONG, 5, 2, false).unwrap(),
-        reference_syncmers(LONG, 5, 2, false)
+        syncmers_with_mode("AACCC", 5, 2, SyncmerMode::Open { offset: 1 }).unwrap(),
+        BTreeSet::from([full("AACCC")])
     );
     assert_eq!(
-        syncmers(LONG, 5, 2, true).unwrap(),
-        reference_syncmers(LONG, 5, 2, true)
+        syncmers_with_mode("CCCAA", 5, 2, SyncmerMode::Closed).unwrap(),
+        BTreeSet::from([full("CCCAA")])
+    );
+    assert_eq!(
+        syncmers_with_mode("CCAAC", 5, 2, SyncmerMode::Closed).unwrap(),
+        BTreeSet::from([full("CCAAC")])
+    );
+    assert!(
+        syncmers_with_mode("CCAAC", 5, 2, SyncmerMode::Open { offset: 1 })
+            .unwrap()
+            .is_empty()
+    );
+    assert!(
+        syncmers_with_mode("CCAAC", 5, 2, SyncmerMode::Open { offset: 2 })
+            .unwrap()
+            .is_empty()
+    );
+    // AA 同时位于左右端点且同为最小值；first-min 只把左端视为最小位置。
+    assert_eq!(
+        syncmers_with_mode("AADAA", 5, 2, SyncmerMode::Open { offset: 0 }).unwrap(),
+        BTreeSet::from([full("AADAA")])
+    );
+    assert!(
+        syncmers_with_mode("AADAA", 5, 2, SyncmerMode::Open { offset: 3 })
+            .unwrap()
+            .is_empty()
+    );
+    assert!(syncmers_with_mode("ACDE", 5, 2, SyncmerMode::Open { offset: 4 }).is_err());
+    // 旧布尔包装保持历史映射，但不再用于 CLI 标签。
+    assert_eq!(
+        chainmer::seeds::syncmers("CCCAA", 5, 2, false).unwrap(),
+        BTreeSet::from([full("CCCAA")])
     );
 }
 

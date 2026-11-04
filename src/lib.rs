@@ -22,4 +22,5 @@ pub use search::CandidateScore;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// 兼容历史输出：128-bit 存储宽度，但有效状态最多 64 bit。
 pub const HASH_SCHEME: &str = "dual-splitmix64/64-effective-in-u128";
-pub const INDEX_FORMAT: &str = "chainmer-index/3";
+/// X 屏蔽的当前种子语义；旧索引必须重建。
+pub const INDEX_FORMAT: &str = "chainmer-index/4";

@@ -1,43 +1,52 @@
 use anyhow::{bail, Context, Result};
 use std::collections::BTreeMap;
 use std::fs;
+use std::io::{BufRead, BufReader};
 use std::path::Path;
 
 /// 严格读取 FASTA：拒绝空 header、重复 ID、空记录和无序列输入。
+/// BufRead 避免在序列映射之外再常驻一份完整文件字符串。
 pub fn read_fasta<P: AsRef<Path>>(path: P) -> Result<BTreeMap<String, String>> {
     let path = path.as_ref();
-    let text =
-        fs::read_to_string(path).with_context(|| format!("无法读取 FASTA：{}", path.display()))?;
-    parse_fasta(&text).with_context(|| format!("FASTA 格式错误：{}", path.display()))
+    let file =
+        fs::File::open(path).with_context(|| format!("无法读取 FASTA：{}", path.display()))?;
+    parse_fasta_reader(BufReader::new(file))
+        .with_context(|| format!("FASTA 格式错误：{}", path.display()))
 }
 
 pub fn parse_fasta(text: &str) -> Result<BTreeMap<String, String>> {
+    parse_fasta_reader(text.as_bytes())
+}
+
+pub fn parse_fasta_reader<R: BufRead>(mut reader: R) -> Result<BTreeMap<String, String>> {
     let mut records = BTreeMap::new();
     let mut current: Option<String> = None;
     let mut buffer = String::new();
+    let mut raw = String::new();
+    let mut line_no = 0_usize;
 
-    for (line_no, raw) in text.lines().enumerate() {
+    loop {
+        raw.clear();
+        if reader.read_line(&mut raw)? == 0 {
+            break;
+        }
+        line_no += 1;
         let line = raw.trim();
         if let Some(header) = line.strip_prefix('>') {
-            flush_record(&mut records, &mut current, &mut buffer, line_no + 1)?;
+            flush_record(&mut records, &mut current, &mut buffer, line_no)?;
             let id = header.split_whitespace().next().unwrap_or("");
             if id.is_empty() {
-                bail!("第 {} 行：空 header", line_no + 1);
+                bail!("第 {line_no} 行：空 header");
             }
             current = Some(id.to_string());
         } else if !line.is_empty() {
             if current.is_none() {
-                bail!("第 {} 行：序列出现在首个 header 之前", line_no + 1);
+                bail!("第 {line_no} 行：序列出现在首个 header 之前");
             }
             buffer.push_str(line);
         }
     }
-    flush_record(
-        &mut records,
-        &mut current,
-        &mut buffer,
-        text.lines().count() + 1,
-    )?;
+    flush_record(&mut records, &mut current, &mut buffer, line_no + 1)?;
     if records.is_empty() {
         bail!("未找到任何 FASTA 记录");
     }
