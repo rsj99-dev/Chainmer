@@ -19,7 +19,7 @@ use std::time::Instant;
 #[command(
     name = "chainmer",
     version,
-    about = "Chainmer v0.5.1：双通道位置种子、共线链与检索"
+    about = "Chainmer v1.0.0：双通道位置种子、共线链与检索"
 )]
 pub struct Cli {
     #[command(subcommand)]
