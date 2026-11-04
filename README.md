@@ -2,9 +2,9 @@
   <img src="Chainmer_Logo.png" alt="Chainmer Logo" width="420">
 </p>
 
-# Chainmer v0.5.1
+# Chainmer v1.0.0
 
-Chainmer is a Rust library and command-line tool for **protein homolog candidate retrieval and prefiltering**. v0.5.1 replaces the previous “single-channel class-equivalent key counting” with **raw/class dual-channel positional seeds, database IDF calibration, and collinear chain scoring**; the old counting and SWPN interfaces are retained for ablation comparisons.
+Chainmer is a Rust library and command-line tool for **protein homolog candidate retrieval and prefiltering**. v1.0.0 replaces the previous “single-channel class-equivalent key counting” with **raw/class dual-channel positional seeds, database IDF calibration, and collinear chain scoring**; the old counting and SWPN interfaces are retained for ablation comparisons.
 
 > A Seed Hit only indicates that candidates share seeds; it does not constitute a homolog or ortholog determination. Orthology requires downstream analyses such as gene tree–species tree reconciliation; HydDB subgroup labels are also not equivalent to ortholog groups.
 
@@ -81,7 +81,7 @@ The hash is stored as `u128`, but the two 64-bit components come from the same 6
 
 FASTA uses `BufRead` line-by-line parsing to avoid additionally keeping the full file string resident; the current API still returns the full sequence map and is not a fully streaming proteome index. Index saving first writes a temporary file in the same directory and performs `flush/sync_all`; Unix uses direct atomic replacement, while Windows uses backup and rollback-on-failure to avoid losing the old index if overwriting fails.
 
-177 benchmark sequences and 258,610 v0.4 Chainmer keys have been checked item by item; the number of sequences where the Rust and Python prototypes disagree is 0; this compatibility does not mean that v0.5.1 produces the same key sets or rankings as the old version.
+177 benchmark sequences and 258,610 v0.4 Chainmer keys have been checked item by item; the number of sequences where the Rust and Python prototypes disagree is 0; this compatibility does not mean that v1.0.0 produces the same key sets or rankings as the old version.
 
 ## Pre-fix v0.5.0 Feedback-Subset Smoke Test (Historical Results)
 
@@ -93,9 +93,9 @@ Under the same 177 [NiFe] hydrogenase large-subunit sequences, leave-genus-out l
 
 | Method | Task3 AP (5-fold) | Task4 AP (4-fold) |
 |---|---:|---:|
-| Chainmer v0.5.1 dual-channel | **0.825 ± 0.042** | **0.915 ± 0.056** |
-| Chainmer v0.5.1 class single-channel | 0.810 ± 0.034 | 0.903 ± 0.070 |
-| Chainmer v0.5.1 raw single-channel | 0.740 ± 0.041 | 0.863 ± 0.086 |
+| Chainmer v1.0.0 dual-channel | **0.825 ± 0.042** | **0.915 ± 0.056** |
+| Chainmer v1.0.0 class single-channel | 0.810 ± 0.034 | 0.903 ± 0.070 |
+| Chainmer v1.0.0 raw single-channel | 0.740 ± 0.041 | 0.863 ± 0.086 |
 
 Before the fix, the dual-channel results were 0.817 / 0.913; this round’s re-evaluation gives 0.825 / 0.915; this same-data comparison cannot decompose the contribution of individual fixes, nor does it replace independent cross-family validation. The dual-channel result still does not exceed the historical v0.4 SWPN result (0.916 / 0.949) or BLASTp on Task4 (0.990). After stricter chaining, the single-run time for all queries increased from 1.923 s to 4.546 s. For full definitions, pre-/post-fix tables, per-fold results, and limitations, see [BENCHMARK.md](BENCHMARK.md).
 
