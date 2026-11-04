@@ -8,7 +8,7 @@ description = "Dual-track protein candidate retrieval with positional seed chain
 license = "MIT"
 readme = "README.md"
 documentation = "https://docs.rs/chainmer"
-include = ["src/**", "tests/**", "Cargo.toml", "Cargo.lock", "README.md", "BENCHMARK.md", "CHANGELOG.md", "LICENSE", "MANIFEST.tsv", "Chainmer_Logo.png"]
+include = ["src/**", "tests/**", "Cargo.toml", "Cargo.lock", "README.md", "README_CN.md", "BENCHMARK.md", "CHANGELOG.md", "LICENSE", "MANIFEST.tsv", "Chainmer_Logo.png"]
 keywords = ["bioinformatics", "protein", "homology", "seed", "sequence"]
 categories = ["science", "command-line-utilities"]
 

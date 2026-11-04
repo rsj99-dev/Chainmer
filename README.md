@@ -4,23 +4,25 @@
 
 # Chainmer v1.0.0
 
-Chainmer is a Rust library and command-line tool for **protein homolog candidate retrieval and prefiltering**. v1.0.0 replaces the previous “single-channel class-equivalent key counting” with **raw/class dual-channel positional seeds, database IDF calibration, and collinear chain scoring**; the old counting and SWPN interfaces are retained for ablation comparisons.
+**Language:** English | [中文](README_CN.md)
 
-> A Seed Hit only indicates that candidates share seeds; it does not constitute a homolog or ortholog determination. Orthology requires downstream analyses such as gene tree–species tree reconciliation; HydDB subgroup labels are also not equivalent to ortholog groups.
+Chainmer is a Rust library and command-line tool for **protein homology candidate retrieval and prefiltering**. Version 1.0.0 replaces the former single-track class-equivalence key count with **raw/class dual-track positional seeds, database-calibrated IDF, and collinear chain scoring**. The legacy count and SWPN interfaces remain available as ablation controls.
 
-## Core Components
+> A Seed Hit only indicates that candidates share a seed; it does not establish homology or orthology. Orthology requires downstream analyses such as gene tree–species tree reconciliation. HydDB subgroup labels are not equivalent to orthologous groups.
 
-1. **Dual-channel recall**: the raw channel uses original amino acids with `kc=5`, and the class channel uses substitution equivalence classes with `class_kc=8`; the two kinds of keys use different hash salts;
-2. **Positional anchor pairs**: stores dual anchor positions for the query and target, and no longer treats seeds merely as unordered key sets;
-3. **Database frequency calibration**: computes IDF from the current database document frequency, and automatically downweights high-frequency keys;
-4. **Duplicate-contribution constraint**: retained positional hits for the same key within a candidate jointly share one IDF weight; each key retains at most 64 representative hits via stable-hash bottom-k, the retained set does not depend on posting order, and counts before and after truncation are reported;
-5. **Collinear chain scoring**: within staggered diagonal buckets, finds the optimal chain under the compatibility condition that all four anchor endpoints are strictly increasing in both query and target; the final score is “sum of raw/class optimal chain weights ÷ union of weighted key sets of query and target”;
-6. **Unknown residue masking**: X, B, Z, J, O, `*`, and other non-standard symbols are sanitized to X; the current main channels do not allow any k-mer covering X to participate in anchor selection, and Raw/Class share the same validity mask before class conversion;
-7. **Reproducible index**: records actual parameters, positional postings, key frequencies, sequence IDF weights, algorithm version, and database BLAKE3 digest.
+## Core components
 
-## Installation and Verification
+1. **Dual-track recall**: the raw track uses original amino acids with `kc=5`, while the class track uses substitution-equivalence classes with `class_kc=8`; the two key types use different hash salts.
+2. **Positioned anchor pairs**: both anchor positions are stored for queries and targets, rather than treating seeds as unordered key sets.
+3. **Database frequency calibration**: IDF is calculated from document frequencies in the current database, automatically down-weighting frequent keys.
+4. **Duplicate contribution constraint**: retained positional hits for the same key within one candidate share a single IDF weight. A stable-hash bottom-k retains at most 64 representative hits per key, making the retained set independent of posting order; hit counts before and after truncation are reported.
+5. **Collinear chain scoring**: optimal chains are computed within staggered diagonal bins, with compatibility requiring all four anchor endpoints to increase strictly in both query and target. The final score is the sum of the optimal raw and class chain weights divided by the weighted key-set union of the query and target.
+6. **Unknown-residue masking**: X, B, Z, J, O, `*`, and other nonstandard symbols are normalized to X. In the current main tracks, any k-mer covering X is excluded from anchor selection. Raw and Class share the same validity mask before class conversion.
+7. **Reproducible indexes**: indexes record the actual parameters, positional postings, key frequencies, sequence IDF weights, algorithm version, and a BLAKE3 digest of the database.
 
-Requires Rust 1.85 or higher (consistent with the minimum requirements of the locked dependencies).
+## Installation and validation
+
+Rust 1.85 or later is required, consistent with the minimum supported versions of the locked dependencies.
 
 ```bash
 cargo install --path . --locked
@@ -29,77 +31,100 @@ cargo clippy --all-targets -- -D warnings
 cargo fmt --check
 ```
 
-The release directory contains only the Rust implementation and does not require Python or Biopython.
+The release directory contains only the Rust implementation and requires neither Python nor Biopython.
 
-## Quick Start
+## Quick start
 
 ```bash
-# Synthetic sequence demo; not biological validation evidence
+# Synthetic-sequence demonstration; not biological validation evidence
 chainmer demo
 
-# Count unique seed keys per sequence
+# Count unique seed keys for each sequence
 chainmer seed -i db.faa -m chainmer
 
-# Export TSV: sequence ID + 32-bit hexadecimal key
+# Export TSV containing sequence IDs and 32-digit hexadecimal keys
 chainmer seed -i db.faa -m subseqhash2 --keys -o subseqhash2.tsv
 
-# Build an index and search using parameters saved in the index
+# Build an index and search using the parameters stored in that index
 chainmer index -d db.faa -o db.chainmer.json --kc 5 --class-kc 8 --gmin 30 --gmax 300
 chainmer search -d db.faa -q query.faa -x db.chainmer.json --top 5
 
-# Compare seed counts and single-extraction time within the same Rust binary
+# Compare seed counts and single-pass extraction times within the same Rust binary
 chainmer compare -i db.faa -o seed_compare.tsv
 ```
 
-Supported `seed --method`: `chainmer`, `kmer`, `spaced`, `minimizer`, `syncmer`, `strobemer`, `ckmer`, `subseqhash2`. Fixed parameters for the traditional baselines are in `src/cli.rs`; the syncmer baseline uses the **Closed** definition where the minimum s-mer is at the first or last end, and a spaced pattern must contain at least one `1`; `simplified-strobemer` is a fixed-offset anchor-pair, not a standard randstrobe/minstrobe.
+Supported `seed --method` values are `chainmer`, `kmer`, `spaced`, `minimizer`, `syncmer`, `strobemer`, `ckmer`, and `subseqhash2`. See `src/cli.rs` for the fixed parameters of the conventional baselines. The syncmer baseline uses the **Closed** definition, in which the minimum s-mer occurs at the first or last position. A spaced pattern must contain at least one `1`. `simplified-strobemer` is a fixed-offset anchor pair, not a standard randstrobe or minstrobe.
 
-Default `search` outputs the new normalized collinear-chain score. `--raw` and `--class-only` perform single-channel ablations, respectively. The `--weights` JSON for weighted retrieval follows the legacy weighted-overlap scoring, using 32-bit hexadecimal keys as field names and finite floats as values; it is not the new chaining model. `min_shared` must be at least 1; zero-weight shared keys still form neutral candidates. When loading an existing index, the database’s full contents, redundant statistics, and sanitized sequence coordinates are validated, rather than only comparing sequence IDs.
+By default, `search` outputs the new normalized collinear-chain score. `--raw` and `--class-only` run the respective single-track ablations. The optional weighted-search `--weights` JSON uses the legacy weighted-overlap score, with 32-digit hexadecimal keys as fields and finite floating-point numbers as values; it is not the new chaining model. `min_shared` must be at least 1, and zero-weight shared keys still produce neutral candidates. When an existing index is loaded, Chainmer validates the complete database contents, redundancy statistics, and cleaned-sequence coordinates rather than comparing only sequence IDs.
+
+## Default k-mer parameters and tuning boundaries
+
+The defaults `kc=5` and `class_kc=8` are **compromise operating points** for the current implementation, not a theoretically or empirically universal optimum. In the research repository, a 12-configuration full-factorial experiment evaluated raw `kc=4/5/6` and class `class_kc=6/7/8/9` on the same 177 [NiFe] hydrogenase sequences. Each configuration independently built an index and ran all queries three times. Raw 5 achieved the highest values of both candidate-precision metrics among the three raw lengths at every tested class length. No other configuration simultaneously dominated the default 5/8 setting across target-pair retention, both precision metrics, and candidate count. These results support retaining the current defaults, but they do not establish optimality across protein families.
+
+With raw `kc=5` fixed, class length shows a clear retention–candidate-count trade-off:
+
+| class_kc | Target-pair retention (%) | P_all (%) | P_Task3 (%) | Candidates/query |
+|---|---:|---:|---:|---:|
+| 6 | 88.48 | 15.84 | 71.97 | 69.073 |
+| 7 | 80.35 | 22.67 | 74.11 | 43.819 |
+| **8 (default)** | **74.31** | **33.48** | **80.98** | **27.435** |
+| 9 | 67.55 | 39.46 | 83.69 | 21.164 |
+
+Target-pair retention is based on 1,094 undirected ortholog pairs. P_all uses all unique candidate pairs as its denominator, including unlabeled pairs, and is therefore an operational candidate-precision metric. P_Task3 uses only candidate pairs with mutually exclusive ortholog/paralog labels. Candidate counts exclude self-matches. Consider class 7 when recall is prioritized, or class 9 when precision or candidate compression is more important. These are tuning directions observed on the current dataset only. New database deployments should be reevaluated using independent labels rather than selecting parameters from a single runtime measurement.
+
+Changing `kc` or `class_kc` changes seed keys, DF/IDF, candidates, and index contents, so the index **must be rebuilt**. `search` uses the parameters stored in the index; changing only the search command is insufficient:
+
+```bash
+chainmer index -d db.faa -o db.kc5.class7.chainmer.json --kc 5 --class-kc 7
+chainmer search -d db.faa -q query.faa -x db.kc5.class7.chainmer.json --top 5
+```
+
+The reproduction entry point in the research repository is `python OrthologySeed/scripts/rev_kc_sensitivity.py --repeats 3`. It writes `kc_sensitivity.tsv`, `kc_sensitivity_runs.tsv`, and `kc_sensitivity_metadata.json`. Benchmark sequences and labels are not distributed with the standalone Rust package. See Supplementary Data 5 of the paper for the complete experimental protocol and all 12 configurations.
 
 ## Rust API
 
 Main entry points:
 
-- `chainmer_seeds` / `chainmer_keys` / `ChainmerParams`: dual-channel positional seed and key generation;
-- `SeedIndex`: positional index, frequency statistics, saving, loading, and database validation;
-- `search` / `CandidateScore`: IDF-normalized collinear chain retrieval, per-channel diagnostic scores, and positional hit truncation statistics;
-- `search_count` / `search_with_keys`: legacy inverted-index and exhaustive counting comparisons;
+- `chainmer_seeds` / `chainmer_keys` / `ChainmerParams`: dual-track positional seed and key generation;
+- `SeedIndex`: positional indexing, frequency statistics, saving, loading, and database validation;
+- `search` / `CandidateScore`: IDF-normalized collinear-chain retrieval, per-track diagnostic scores, and positional-hit truncation statistics;
+- `search_count` / `search_with_keys`: legacy inverted-index and exhaustive-count controls;
 - `search_weighted_index` / `search_weighted_with_keys`: weighted retrieval;
 - `contrastive_weights` / `specificity_weights` / `weighted_score`: training-fold weights and scoring;
-- `subseqhash2_keys` / `SubseqHash2Params`: SubseqHash2 protein scalar adaptation.
+- `subseqhash2_keys` / `SubseqHash2Params`: scalar protein adaptation of SubseqHash2.
 
-All index queries check whether query parameters are consistent with index metadata. `gap_filter` and `gap_bucket` are independent switches; `set_use_gap` is only a shorthand that sets both at once.
+All index queries check that query parameters match the index metadata. `gap_filter` and `gap_bucket` are independent switches; `set_use_gap` is only a shorthand for setting both.
 
-## SubseqHash2 Adaptation Boundary
+## Scope of the SubseqHash2 adaptation
 
-This package provides a **scalar Rust adaptation for the 20 standard amino acids + X**, based on the ABCk orders, forward/reverse dynamic programming, and pivot merging ideas of the [Shao-Group official SubseqHash2 implementation](https://github.com/Shao-Group/subseqhash2). The default parameters are `window=25, subseq=11, d=5, repeats=11, table_seed=42, chunk_size=500`, and have not been tuned on Chainmer test labels.
+Based on the ABCk orders, forward and reverse dynamic programming, and pivot-merging concepts of the [official Shao-Group SubseqHash2 implementation](https://github.com/Shao-Group/subseqhash2), this package provides a **scalar Rust adaptation for the 20 standard amino acids plus X**. Its defaults are `window=25, subseq=11, d=5, repeats=11, table_seed=42, chunk_size=500`; these parameters were not tuned on the Chainmer test labels.
 
-It is not the official four-character nucleotide SIMD binary and cannot be directly equated with the official implementation’s runtime. Windows containing X do not produce seeds. Both forward and reverse DP have naive subsequence enumeration comparison tests, and chunked vs. whole-segment processing has consistency tests.
+This is not the official four-character nucleotide SIMD binary, and its runtime cannot be directly equated with that of the official implementation. Windows containing X produce no seeds. Both forward and reverse DP have naive-subsequence enumeration controls, and chunked and whole-sequence processing have consistency tests.
 
-## Hash and Compatibility
+## Hashing and compatibility
 
-The hash is stored as `u128`, but the two 64-bit components come from the same 64-bit rolling state, so **the effective state is at most 64 bit**; it must not be claimed to have 128-bit entropy or collision guarantees; anchor combinations only use the lower 64 bits of the sub-hash and do not further reduce the information content of the original state. The current index format is `chainmer-index/4`, and old indexes must be rebuilt. `chainmer_keys_legacy` retains only v0.4 single-channel key output with X unmasked for historical checking and does not participate in new indexes or default retrieval.
+Hashes are stored as `u128`, but both 64-bit components derive from the same 64-bit rolling state. Therefore, the **effective state is at most 64 bits**; no 128-bit entropy or collision guarantee should be claimed. Anchor pairing uses only the lower 64 bits of each subhash and does not further reduce the information in the original state. The current index format is `chainmer-index/4`, and older indexes must be rebuilt. `chainmer_keys_legacy` retains only the v0.4 single-track key output without X masking for historical comparison; it is not used by the new index or default search.
 
-FASTA uses `BufRead` line-by-line parsing to avoid additionally keeping the full file string resident; the current API still returns the full sequence map and is not a fully streaming proteome index. Index saving first writes a temporary file in the same directory and performs `flush/sync_all`; Unix uses direct atomic replacement, while Windows uses backup and rollback-on-failure to avoid losing the old index if overwriting fails.
+FASTA input is parsed line by line with `BufRead`, avoiding an additional resident copy of the complete file string. The current API still returns a complete sequence map and is not a fully streaming proteome-scale index. Index saving first writes a temporary file in the same directory and performs `flush/sync_all`. Unix uses direct atomic replacement, while Windows uses backup and failure rollback to avoid losing an old index when replacement fails.
 
-177 benchmark sequences and 258,610 v0.4 Chainmer keys have been checked item by item; the number of sequences where the Rust and Python prototypes disagree is 0; this compatibility does not mean that v1.0.0 produces the same key sets or rankings as the old version.
+All 258,610 v0.4 Chainmer keys from the 177 benchmark sequences were checked individually, with zero sequences disagreeing between Rust and the Python prototype. This compatibility does not imply that v1.0.0 produces the same key sets or rankings as the older version.
 
-## Pre-fix v0.5.0 Feedback-Subset Smoke Test (Historical Results)
+## Pre-repair v0.5.0 feedback-subset smoke test (historical results)
 
-Using the four `tree_input.fa` display-tree subsets from the feedback package, the new default retrieval was actually run, excluding QUERY itself: archaea 7/7 references all entered the candidates and no other candidates were reported; bacteria 18/19; fungi 17/17 within the top 17; viruses 1/1. The weak bacterial reference `WP_407854620.1` was still not recalled. **These files are not the original full database; the results only verify runtime and ranking behavior on real sequences, not full-database AP, FP/FN, or performance conclusions.**
+The new default search was run on four `tree_input.fa` demonstration-tree subsets from the feedback package, excluding QUERY itself. All 7/7 archaeal references were retrieved with no additional candidates; 18/19 bacterial references were retrieved; all 17/17 fungal references appeared in the top 17; and the single viral reference was retrieved. The weak bacterial reference `WP_407854620.1` remained unretrieved. **These files are not the original full database. The results only validate execution and ranking behavior on real sequences; they are not full-database AP, FP/FN, or performance results.**
 
-## Fixed-Version Benchmark Summary (177-Sequence Re-evaluation)
+## Repaired benchmark summary (177-sequence reevaluation)
 
-Under the same 177 [NiFe] hydrogenase large-subunit sequences, leave-genus-out labels, and undirected deduplicated pairs, the database IDF of fixed v0.5.1 uses full-database unlabeled statistics, and the classification threshold is still determined only by the training folds:
+For the same 177 [NiFe] hydrogenase large-subunit sequences, genus-held-out evaluation, and deduplicated undirected pairs, repaired v1.0.0 computes database IDF from unlabeled whole-database statistics, while classification thresholds are still determined exclusively from training folds:
 
-| Method | Task3 AP (5-fold) | Task4 AP (4-fold) |
+| Method | Task3 AP (5 folds) | Task4 AP (4 folds) |
 |---|---:|---:|
-| Chainmer v1.0.0 dual-channel | **0.825 ± 0.042** | **0.915 ± 0.056** |
-| Chainmer v1.0.0 class single-channel | 0.810 ± 0.034 | 0.903 ± 0.070 |
-| Chainmer v1.0.0 raw single-channel | 0.740 ± 0.041 | 0.863 ± 0.086 |
+| Chainmer v1.0.0 dual track | **0.825 ± 0.042** | **0.915 ± 0.056** |
+| Chainmer v1.0.0 class only | 0.810 ± 0.034 | 0.903 ± 0.070 |
+| Chainmer v1.0.0 raw only | 0.740 ± 0.041 | 0.863 ± 0.086 |
 
-Before the fix, the dual-channel results were 0.817 / 0.913; this round’s re-evaluation gives 0.825 / 0.915; this same-data comparison cannot decompose the contribution of individual fixes, nor does it replace independent cross-family validation. The dual-channel result still does not exceed the historical v0.4 SWPN result (0.916 / 0.949) or BLASTp on Task4 (0.990). After stricter chaining, the single-run time for all queries increased from 1.923 s to 4.546 s. For full definitions, pre-/post-fix tables, per-fold results, and limitations, see [BENCHMARK.md](BENCHMARK.md).
+The dual-track AP values were 0.817 / 0.913 before repair and 0.825 / 0.915 in this reevaluation. This same-data comparison cannot isolate the contribution of individual repairs and does not replace independent cross-family validation. The dual track remains below the historical v0.4 SWPN results (0.916 / 0.949) and below BLASTp on Task4 (0.990). A single all-query run increased from 1.923 s to 4.546 s with strict chaining. See [BENCHMARK.md](BENCHMARK.md) for complete protocols, pre/post-repair tables, fold-level results, and limitations.
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
-```
+MIT; see [LICENSE](LICENSE).
