@@ -1,3 +1,3 @@
 fn main() -> anyhow::Result<()> {
-    orthochain::cli::run()
+    chainmer::cli::run()
 }

@@ -1,4 +1,4 @@
-use crate::core::{orthochain_keys, orthochain_seeds, OrthoParams, SeedTrack};
+use crate::core::{chainmer_keys, chainmer_seeds, ChainmerParams, SeedTrack};
 use crate::index::SeedIndex;
 use crate::scoring::{reject_score, weighted_score};
 use anyhow::{bail, Result};
@@ -147,7 +147,7 @@ fn check_rejection<'a>(
 pub fn search(
     query: &str,
     index: &SeedIndex,
-    params: &OrthoParams,
+    params: &ChainmerParams,
     min_shared: usize,
     negative_keys: &BTreeSet<u128>,
     max_reject: usize,
@@ -158,7 +158,7 @@ pub fn search(
         bail!("查询参数与索引元数据不一致");
     }
     let db_keys = check_rejection(negative_keys, db_keys)?;
-    let query_seeds = orthochain_seeds(query, params)?;
+    let query_seeds = chainmer_seeds(query, params)?;
     let query_keys: BTreeSet<u128> = query_seeds.iter().map(|seed| seed.key).collect();
     let query_weight: f64 = query_keys.iter().map(|key| index.idf(key)).sum();
     let mut candidates: BTreeMap<String, Candidate> = BTreeMap::new();
@@ -247,14 +247,14 @@ pub fn search(
 pub fn search_count(
     query: &str,
     index: &SeedIndex,
-    params: &OrthoParams,
+    params: &ChainmerParams,
     min_shared: usize,
 ) -> Result<Vec<(String, usize)>> {
     validate_min_shared(min_shared)?;
     if params != &index.meta.params {
         bail!("查询参数与索引元数据不一致");
     }
-    let query_keys = orthochain_keys(query, params)?;
+    let query_keys = chainmer_keys(query, params)?;
     let mut votes: BTreeMap<String, usize> = BTreeMap::new();
     for key in query_keys {
         if let Some(postings) = index.postings.get(&key) {
@@ -274,7 +274,7 @@ pub fn search_count(
 pub fn search_weighted_index(
     query: &str,
     index: &SeedIndex,
-    params: &OrthoParams,
+    params: &ChainmerParams,
     weights: &BTreeMap<u128, f64>,
     min_score: Option<f64>,
     min_shared: usize,
@@ -288,7 +288,7 @@ pub fn search_weighted_index(
     {
         bail!("权重和 min_score 必须为有限数值");
     }
-    let query_keys = orthochain_keys(query, params)?;
+    let query_keys = chainmer_keys(query, params)?;
     let mut votes: BTreeMap<String, (usize, f64)> = BTreeMap::new();
     for key in query_keys {
         let weight = weights.get(&key).copied().unwrap_or(0.0);
@@ -317,13 +317,13 @@ pub fn search_weighted_index(
 pub fn search_with_keys(
     query: &str,
     db_keys: &BTreeMap<String, BTreeSet<u128>>,
-    params: &OrthoParams,
+    params: &ChainmerParams,
     min_shared: usize,
     negative_keys: &BTreeSet<u128>,
     max_reject: usize,
 ) -> Result<Vec<(String, usize)>> {
     validate_min_shared(min_shared)?;
-    let query_keys = orthochain_keys(query, params)?;
+    let query_keys = chainmer_keys(query, params)?;
     let mut hits: Vec<_> = db_keys
         .iter()
         .filter_map(|(id, keys)| {
@@ -343,7 +343,7 @@ pub fn search_with_keys(
 pub fn search_weighted_with_keys(
     query: &str,
     db_keys: &BTreeMap<String, BTreeSet<u128>>,
-    params: &OrthoParams,
+    params: &ChainmerParams,
     weights: &BTreeMap<u128, f64>,
     min_score: Option<f64>,
     min_shared: usize,
@@ -354,7 +354,7 @@ pub fn search_weighted_with_keys(
     {
         bail!("权重和 min_score 必须为有限数值");
     }
-    let query_keys = orthochain_keys(query, params)?;
+    let query_keys = chainmer_keys(query, params)?;
     let mut hits = Vec::new();
     for (id, keys) in db_keys {
         let shared = query_keys.intersection(keys).count();
@@ -382,10 +382,10 @@ mod tests {
     const LONG: &str = "MVKAVLAVLAKGGTIAAQLSPEHMPVRMRMLDNNEAAELKALGVPFGRIRLPGGQVAEPIKVDANGVITDAQSSSLIFRGFERILQHQDPRDAAFLTQRICGVCPLSHGLTATNALDELYGVAEHVPKDGYKVTYAPQISDEEVKQMLEDLKRAG";
     const OTHER: &str = "MTNKKAAAWLVGAIVGGLGMAEAKLDDKAEAKKAAKEAKKAAELKALGVPFGRIRLPGGQVAEPIKVDANGVITDAQSSSLIFRGFERILQHQDPRDAAWQISNEEVKQMLEDLKRAG";
 
-    fn setup() -> (BTreeMap<String, String>, SeedIndex, OrthoParams) {
+    fn setup() -> (BTreeMap<String, String>, SeedIndex, ChainmerParams) {
         let seq = "ACDEFGHIKLMNPQRSTVWY".repeat(8);
         let db = BTreeMap::from([("a".into(), seq.clone()), ("b".into(), seq)]);
-        let params = OrthoParams::default();
+        let params = ChainmerParams::default();
         let index = SeedIndex::build(&db, params.clone()).unwrap();
         (db, index, params)
     }
@@ -421,7 +421,7 @@ mod tests {
     #[test]
     fn dual_chain_search_prefers_self_and_exposes_track_scores() {
         let db = BTreeMap::from([("self".into(), LONG.into()), ("other".into(), OTHER.into())]);
-        let params = OrthoParams::default();
+        let params = ChainmerParams::default();
         let index = SeedIndex::build(&db, params.clone()).unwrap();
         let hits = search(LONG, &index, &params, 1, &BTreeSet::new(), 0, None).unwrap();
         assert_eq!(hits[0].id, "self");
@@ -444,7 +444,7 @@ mod tests {
         assert_eq!(indexed.len(), 2);
         assert!(search(&query, &index, &params, 0, &BTreeSet::new(), 0, None).is_err());
         assert!(search_with_keys(&query, &keys, &params, 0, &BTreeSet::new(), 0).is_err());
-        let too_many = orthochain_keys(&query, &params).unwrap().len() + 1;
+        let too_many = chainmer_keys(&query, &params).unwrap().len() + 1;
         let indexed =
             search_weighted_index(&query, &index, &params, &weights, Some(0.0), too_many).unwrap();
         let brute =

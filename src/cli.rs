@@ -1,4 +1,4 @@
-use crate::core::{orthochain_keys, OrthoParams};
+use crate::core::{chainmer_keys, ChainmerParams};
 use crate::fasta::read_fasta;
 use crate::index::{database_keys, key_hex, parse_key_hex, SeedIndex};
 use crate::search::{search, search_weighted_index};
@@ -17,9 +17,9 @@ use std::time::Instant;
 
 #[derive(Parser)]
 #[command(
-    name = "orthochain",
+    name = "chainmer",
     version,
-    about = "OrthoChain v0.5.0：双通道位置种子、共线链与检索"
+    about = "Chainmer v0.5.0：双通道位置种子、共线链与检索"
 )]
 pub struct Cli {
     #[command(subcommand)]
@@ -30,7 +30,7 @@ pub struct Cli {
 enum Command {
     /// 统计或导出每个序列的唯一种子键
     Seed(SeedArgs),
-    /// 构建带完整元数据的 OrthoChain 倒排索引
+    /// 构建带完整元数据的 Chainmer 倒排索引
     Index(IndexArgs),
     /// 使用索引参数检索，并校验数据库内容摘要
     Search(SearchArgs),
@@ -42,7 +42,8 @@ enum Command {
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
 enum Method {
-    OrthoChain,
+    #[value(name = "chainmer")]
+    Chainmer,
     Kmer,
     Spaced,
     Minimizer,
@@ -55,7 +56,7 @@ enum Method {
 impl Method {
     fn name(self) -> &'static str {
         match self {
-            Self::OrthoChain => "OrthoChain",
+            Self::Chainmer => "Chainmer",
             Self::Kmer => "k-mer(k=5)",
             Self::Spaced => "spaced(11101101)",
             Self::Minimizer => "minimizer(k5w8)",
@@ -70,7 +71,7 @@ impl Method {
 fn extract(method: Method, sequence: &str) -> Result<BTreeSet<u128>> {
     let cleaned = || clean_protein(sequence, SecPolicy::C);
     match method {
-        Method::OrthoChain => orthochain_keys(sequence, &OrthoParams::default()),
+        Method::Chainmer => chainmer_keys(sequence, &ChainmerParams::default()),
         Method::Kmer => Ok(kmers(&cleaned(), 5)?.into_iter().map(|x| x.1).collect()),
         Method::Spaced => Ok(spaced_kmers(&cleaned(), "11101101", 6)?
             .into_iter()
@@ -91,7 +92,7 @@ fn extract(method: Method, sequence: &str) -> Result<BTreeSet<u128>> {
 struct SeedArgs {
     #[arg(short, long)]
     input: PathBuf,
-    #[arg(short, long, value_enum, default_value = "orthochain")]
+    #[arg(short, long, value_enum, default_value = "chainmer")]
     method: Method,
     /// 输出每个 ID 的全部键，而不是只统计数量
     #[arg(long)]
@@ -108,7 +109,7 @@ struct IndexArgs {
     #[arg(short, long)]
     output: PathBuf,
     #[command(flatten)]
-    params: OrthoCliParams,
+    params: ChainmerCliParams,
 }
 
 #[derive(Args)]
@@ -139,7 +140,7 @@ struct CompareArgs {
 }
 
 #[derive(Args, Clone)]
-struct OrthoCliParams {
+struct ChainmerCliParams {
     #[arg(long, default_value_t = 5)]
     kc: usize,
     #[arg(long, default_value_t = 8)]
@@ -173,9 +174,9 @@ struct OrthoCliParams {
     sec_policy: String,
 }
 
-impl OrthoCliParams {
-    fn build(self) -> OrthoParams {
-        let mut p = OrthoParams {
+impl ChainmerCliParams {
+    fn build(self) -> ChainmerParams {
+        let mut p = ChainmerParams {
             kc: self.kc,
             class_kc: self.class_kc,
             gmin: self.gmin,
@@ -187,7 +188,7 @@ impl OrthoCliParams {
             use_class: !self.raw,
             dual_track: !self.raw && !self.class_only,
             sec_policy: self.sec_policy,
-            ..OrthoParams::default()
+            ..ChainmerParams::default()
         };
         if self.no_gap {
             p.set_use_gap(false);
@@ -295,7 +296,7 @@ fn cmd_search(args: SearchArgs) -> Result<()> {
             idx.validate_db(&db)?;
             idx
         }
-        None => SeedIndex::build(&db, OrthoParams::default())?,
+        None => SeedIndex::build(&db, ChainmerParams::default())?,
     };
     let weights = args.weights.as_ref().map(read_weights).transpose()?;
     for (qid, query) in read_fasta(&args.query)? {
@@ -336,7 +337,7 @@ fn cmd_search(args: SearchArgs) -> Result<()> {
 fn cmd_compare(args: CompareArgs) -> Result<()> {
     let sequences = read_fasta(&args.input)?;
     let methods = [
-        Method::OrthoChain,
+        Method::Chainmer,
         Method::Subseqhash2,
         Method::Kmer,
         Method::Spaced,
@@ -377,7 +378,7 @@ fn cmd_demo() -> Result<()> {
         ("MvhA_synthetic".into(),"MVKAVLAVLAKGGTIAAQLSPEHMPVRMRMLDNNEAAELKALGVPFGRIRLPGGQVAEPIKVDANGVITDAQSSSLIFRGFERILQHQDPRDAAFLTQRI".into()),
         ("FrhA_synthetic".into(),"MTNKKAAAWLVGAIVGGLGMAEAKLDDKAEAKKAAKEAKKAAELKALGVPFGRIRLPGGQVAEPIKVDANGVITDAQSSSLIFRGFERILQHQDPRDAA".into()),
     ]);
-    let index = SeedIndex::build(&db, OrthoParams::default())?;
+    let index = SeedIndex::build(&db, ChainmerParams::default())?;
     for (id, seq) in &db {
         let hits = search(
             seq,
@@ -390,7 +391,7 @@ fn cmd_demo() -> Result<()> {
         )?;
         println!("{id}: {hits:?}");
     }
-    let keys = database_keys(&db, &OrthoParams::default())?;
+    let keys = database_keys(&db, &ChainmerParams::default())?;
     assert_eq!(keys.len(), 2);
     println!("NOTE: synthetic illustrative sequences, not biological evidence.");
     Ok(())

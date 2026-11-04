@@ -1,8 +1,8 @@
-use orthochain::core::{orthochain_keys, orthochain_keys_legacy, OrthoParams};
-use orthochain::index::{database_keys, SeedIndex};
-use orthochain::scoring::weighted_score;
-use orthochain::search::{search, search_count, search_with_keys};
-use orthochain::seeds::{
+use chainmer::core::{chainmer_keys, chainmer_keys_legacy, ChainmerParams};
+use chainmer::index::{database_keys, SeedIndex};
+use chainmer::scoring::weighted_score;
+use chainmer::search::{search, search_count, search_with_keys};
+use chainmer::seeds::{
     class_map, clean_protein, encode, hash_kmer, kmers, strobemers, syncmers, to_class_string,
     SecPolicy, AA20,
 };
@@ -20,7 +20,7 @@ fn coded(text: &str) -> Vec<u64> {
 fn python_prototype_hash_and_key_parity() {
     let hash = hash_kmer(&coded("ACDEFGH"), 0xABCDEF);
     assert_eq!(hash, 0xd4c2adf8a9645bcc77bdedcf9999e8d2);
-    let keys = orthochain_keys_legacy(LONG, &OrthoParams::default()).unwrap();
+    let keys = chainmer_keys_legacy(LONG, &ChainmerParams::default()).unwrap();
     assert_eq!(keys.len(), 306);
     assert_eq!(keys.first(), Some(&0x0a1cbb4e9e2bd0adfd911785526697d));
     assert_eq!(keys.last(), Some(&0xffc7a9e54c658efa18c5b069a279c357));
@@ -40,7 +40,7 @@ fn classes_cleaning_and_short_inputs_are_consistent() {
     assert!(kmers("", 5).unwrap().is_empty());
     assert!(kmers("ACD", 5).unwrap().is_empty());
     assert!(syncmers("ACD", 5, 2, false).unwrap().is_empty());
-    assert!(orthochain_keys("ACD", &OrthoParams::default())
+    assert!(chainmer_keys("ACD", &ChainmerParams::default())
         .unwrap()
         .is_empty());
 }
@@ -75,14 +75,14 @@ fn syncmer_open_and_closed_match_definitions() {
 
 #[test]
 fn self_match_cross_family_and_gap_modes() {
-    let params = OrthoParams::default();
-    let own = orthochain_keys(LONG, &params).unwrap();
-    let other = orthochain_keys(FRH, &params).unwrap();
+    let params = ChainmerParams::default();
+    let own = chainmer_keys(LONG, &params).unwrap();
+    let other = chainmer_keys(FRH, &params).unwrap();
     assert!(!own.is_empty());
     assert!(own.intersection(&other).count() < own.len());
     let mut no_gap = params.clone();
     no_gap.set_use_gap(false);
-    assert_ne!(own, orthochain_keys(LONG, &no_gap).unwrap());
+    assert_ne!(own, chainmer_keys(LONG, &no_gap).unwrap());
 }
 
 #[test]
@@ -93,8 +93,8 @@ fn fixed_offset_strobemer_supports_offsets_above_five() {
 
 #[test]
 fn negative_rejection_threshold_is_strictly_greater_than_limit() {
-    let params = OrthoParams::default();
-    let query_keys = orthochain_keys(LONG, &params).unwrap();
+    let params = ChainmerParams::default();
+    let query_keys = chainmer_keys(LONG, &params).unwrap();
     let negative: BTreeSet<u128> = query_keys.iter().copied().take(3).collect();
     let db = BTreeMap::from([
         (
@@ -116,8 +116,7 @@ fn negative_rejection_threshold_is_strictly_greater_than_limit() {
 
 #[test]
 fn weighted_score_orders_positive_enriched_candidate_first() {
-    let weights =
-        orthochain::contrastive_weights(&[BTreeSet::from([1, 2])], &[BTreeSet::from([3])]);
+    let weights = chainmer::contrastive_weights(&[BTreeSet::from([1, 2])], &[BTreeSet::from([3])]);
     let query = BTreeSet::from([1, 9]);
     let positive = weighted_score(&query, &BTreeSet::from([1]), &weights, 0.0).unwrap();
     let negative = weighted_score(&query, &BTreeSet::from([3]), &weights, 0.0).unwrap();
@@ -130,10 +129,10 @@ fn index_roundtrip_preserves_metadata_postings_and_results() {
         ("a".to_string(), LONG.to_string()),
         ("b".to_string(), LONG.to_string()),
     ]);
-    let params = OrthoParams::default();
+    let params = ChainmerParams::default();
     let index = SeedIndex::build(&db, params.clone()).unwrap();
     let path =
-        std::env::temp_dir().join(format!("orthochain-regression-{}.json", std::process::id()));
+        std::env::temp_dir().join(format!("chainmer-regression-{}.json", std::process::id()));
     index.save(&path).unwrap();
     let loaded = SeedIndex::load(&path).unwrap();
     fs::remove_file(&path).unwrap();
@@ -155,7 +154,7 @@ fn chain_score_penalizes_extra_unrelated_target_keys() {
         ("elongated".to_string(), elongated),
         ("other".to_string(), FRH.to_string()),
     ]);
-    let params = OrthoParams::default();
+    let params = ChainmerParams::default();
     let index = SeedIndex::build(&db, params.clone()).unwrap();
     let hits = search(LONG, &index, &params, 1, &BTreeSet::new(), 0, None).unwrap();
     let own = hits.iter().find(|hit| hit.id == "self").unwrap();
@@ -171,10 +170,10 @@ fn database_frequency_downweights_common_keys() {
         ("a".to_string(), LONG.to_string()),
         ("b".to_string(), FRH.to_string()),
     ]);
-    let params = OrthoParams::default();
+    let params = ChainmerParams::default();
     let index = SeedIndex::build(&db, params.clone()).unwrap();
-    let a = orthochain_keys(LONG, &params).unwrap();
-    let b = orthochain_keys(FRH, &params).unwrap();
+    let a = chainmer_keys(LONG, &params).unwrap();
+    let b = chainmer_keys(FRH, &params).unwrap();
     let common = a.intersection(&b).next().unwrap();
     let rare = a.difference(&b).next().unwrap();
     assert!(index.idf(common) < index.idf(rare));

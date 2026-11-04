@@ -1,6 +1,6 @@
 # Benchmark 与复现说明
 
-本文件区分 **OrthoChain v0.5 当前结果**和 **v0.4 历史结果**。v0.5 数值来自 177 条 [NiFe] 氢化酶大亚基序列的真实留属评估；数据不随代码包分发。
+本文件区分 **Chainmer v0.5 当前结果**和 **v0.4 历史结果**。v0.5 数值来自 177 条 [NiFe] 氢化酶大亚基序列的真实留属评估；数据不随代码包分发。
 
 ## 数据与评估口径
 
@@ -68,16 +68,16 @@ cargo test --locked --all-targets
 在当前研究中重新运行 v0.5：
 
 ```powershell
-$env:ORTHOCHAIN_BIN="<仓库根>/OrthoChain_code_release/target/release/orthochain.exe"
+$env:CHAINMER_BIN="<仓库根>/Chainmer_code_release/target/release/chainmer.exe"
 python OrthologySeed/scripts/rev_v05_eval.py
 ```
 
 主要输出位于研究仓库 `benchmark/orthology_tasks/`：
 
-- `orthochain_v05_eval_folds.tsv`
-- `orthochain_v05_eval_summary.tsv`
-- `orthochain_v05_*_directed_scores.tsv`
-- `orthochain_v05_run_metadata.json`
+- `chainmer_v05_eval_folds.tsv`
+- `chainmer_v05_eval_summary.tsv`
+- `chainmer_v05_*_directed_scores.tsv`
+- `chainmer_v05_run_metadata.json`
 
 ## 验证与限制
 
