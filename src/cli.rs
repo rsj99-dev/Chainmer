@@ -1,6 +1,7 @@
 use crate::core::{chainmer_keys, ChainmerParams};
 use crate::fasta::read_fasta;
 use crate::index::{database_keys, key_hex, parse_key_hex, SeedIndex};
+use crate::index_cache::{load_or_build_index, CacheOptions};
 use crate::search::{search, search_weighted_index};
 use crate::seeds::{
     clean_protein, kmers, minimizers, spaced_kmers, strobemers, syncmers_with_mode,
@@ -19,7 +20,7 @@ use std::time::Instant;
 #[command(
     name = "chainmer",
     version,
-    about = "Chainmer v1.0.0：双通道位置种子、共线链与检索"
+    about = "Chainmer v1.0.1：双通道位置种子、共线链与检索"
 )]
 pub struct Cli {
     #[command(subcommand)]
@@ -120,6 +121,15 @@ struct SearchArgs {
     query: PathBuf,
     #[arg(short = 'x', long)]
     index: Option<PathBuf>,
+    /// 强制重建持久化索引缓存
+    #[arg(long)]
+    rebuild_index: bool,
+    /// 索引缓存目录；缺省使用平台缓存目录（可用 CHAINMER_CACHE_DIR 覆盖）
+    #[arg(long)]
+    cache_dir: Option<PathBuf>,
+    /// 一次性运行：不读取也不写入索引缓存
+    #[arg(long)]
+    no_cache: bool,
     #[arg(long, default_value_t = 1)]
     min_shared: usize,
     #[arg(long)]
@@ -290,14 +300,16 @@ fn cmd_search(args: SearchArgs) -> Result<()> {
         bail!("min_shared 必须 >= 1");
     }
     let db = read_fasta(&args.db)?;
-    let index = match args.index {
-        Some(path) => {
-            let idx = SeedIndex::load(path)?;
-            idx.validate_db(&db)?;
-            idx
-        }
-        None => SeedIndex::build(&db, ChainmerParams::default())?,
-    };
+    let index = load_or_build_index(
+        &db,
+        &ChainmerParams::default(),
+        args.index.as_deref(),
+        &CacheOptions {
+            cache_dir: args.cache_dir.clone(),
+            no_cache: args.no_cache,
+            rebuild: args.rebuild_index,
+        },
+    )?;
     let weights = args.weights.as_ref().map(read_weights).transpose()?;
     for (qid, query) in read_fasta(&args.query)? {
         println!(">{qid}");

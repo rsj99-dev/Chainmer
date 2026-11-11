@@ -2,7 +2,7 @@
   <img src="Chainmer_Logo.png" alt="Chainmer Logo" width="420">
 </p>
 
-# Chainmer v1.0.0
+# Chainmer v1.0.1
 
 **语言 / Language：** 中文 | [English](README.md)
 
@@ -103,7 +103,7 @@ chainmer search -d db.faa -q query.faa -x db.kc5.class7.chainmer.json --top 5
 
 ## 哈希与兼容性
 
-哈希以 `u128` 存储，但两个 64 位分量来自同一个 64 位滚动状态，因此**有效状态最多 64 bit**，不得宣称具有 128-bit 熵或碰撞保证；锚点组合只使用子哈希低 64 位，不会进一步减少原状态的信息量。当前索引格式为 `chainmer-index/4`，旧版索引必须重建。`chainmer_keys_legacy` 仅保留 v0.4 单通道、未屏蔽 X 的键输出用于历史核对，不参与新索引和默认检索。
+哈希以 `u128` 存储，但两个 64 位分量来自同一个 64 位滚动状态，因此**有效状态最多 64 bit**，不得宣称具有 128-bit 熵或碰撞保证；锚点组合只使用子哈希低 64 位，不会进一步减少原状态的信息量。当前索引格式为 `chainmer-index/5`（紧凑二进制 CSR，整数 target_id），旧版索引必须重建。`chainmer_keys_legacy` 仅保留 v0.4 单通道、未屏蔽 X 的键输出用于历史核对，不参与新索引和默认检索。
 
 FASTA 使用 `BufRead` 逐行解析，避免额外常驻完整文件字符串；当前 API 仍返回完整序列映射，并非全流式蛋白组索引。索引保存先写同目录临时文件并 `flush/sync_all`；Unix 直接原子替换，Windows 使用备份与失败回滚避免覆盖失败丢失旧索引。
 

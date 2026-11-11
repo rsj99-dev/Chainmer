@@ -2,7 +2,7 @@
   <img src="Chainmer_Logo.png" alt="Chainmer Logo" width="420">
 </p>
 
-# Chainmer v1.0.0
+# Chainmer v1.0.1
 
 **Language:** English | [中文](README_CN.md)
 
@@ -103,7 +103,7 @@ This is not the official four-character nucleotide SIMD binary, and its runtime 
 
 ## Hashing and compatibility
 
-Hashes are stored as `u128`, but both 64-bit components derive from the same 64-bit rolling state. Therefore, the **effective state is at most 64 bits**; no 128-bit entropy or collision guarantee should be claimed. Anchor pairing uses only the lower 64 bits of each subhash and does not further reduce the information in the original state. The current index format is `chainmer-index/4`, and older indexes must be rebuilt. `chainmer_keys_legacy` retains only the v0.4 single-track key output without X masking for historical comparison; it is not used by the new index or default search.
+Hashes are stored as `u128`, but both 64-bit components derive from the same 64-bit rolling state. Therefore, the **effective state is at most 64 bits**; no 128-bit entropy or collision guarantee should be claimed. Anchor pairing uses only the lower 64 bits of each subhash and does not further reduce the information in the original state. The current index format is `chainmer-index/5` (compact binary CSR with integer target IDs), and older indexes must be rebuilt. `chainmer_keys_legacy` retains only the v0.4 single-track key output without X masking for historical comparison; it is not used by the new index or default search.
 
 FASTA input is parsed line by line with `BufRead`, avoiding an additional resident copy of the complete file string. The current API still returns a complete sequence map and is not a fully streaming proteome-scale index. Index saving first writes a temporary file in the same directory and performs `flush/sync_all`. Unix uses direct atomic replacement, while Windows uses backup and failure rollback to avoid losing an old index when replacement fails.
 

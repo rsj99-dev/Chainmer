@@ -115,9 +115,10 @@ impl RetainedHits {
     }
 }
 
+/// 候选只保留一个以 key 为索引的 scratch entry（`hits` 的键即共享键集合），
+/// 避免旧实现里 `shared: BTreeSet<u128>` 与 `hits: BTreeMap<...>` 对同一 key 重复登记。
 #[derive(Default)]
 struct Candidate {
-    shared: BTreeSet<u128>,
     hits: BTreeMap<u128, RetainedHits>,
 }
 
@@ -188,31 +189,34 @@ pub fn search(
     let query_seeds = chainmer_seeds(query, params)?;
     let query_keys: BTreeSet<u128> = query_seeds.iter().map(|seed| seed.key).collect();
     let query_weight: f64 = query_keys.iter().map(|key| index.idf(key)).sum();
-    let mut candidates: BTreeMap<String, Candidate> = BTreeMap::new();
+    let mut candidates: BTreeMap<u32, Candidate> = BTreeMap::new();
     for seed in query_seeds {
-        let Some(postings) = index.postings.get(&seed.key) else {
+        let Some(postings) = index.postings_for(&seed.key) else {
             continue;
         };
         for posting in postings {
-            let candidate = candidates.entry(posting.id.clone()).or_default();
-            candidate.shared.insert(seed.key);
+            let candidate = candidates.entry(posting.target_id).or_default();
             candidate.hits.entry(seed.key).or_default().offer(SeedHit {
                 key: seed.key,
                 track: seed.track,
                 q1: seed.p1,
                 q2: seed.p2,
-                t1: posting.p1,
-                t2: posting.p2,
+                t1: posting.p1 as usize,
+                t2: posting.p2 as usize,
                 weight: 0.0,
             })?;
         }
     }
 
     let mut hits = Vec::new();
-    for (id, candidate) in candidates {
-        if candidate.shared.len() < min_shared {
+    for (target_id, candidate) in candidates {
+        // hits 的键即共享键集合：一个 query key 只登记一次，位置命中总数按现有口径统计。
+        let shared = candidate.hits.len();
+        if shared < min_shared {
             continue;
         }
+        let target = &index.targets[target_id as usize];
+        let id = target.id.clone();
         if !negative_keys.is_empty()
             && db_keys
                 .and_then(|all| all.get(&id))
@@ -221,16 +225,11 @@ pub fn search(
         {
             continue;
         }
-        let overlap: f64 = candidate.shared.iter().map(|key| index.idf(key)).sum();
-        let target_weight = index
-            .sequence_stats
-            .get(&id)
-            .map(|stat| stat.idf_weight)
-            .unwrap_or(0.0);
+        let overlap: f64 = candidate.hits.keys().map(|key| index.idf(key)).sum();
+        let target_weight = target.idf_weight;
         let union = query_weight + target_weight - overlap;
         let weighted_jaccard = if union > 0.0 { overlap / union } else { 0.0 };
         let Candidate {
-            shared,
             hits: retained_by_key,
         } = candidate;
         let position_hits_total = retained_by_key.values().map(|hits| hits.total).sum();
@@ -259,7 +258,7 @@ pub fn search(
         hits.push(CandidateScore {
             id,
             score,
-            shared: shared.len(),
+            shared,
             chain_score,
             weighted_jaccard,
             raw_chain_score,
@@ -292,17 +291,23 @@ pub fn search_count(
         bail!("查询参数与索引元数据不一致");
     }
     let query_keys = chainmer_keys(query, params)?;
-    let mut votes: BTreeMap<String, usize> = BTreeMap::new();
+    let mut votes: BTreeMap<u32, usize> = BTreeMap::new();
     for key in query_keys {
-        if let Some(postings) = index.postings.get(&key) {
-            for id in postings.iter().map(|hit| &hit.id).collect::<BTreeSet<_>>() {
-                *votes.entry(id.clone()).or_default() += 1;
+        if let Some(postings) = index.postings_for(&key) {
+            // posting 已按 target_id 分组：相邻 target_id 变化即一个不同目标。
+            let mut last: Option<u32> = None;
+            for posting in postings {
+                if last != Some(posting.target_id) {
+                    *votes.entry(posting.target_id).or_default() += 1;
+                    last = Some(posting.target_id);
+                }
             }
         }
     }
-    let mut hits: Vec<_> = votes
+    let mut hits: Vec<(String, usize)> = votes
         .into_iter()
         .filter(|(_, count)| *count >= min_shared)
+        .map(|(target_id, count)| (index.targets[target_id as usize].id.clone(), count))
         .collect();
     hits.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
     Ok(hits)
@@ -326,18 +331,22 @@ pub fn search_weighted_index(
         bail!("权重和 min_score 必须为有限数值");
     }
     let query_keys = chainmer_keys(query, params)?;
-    let mut votes: BTreeMap<String, (usize, f64)> = BTreeMap::new();
+    let mut votes: BTreeMap<u32, (usize, f64)> = BTreeMap::new();
     for key in query_keys {
         let weight = weights.get(&key).copied().unwrap_or(0.0);
-        if let Some(postings) = index.postings.get(&key) {
-            for id in postings.iter().map(|hit| &hit.id).collect::<BTreeSet<_>>() {
-                let entry = votes.entry(id.clone()).or_insert((0, 0.0));
-                entry.0 += 1;
-                entry.1 += weight;
+        if let Some(postings) = index.postings_for(&key) {
+            let mut last: Option<u32> = None;
+            for posting in postings {
+                if last != Some(posting.target_id) {
+                    let entry = votes.entry(posting.target_id).or_insert((0, 0.0));
+                    entry.0 += 1;
+                    entry.1 += weight;
+                    last = Some(posting.target_id);
+                }
             }
         }
     }
-    let mut hits: Vec<_> = votes
+    let mut hits: Vec<(String, f64)> = votes
         .into_iter()
         .filter(|(_, (shared, score))| {
             *shared >= min_shared
@@ -345,7 +354,7 @@ pub fn search_weighted_index(
                     .map(|threshold| *score >= threshold)
                     .unwrap_or(true)
         })
-        .map(|(id, (_, score))| (id, score))
+        .map(|(target_id, (_, score))| (index.targets[target_id as usize].id.clone(), score))
         .collect();
     hits.sort_by(|a, b| b.1.total_cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
     Ok(hits)
@@ -577,8 +586,10 @@ mod tests {
             .iter()
             .all(|hit| hit.position_hits_retained <= 64 * hit.shared));
         let mut reversed = index;
-        for postings in reversed.postings.values_mut() {
-            postings.reverse();
+        for slot in 0..reversed.keys.len() {
+            let start = reversed.offsets[slot] as usize;
+            let end = reversed.offsets[slot + 1] as usize;
+            reversed.postings[start..end].reverse();
         }
         let shuffled = search(&query, &reversed, &params, 1, &BTreeSet::new(), 0, None).unwrap();
         assert_eq!(shuffled, baseline);

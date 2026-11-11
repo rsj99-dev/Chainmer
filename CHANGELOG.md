@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.1 — 内存整改 A+B（紧凑 CSR + 持久化缓存）
+
+- **紧凑索引（Milestone B）：** `SeedIndex` 改为 CSR：`keys: Vec<u128>` / `offsets: Vec<u64>` / `document_freq: Vec<u32>` / `postings: Vec<PackedPosting>`（`target_id/p1/p2` 各 u32，共 12 字节）/ `targets: Vec<TargetRecord>`。删除每条 posting 的 `String` 目标 ID、`BTreeMap<u128, Vec<SeedPosting>>` 嵌套结构、`target_keys` 全量 BTreeSet、逐 key DF BTreeSet，以及 `validate()` 中的 `observed` 全量 BTreeSet。
+- **索引格式升级：** `chainmer-index/4`（JSON）→ **`chainmer-index/5`**（紧凑二进制 CSR，含数据区 blake3 与尾部哨兵）。旧 v4/JSON 索引给出明确迁移提示（`chainmer index` 重建）。
+- **持久化缓存（Milestone A）：** `search` 未传 `-x` 时默认按“格式+算法+版本+哈希方案+参数+数据库摘要”定位持久缓存，命中直接复用，不再每次重建全库种子；新增 `--rebuild-index`、`--cache-dir`、`--no-cache`（缺省缓存目录可用 `CHAINMER_CACHE_DIR` 覆盖）。
+- **流式读写：** `save()` 用 `BufWriter` 顺序写出并边写边算 blake3；`load()` 用尾部 meta + 分配前 section 边界校验 + 缓冲顺序读取，避免裸 `File` 逐字段读取的系统调用风暴。
+- **实测（同一 2,012 序列 hyddb，keys/posting 数不变）：** 索引 830 MB→171.5 MB，建索引峰值 RSS 3,442 MB→314 MB，搜索峰值 RSS 2,663 MB→184 MB；cache hit 0.58 s。cache miss/hit/`-x`/`--no-cache` 四路径结果一致。
+- **未完成：** 外存分块 builder（C）、mmap 只读后端（D）、v4 只读导入（改为明确重建提示）。
+
 ## v1.0.0
 
 本次发布集中修复 Chainmer 的种子定义、共线链几何、模糊残基处理、位置命中保留、索引完整性和文件写入安全性问题。

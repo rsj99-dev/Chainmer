@@ -8,6 +8,7 @@ pub mod cli;
 pub mod core;
 pub mod fasta;
 pub mod index;
+pub mod index_cache;
 pub mod scoring;
 pub mod search;
 pub mod seeds;
@@ -22,5 +23,5 @@ pub use search::CandidateScore;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// 兼容历史输出：128-bit 存储宽度，但有效状态最多 64 bit。
 pub const HASH_SCHEME: &str = "dual-splitmix64/64-effective-in-u128";
-/// X 屏蔽的当前种子语义；旧索引必须重建。
-pub const INDEX_FORMAT: &str = "chainmer-index/4";
+/// X 屏蔽的当前种子语义；旧索引必须重建。v5 为紧凑二进制 CSR 格式。
+pub const INDEX_FORMAT: &str = "chainmer-index/5";
