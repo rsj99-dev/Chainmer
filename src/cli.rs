@@ -159,7 +159,7 @@ struct ChainmerCliParams {
     gmin: usize,
     #[arg(long, default_value_t = 300)]
     gmax: usize,
-    #[arg(long, default_value_t = 15)]
+    #[arg(long, default_value_t = 5)]
     delta: usize,
     #[arg(long, default_value_t = 6)]
     w1: usize,

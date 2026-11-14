@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.2 — 默认参数调优（delta 15→5）
+
+- **默认 `delta` 15→5（`ChainmerParams::default()` 与 CLI `--delta` 缺省值同步）：** gap 分桶 `bucket = d / delta` 细化 3 倍，键更精确地编码锚点间距，减少旁系偶然匹配。30 配置三阶段扫描（kc×class_kc 4×4、特异性旋钮 10、delta 曲线 4）中唯一弱 Pareto 优于旧默认的配置。
+- **实测（HydDB 2012 全库 n=2012，种子键集口径）：** Top-1 0.9935→0.9945（McNemar 0:2 零回归）；FP 313→295；FN 0→0；属留出 Top-1 0.9275 持平（McNemar 4:4，p=1.0）；KEGG92 Top-1 1.0000 持平；中位密度 6.049 keys/残基不变。
+- **历史对照测试钉住旧参数：** `python_prototype_hash_and_key_parity` 显式使用 `delta: 15`，golden 值不随新默认漂移。
+
 ## v1.0.1 — 内存整改 A+B（紧凑 CSR + 持久化缓存）
 
 - **紧凑索引（Milestone B）：** `SeedIndex` 改为 CSR：`keys: Vec<u128>` / `offsets: Vec<u64>` / `document_freq: Vec<u32>` / `postings: Vec<PackedPosting>`（`target_id/p1/p2` 各 u32，共 12 字节）/ `targets: Vec<TargetRecord>`。删除每条 posting 的 `String` 目标 ID、`BTreeMap<u128, Vec<SeedPosting>>` 嵌套结构、`target_keys` 全量 BTreeSet、逐 key DF BTreeSet，以及 `validate()` 中的 `observed` 全量 BTreeSet。

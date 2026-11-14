@@ -51,7 +51,7 @@ impl Default for ChainmerParams {
             class_kc: 8,
             gmin: 30,
             gmax: 300,
-            delta: 15,
+            delta: 5,
             use_class: true,
             dual_track: true,
             gap_filter: true,

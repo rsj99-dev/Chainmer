@@ -20,7 +20,9 @@ fn coded(text: &str) -> Vec<u64> {
 fn python_prototype_hash_and_key_parity() {
     let hash = hash_kmer(&coded("ACDEFGH"), 0xABCDEF);
     assert_eq!(hash, 0xd4c2adf8a9645bcc77bdedcf9999e8d2);
-    let keys = chainmer_keys_legacy(LONG, &ChainmerParams::default()).unwrap();
+    // 历史对照钉住 v0.4 原型参数 delta=15，不随新默认值（delta=5）漂移。
+    let legacy_params = ChainmerParams { delta: 15, ..ChainmerParams::default() };
+    let keys = chainmer_keys_legacy(LONG, &legacy_params).unwrap();
     assert_eq!(keys.len(), 306);
     assert_eq!(keys.first(), Some(&0x0a1cbb4e9e2bd0adfd911785526697d));
     assert_eq!(keys.last(), Some(&0xffc7a9e54c658efa18c5b069a279c357));
