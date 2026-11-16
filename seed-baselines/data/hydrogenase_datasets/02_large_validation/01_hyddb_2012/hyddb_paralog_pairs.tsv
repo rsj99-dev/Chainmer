@@ -1,0 +1,1493 @@
+organism	id_a	id_b	group_a	group_b
+Clostridium papyrosolvens	WP_004615979.1	WP_004618281.1	1a	4e
+Bilophila wadsworthia	WP_005027974.1	WP_005027591.1	1a	1b
+Bilophila wadsworthia	WP_005027974.1	WP_005026843.1	1a	1d
+Bilophila wadsworthia	WP_005027974.1	WP_005028008.1	1a	4c
+Bilophila wadsworthia	WP_005028324.1	WP_005027591.1	1a	1b
+Bilophila wadsworthia	WP_005028324.1	WP_005026843.1	1a	1d
+Bilophila wadsworthia	WP_005028324.1	WP_005028008.1	1a	4c
+Bilophila wadsworthia	WP_005027591.1	WP_005026843.1	1b	1d
+Bilophila wadsworthia	WP_005027591.1	WP_005028008.1	1b	4c
+Bilophila wadsworthia	WP_005026843.1	WP_005028008.1	1d	4c
+Desulfitobacterium hafniense	WP_005808602.1	WP_005811167.1	1a	1d
+Desulfitobacterium hafniense	WP_005808602.1	WP_015945149.1	1a	4f
+Desulfitobacterium hafniense	WP_005811612.1	WP_005811167.1	1a	1d
+Desulfitobacterium hafniense	WP_005811612.1	WP_015945149.1	1a	4f
+Desulfitobacterium hafniense	WP_005812775.1	WP_005811167.1	1a	1d
+Desulfitobacterium hafniense	WP_005812775.1	WP_015945149.1	1a	4f
+Desulfitobacterium hafniense	WP_005811167.1	WP_015945149.1	1d	4f
+Desulfovibrio piger	WP_006003971.1	WP_006008218.1	1a	1b
+Desulfovibrio piger	WP_006003971.1	WP_006007878.1	1a	4c
+Desulfovibrio piger	WP_006008218.1	WP_006007878.1	1b	4c
+Thermosinus carboxydivorans	WP_007288048.1	WP_007290417.1	1a	1d
+Desulfosporosinus youngiae	WP_007778579.1	WP_007780611.1	1a	4f
+Desulfosporosinus youngiae	WP_007779707.1	WP_007780611.1	1a	4f
+Caloramator australicus	WP_008909589.1	WP_008908605.1	1a	4g
+Bilophila sp. 4_1_30	WP_009368189.1	WP_009380705.1	1a	1b
+Bilophila sp. 4_1_30	WP_009368189.1	WP_009378513.1	1a	1d
+Bilophila sp. 4_1_30	WP_009368189.1	WP_009368261.1	1a	4c
+Bilophila sp. 4_1_30	WP_009380431.1	WP_009380705.1	1a	1b
+Bilophila sp. 4_1_30	WP_009380431.1	WP_009378513.1	1a	1d
+Bilophila sp. 4_1_30	WP_009380431.1	WP_009368261.1	1a	4c
+Bilophila sp. 4_1_30	WP_009380705.1	WP_009378513.1	1b	1d
+Bilophila sp. 4_1_30	WP_009380705.1	WP_009368261.1	1b	4c
+Bilophila sp. 4_1_30	WP_009378513.1	WP_009368261.1	1d	4c
+Desulfosporosinus sp. OT	WP_009616484.1	WP_009623566.1	1a	1d
+Desulfosporosinus sp. OT	WP_009616484.1	WP_009619272.1	1a	4f
+Desulfosporosinus sp. OT	WP_009623566.1	WP_009619272.1	1d	4f
+Acetivibrio cellulolyticus	WP_010244488.1	WP_010251151.1	1a	4e
+Desulfovibrio vulgaris	WP_010939204.1	WP_010939208.1	1a	1b
+Desulfovibrio vulgaris	WP_010939204.1	WP_010939796.1	1a	1b
+Desulfovibrio vulgaris	WP_010939204.1	WP_010939566.1	1a	4c
+Desulfovibrio vulgaris	WP_010939204.1	WP_010937737.1	1a	4e
+Desulfovibrio vulgaris	WP_010939208.1	WP_010939566.1	1b	4c
+Desulfovibrio vulgaris	WP_010939208.1	WP_010937737.1	1b	4e
+Desulfovibrio vulgaris	WP_010939796.1	WP_010939566.1	1b	4c
+Desulfovibrio vulgaris	WP_010939796.1	WP_010937737.1	1b	4e
+Desulfovibrio vulgaris	WP_010939566.1	WP_010937737.1	4c	4e
+Desulfotalea psychrophila	WP_011187404.1	WP_011187820.1	1a	1c
+Desulfotalea psychrophila	WP_011187404.1	WP_011188256.1	1a	3c
+Desulfotalea psychrophila	WP_011187404.1	WP_011189453.1	1a	3d
+Desulfotalea psychrophila	WP_011187820.1	WP_011188256.1	1c	3c
+Desulfotalea psychrophila	WP_011187820.1	WP_011189453.1	1c	3d
+Desulfotalea psychrophila	WP_011188256.1	WP_011189453.1	3c	3d
+Carboxydothermus hydrogenoformans	WP_011344452.1	WP_011344721.1	1a	4c
+Desulfovibrio alaskensis	WP_011368032.1	WP_011368035.1	1a	1b
+Desulfovibrio alaskensis	WP_011368032.1	WP_011369403.1	1a	1b
+Denitrovibrio acetiphilus	WP_013011808.1	WP_013010514.1	1a	1c
+Denitrovibrio acetiphilus	WP_013011808.1	WP_013011747.1	1a	1f
+Denitrovibrio acetiphilus	WP_013010514.1	WP_013011747.1	1c	1f
+Thermincola potens	WP_013119172.1	WP_013121779.1	1a	4c
+Thermincola potens	WP_013119653.1	WP_013121779.1	1a	4c
+Desulfurivibrio alkaliphilus	WP_013162757.1	WP_013163129.1	1a	1b
+Desulfurivibrio alkaliphilus	WP_013162757.1	WP_013163642.1	1a	3d
+Desulfurivibrio alkaliphilus	WP_013163129.1	WP_013163642.1	1b	3d
+Syntrophothermus lipocalidus	WP_013174572.1	WP_013174844.1	1a	4e
+Dehalogenimonas lykanthroporepellens	WP_013217520.1	WP_013218375.1	1a	3b
+Dehalogenimonas lykanthroporepellens	WP_013217520.1	WP_013218178.1	1a	3c
+Dehalogenimonas lykanthroporepellens	WP_013218717.1	WP_013218375.1	1a	3b
+Dehalogenimonas lykanthroporepellens	WP_013218717.1	WP_013218178.1	1a	3c
+Dehalogenimonas lykanthroporepellens	WP_013218375.1	WP_013218178.1	3b	3c
+Thermodesulfobium narugense	WP_013755712.1	WP_013756665.1	1a	3c
+Thermodesulfobium narugense	WP_013755712.1	WP_013756005.1	1a	4g
+Thermodesulfobium narugense	WP_013756665.1	WP_013756005.1	3c	4g
+Flexistipes sinusarabici	WP_013885747.1	WP_013886108.1	1a	1c
+Flexistipes sinusarabici	WP_013885747.1	WP_013885838.1	1a	1f
+Flexistipes sinusarabici	WP_013886108.1	WP_013885838.1	1c	1f
+Desulfosporosinus orientis	WP_014182845.1	WP_014186363.1	1a	1d
+Desulfosporosinus orientis	WP_014182845.1	WP_014183752.1	1a	4f
+Desulfosporosinus orientis	WP_014183412.1	WP_014186363.1	1a	1d
+Desulfosporosinus orientis	WP_014183412.1	WP_014183752.1	1a	4f
+Desulfosporosinus orientis	WP_014186363.1	WP_014183752.1	1d	4f
+Clostridium clariflavum	WP_014254247.1	WP_014254276.1	1a	4e
+Desulfovibrio africanus	WP_014261065.1	WP_014261062.1	1a	1b
+Desulfovibrio africanus	WP_014261065.1	WP_027366709.1	1a	3b
+Desulfovibrio africanus	WP_014261065.1	WP_027368703.1	1a	3c
+Desulfovibrio africanus	WP_014261065.1	WP_005986921.1	1a	4e
+Desulfovibrio africanus	WP_014261062.1	WP_027366709.1	1b	3b
+Desulfovibrio africanus	WP_014261062.1	WP_027368703.1	1b	3c
+Desulfovibrio africanus	WP_014261062.1	WP_005986921.1	1b	4e
+Desulfovibrio africanus	WP_027366709.1	WP_027368703.1	3b	3c
+Desulfovibrio africanus	WP_027366709.1	WP_005986921.1	3b	4e
+Desulfovibrio africanus	WP_027368703.1	WP_005986921.1	3c	4e
+Desulfitobacterium dehalogenans	WP_014792614.1	WP_014794600.1	1a	1d
+Desulfitobacterium dehalogenans	WP_014792614.1	WP_014795396.1	1a	4f
+Desulfitobacterium dehalogenans	WP_014794526.1	WP_014794600.1	1a	1d
+Desulfitobacterium dehalogenans	WP_014794526.1	WP_014795396.1	1a	4f
+Desulfitobacterium dehalogenans	WP_014794600.1	WP_014795396.1	1d	4f
+Desulfosporosinus acidiphilus	WP_014825623.1	WP_014826810.1	1a	1d
+Desulfosporosinus acidiphilus	WP_014828375.1	WP_014826810.1	1a	1d
+Desulfosporosinus meridiei	WP_014901287.1	WP_014904046.1	1a	1d
+Desulfosporosinus meridiei	WP_014901287.1	WP_014902103.1	1a	4f
+Desulfosporosinus meridiei	WP_014901856.1	WP_014904046.1	1a	1d
+Desulfosporosinus meridiei	WP_014901856.1	WP_014902103.1	1a	4f
+Desulfosporosinus meridiei	WP_014904046.1	WP_014902103.1	1d	4f
+Thermacetogenium phaeum	WP_015049787.1	WP_015051716.1	1a	3b
+Thermacetogenium phaeum	WP_015049787.1	WP_015051661.1	1a	4a
+Thermacetogenium phaeum	WP_015049787.1	WP_015051201.1	1a	4e
+Thermacetogenium phaeum	WP_015051716.1	WP_015051661.1	3b	4a
+Thermacetogenium phaeum	WP_015051716.1	WP_015051201.1	3b	4e
+Thermacetogenium phaeum	WP_015051661.1	WP_015051201.1	4a	4e
+Desulfitobacterium dichloroeliminans	WP_015262308.1	WP_015261076.1	1a	1d
+Desulfitobacterium dichloroeliminans	WP_015262676.1	WP_015261076.1	1a	1d
+Desulfovibrio hydrothermalis	WP_015336980.1	WP_015337220.1	1a	1b
+Desulfovibrio hydrothermalis	WP_015336980.1	WP_015336113.1	1a	4e
+Desulfovibrio hydrothermalis	WP_015337220.1	WP_015336113.1	1b	4e
+Dehalococcoides mccartyi	WP_015407385.1	WP_010936390.1	1a	3c
+Dehalococcoides mccartyi	WP_015407385.1	WP_010936594.1	1a	4e
+Dehalococcoides mccartyi	WP_010936390.1	WP_010936594.1	3c	4e
+Ammonifex degensii	WP_015739219.1	WP_015739967.1	1a	3c
+Ammonifex degensii	WP_015739219.1	WP_015738579.1	1a	4e
+Ammonifex degensii	WP_015739752.1	WP_015739967.1	1a	3c
+Ammonifex degensii	WP_015739752.1	WP_015738579.1	1a	4e
+Ammonifex degensii	WP_015739967.1	WP_015738579.1	3c	4e
+Desulfomicrobium baculatum	WP_015774148.1	WP_015772985.1	1a	1b
+Desulfovibrio salexigens	WP_015851925.1	WP_015851793.1	1a	1b
+Desulfovibrio salexigens	WP_015851925.1	WP_015853104.1	1a	4e
+Desulfovibrio salexigens	WP_015851793.1	WP_015853104.1	1b	4e
+Clostridium cellulolyticum	WP_015924586.1	WP_015926708.1	1a	4e
+Dehalobacter sp. E1	WP_019225238.1	WP_019226053.1	1a	1d
+Dehalobacter sp. E1	WP_019225238.1	WP_019226287.1	1a	4e
+Dehalobacter sp. E1	WP_019226053.1	WP_019226287.1	1d	4e
+Desulfitobacterium sp. PCE1	WP_019850824.1	WP_019850866.1	1a	1d
+Desulfitobacterium sp. PCE1	WP_019850824.1	WP_019851221.1	1a	4f
+Desulfitobacterium sp. PCE1	WP_019850866.1	WP_019851221.1	1d	4f
+Desulfovibrio desulfuricans	WP_020001710.1	WP_020001707.1	1a	1b
+Desulfovibrio desulfuricans	WP_020001710.1	WP_012625505.1	1a	4c
+Desulfovibrio desulfuricans	WP_020001710.1	WP_012625292.1	1a	4e
+Desulfovibrio desulfuricans	WP_020001710.1	WP_014323623.1	1a	4e
+Desulfovibrio desulfuricans	WP_020001707.1	WP_012625505.1	1b	4c
+Desulfovibrio desulfuricans	WP_020001707.1	WP_012625292.1	1b	4e
+Desulfovibrio desulfuricans	WP_020001707.1	WP_014323623.1	1b	4e
+Desulfovibrio desulfuricans	WP_012625505.1	WP_012625292.1	4c	4e
+Desulfovibrio desulfuricans	WP_012625505.1	WP_014323623.1	4c	4e
+Dehalobacter sp. FTH1	WP_020491267.1	WP_026156348.1	1a	1d
+Dehalobacter sp. FTH1	WP_020491267.1	WP_020489980.1	1a	1f
+Dehalobacter sp. FTH1	WP_020491267.1	WP_020490799.1	1a	4e
+Dehalobacter sp. FTH1	WP_026156348.1	WP_020489980.1	1d	1f
+Dehalobacter sp. FTH1	WP_026156348.1	WP_020490799.1	1d	4e
+Dehalobacter sp. FTH1	WP_020489980.1	WP_020490799.1	1f	4e
+Desulfobacter curvatus	WP_020589054.1	WP_020585310.1	1a	1b
+Desulfobacter curvatus	WP_020589054.1	WP_020585229.1	1a	4e
+Desulfobacter curvatus	WP_020585310.1	WP_020585229.1	1b	4e
+Sporomusa ovata	WP_021169773.1	WP_021167302.1	1a	1d
+Sporomusa ovata	WP_021169773.1	WP_021167282.1	1a	4f
+Sporomusa ovata	WP_021167302.1	WP_021167282.1	1d	4f
+Desulfospira joergensenii	WP_022664892.1	WP_022666958.1	1a	1b
+Desulfospira joergensenii	WP_022664892.1	WP_022668938.1	1a	3c
+Desulfospira joergensenii	WP_022666958.1	WP_022668938.1	1b	3c
+Desulfotignum balticum	WP_024335307.1	WP_024334199.1	1a	2c
+Clostridium methoxybenzovorans	WP_024346501.1	WP_024346172.1	1a	4e
+Dehalobacter restrictus	WP_025205213.1	WP_025206080.1	1a	1d
+Deferrisoma camini	WP_025324287.1	WP_025322049.1	1a	1b
+Deferrisoma camini	WP_025324287.1	WP_025324524.1	1a	1f
+Deferrisoma camini	WP_025322049.1	WP_025324524.1	1b	1f
+Desulfovibrio bastinii	WP_027178658.1	WP_027177852.1	1a	1b
+Desulfovibrio bastinii	WP_027178658.1	WP_027179541.1	1a	1b
+Desulfovibrio bastinii	WP_027178658.1	WP_027178908.1	1a	4e
+Desulfovibrio bastinii	WP_027177852.1	WP_027178908.1	1b	4e
+Desulfovibrio bastinii	WP_027179541.1	WP_027178908.1	1b	4e
+Desulfovibrio inopinatus	WP_027185047.1	WP_027182711.1	1a	1b
+Desulfovibrio inopinatus	WP_027185047.1	WP_027183464.1	1a	3c
+Desulfovibrio inopinatus	WP_027185047.1	WP_027182881.1	1a	4e
+Desulfovibrio inopinatus	WP_027182711.1	WP_027183464.1	1b	3c
+Desulfovibrio inopinatus	WP_027182711.1	WP_027182881.1	1b	4e
+Desulfovibrio inopinatus	WP_027183464.1	WP_027182881.1	3c	4e
+Desulfovibrio acrylicus	WP_027360998.1	WP_027361001.1	1a	1b
+Clostridium lundense	WP_027623849.1	WP_027624751.1	1a	4g
+Desulfovibrio zosterae	WP_027722757.1	WP_027722919.1	1a	1b
+Desulfovibrio zosterae	WP_027722757.1	WP_027723401.1	1a	4e
+Desulfovibrio zosterae	WP_027722919.1	WP_027723401.1	1b	4e
+Desulfonatronovibrio hydrogenovorans	WP_028573845.1	WP_028574549.1	1a	1b
+Desulfonatronovibrio hydrogenovorans	WP_028573845.1	WP_028574115.1	1a	3c
+Desulfonatronovibrio hydrogenovorans	WP_028573845.1	WP_028574551.1	1a	3c
+Desulfonatronovibrio hydrogenovorans	WP_028573845.1	WP_028573897.1	1a	4e
+Desulfonatronovibrio hydrogenovorans	WP_028574549.1	WP_028574115.1	1b	3c
+Desulfonatronovibrio hydrogenovorans	WP_028574549.1	WP_028574551.1	1b	3c
+Desulfonatronovibrio hydrogenovorans	WP_028574549.1	WP_028573897.1	1b	4e
+Desulfonatronovibrio hydrogenovorans	WP_028574115.1	WP_028573897.1	3c	4e
+Desulfonatronovibrio hydrogenovorans	WP_028574551.1	WP_028573897.1	3c	4e
+Desulfomicrobium escambiense	WP_028575942.1	WP_028577451.1	1a	1b
+Desulfomicrobium escambiense	WP_028575942.1	WP_028576381.1	1a	4e
+Desulfomicrobium escambiense	WP_028577451.1	WP_028576381.1	1b	4e
+Pelobacter seleniigenes	WP_029915207.1	WP_029912396.1	1a	3b
+Pelobacter seleniigenes	WP_029915207.1	WP_029915222.1	1a	3b
+Desulfonauticus sp. A7A	WP_029968792.1	WP_029966051.1	1a	1b
+Desulfonauticus sp. A7A	WP_029968792.1	WP_029966039.1	1a	3c
+Desulfonauticus sp. A7A	WP_029968792.1	WP_029967123.1	1a	4e
+Desulfonauticus sp. A7A	WP_029966051.1	WP_029966039.1	1b	3c
+Desulfonauticus sp. A7A	WP_029966051.1	WP_029967123.1	1b	4e
+Desulfonauticus sp. A7A	WP_029966039.1	WP_029967123.1	3c	4e
+Campylobacter fetus	WP_002849472.1	WP_023384105.1	1b	4a
+Campylobacter showae	WP_002952687.1	WP_002948674.1	1b	4a
+Photobacterium angustum	WP_005368230.1	WP_005366168.1	1b	4a
+Campylobacter gracilis	WP_005870439.1	WP_005871901.1	1b	4a
+Desulfotignum phosphitoxidans	WP_006964156.1	WP_006965253.1	1b	2c
+Caminibacter mediatlanticus	WP_007473991.1	WP_007473987.1	1b	2d
+Caminibacter mediatlanticus	WP_007473991.1	WP_007473606.1	1b	4a
+Caminibacter mediatlanticus	WP_007473991.1	WP_007473061.1	1b	4c
+Caminibacter mediatlanticus	WP_007473991.1	WP_007474009.1	1b	4e
+Caminibacter mediatlanticus	WP_007474315.1	WP_007473987.1	1b	2d
+Caminibacter mediatlanticus	WP_007474315.1	WP_007473606.1	1b	4a
+Caminibacter mediatlanticus	WP_007474315.1	WP_007473061.1	1b	4c
+Caminibacter mediatlanticus	WP_007474315.1	WP_007474009.1	1b	4e
+Caminibacter mediatlanticus	WP_007473987.1	WP_007473606.1	2d	4a
+Caminibacter mediatlanticus	WP_007473987.1	WP_007473061.1	2d	4c
+Caminibacter mediatlanticus	WP_007473987.1	WP_007474009.1	2d	4e
+Caminibacter mediatlanticus	WP_007473606.1	WP_007473061.1	4a	4c
+Caminibacter mediatlanticus	WP_007473606.1	WP_007474009.1	4a	4e
+Caminibacter mediatlanticus	WP_007473061.1	WP_007474009.1	4c	4e
+Sulfurimonas gotlandica	WP_008339404.1	WP_008339288.1	1b	2d
+Sulfurimonas gotlandica	WP_008339404.1	WP_008340210.1	1b	4e
+Sulfurimonas gotlandica	WP_008339288.1	WP_008340210.1	2d	4e
+Photobacterium leiognathi	WP_008987220.1	WP_008989674.1	1b	4a
+Wolinella succinogenes	WP_011139497.1	WP_011139635.1	1b	4a
+Sulfurimonas denitrificans	WP_011373064.1	WP_011373066.1	1b	2d
+Syntrophobacter fumaroxidans	WP_011699790.1	WP_011698648.1	1b	3c
+Syntrophobacter fumaroxidans	WP_011699790.1	WP_011699072.1	1b	3c
+Syntrophobacter fumaroxidans	WP_011699790.1	WP_011700332.1	1b	3c
+Syntrophobacter fumaroxidans	WP_011699790.1	WP_011700738.1	1b	3c
+Syntrophobacter fumaroxidans	WP_011699790.1	WP_011699561.1	1b	3d
+Syntrophobacter fumaroxidans	WP_011698648.1	WP_011699561.1	3c	3d
+Syntrophobacter fumaroxidans	WP_011699072.1	WP_011699561.1	3c	3d
+Syntrophobacter fumaroxidans	WP_011700332.1	WP_011699561.1	3c	3d
+Syntrophobacter fumaroxidans	WP_011700738.1	WP_011699561.1	3c	3d
+Nautilia profundicola	WP_012663540.1	WP_012663437.1	1b	2d
+Nautilia profundicola	WP_012663540.1	WP_015902767.1	1b	4c
+Nautilia profundicola	WP_012663540.1	WP_012663581.1	1b	4e
+Nautilia profundicola	WP_012663437.1	WP_015902767.1	2d	4c
+Nautilia profundicola	WP_012663437.1	WP_012663581.1	2d	4e
+Nautilia profundicola	WP_015902767.1	WP_012663581.1	4c	4e
+Sulfurihydrogenibium azorense	WP_012674350.1	WP_012673603.1	1b	2d
+Sulfurihydrogenibium azorense	WP_012674350.1	WP_012674555.1	1b	3b
+Sulfurihydrogenibium azorense	WP_012673603.1	WP_012674555.1	2d	3b
+Persephonella marina	WP_012675774.1	WP_012676217.1	1b	2d
+Persephonella marina	WP_012675774.1	WP_012676609.1	1b	3b
+Persephonella marina	WP_012676217.1	WP_012676609.1	2d	3b
+Sulfurospirillum deleyianum	WP_012856887.1	WP_012857629.1	1b	4a
+Sulfurospirillum deleyianum	WP_012856887.1	WP_012856977.1	1b	4c
+Sulfurospirillum deleyianum	WP_012857629.1	WP_012856977.1	4a	4c
+Arcobacter nitrofigilis	WP_013135164.1	WP_013135162.1	1b	2d
+Arcobacter nitrofigilis	WP_013135164.1	WP_013134545.1	1b	4a
+Arcobacter nitrofigilis	WP_013135169.1	WP_013135162.1	1b	2d
+Arcobacter nitrofigilis	WP_013135169.1	WP_013134545.1	1b	4a
+Arcobacter nitrofigilis	WP_013135162.1	WP_013134545.1	2d	4a
+Sulfuricurvum kujiense	WP_013460908.1	WP_013460910.1	1b	2d
+Sulfuricurvum kujiense	WP_013460908.1	WP_013460916.1	1b	4e
+Sulfuricurvum kujiense	WP_013460913.1	WP_013460910.1	1b	2d
+Sulfuricurvum kujiense	WP_013460913.1	WP_013460916.1	1b	4e
+Sulfuricurvum kujiense	WP_013460910.1	WP_013460916.1	2d	4e
+Desulfurispirillum indicum	WP_013505701.1	WP_013506608.1	1b	3d
+Desulfovibrio aespoeensis	WP_013515487.1	WP_013515288.1	1b	4e
+Nitratifractor salsuginis	WP_013553045.1	WP_013553042.1	1b	2d
+Sulfobacillus acidophilus	WP_014353799.1	WP_013987182.1	1b	2a
+Arcobacter butzleri	WP_014468932.1	WP_020848144.1	1b	2d
+Arcobacter butzleri	WP_014468937.1	WP_020848144.1	1b	2d
+Sulfurospirillum barnesii	WP_014769320.1	WP_014770116.1	1b	4a
+Sulfurospirillum barnesii	WP_014769320.1	WP_014769235.1	1b	4c
+Sulfurospirillum barnesii	WP_014770116.1	WP_014769235.1	4a	4c
+Desulfovibrio piezophilus	WP_015414692.1	WP_015416298.1	1b	4c
+Desulfovibrio piezophilus	WP_015414692.1	WP_015414775.1	1b	4e
+Desulfovibrio piezophilus	WP_015415315.1	WP_015416298.1	1b	4c
+Desulfovibrio piezophilus	WP_015415315.1	WP_015414775.1	1b	4e
+Desulfovibrio piezophilus	WP_015416298.1	WP_015414775.1	4c	4e
+Desulfohalobium retbaense	WP_015750727.1	WP_015752683.1	1b	3c
+Desulfovibrio magneticus	WP_015860257.1	WP_012749853.1	1b	4e
+Desulfobacterium autotrophicum	WP_015904103.1	WP_015903075.1	1b	3c
+Desulfovibrio oxyclinae	WP_018125512.1	WP_026167551.1	1b	3c
+Desulfovibrio oxyclinae	WP_018125512.1	WP_018125731.1	1b	4e
+Desulfovibrio oxyclinae	WP_018126002.1	WP_026167551.1	1b	3c
+Desulfovibrio oxyclinae	WP_018126002.1	WP_018125731.1	1b	4e
+Desulfovibrio oxyclinae	WP_026167551.1	WP_018125731.1	3c	4e
+Campylobacter curvus	WP_018136329.1	WP_011991841.1	1b	4a
+Sulfobacillus thermosulfidooxidans	WP_020374232.1	WP_020375837.1	1b	1h
+Desulfovibrio sp. X2	WP_020879797.1	WP_020882283.1	1b	3c
+Desulfovibrio sp. X2	WP_020879797.1	WP_020881764.1	1b	4c
+Desulfovibrio sp. X2	WP_020879797.1	WP_020879492.1	1b	4e
+Desulfovibrio sp. X2	WP_020882283.1	WP_020881764.1	3c	4c
+Desulfovibrio sp. X2	WP_020882283.1	WP_020879492.1	3c	4e
+Desulfovibrio sp. X2	WP_020881764.1	WP_020879492.1	4c	4e
+Desulfovibrio alkalitolerans	WP_020888131.1	WP_020887613.1	1b	4e
+Campylobacter concisus	WP_021091366.1	WP_021091787.1	1b	4a
+Sulfurimonas sp. AST-10	WP_021286544.1	WP_021287226.1	1b	3d
+Desulfovibrio gigas	WP_021760964.1	WP_021758533.1	1b	4e
+Desulfovibrio longus	WP_022660651.1	WP_022661459.1	1b	4e
+Lebetimonas sp. JH292	WP_024789021.1	WP_024789023.1	1b	2d
+Lebetimonas sp. JH292	WP_024789021.1	WP_024789181.1	1b	4e
+Lebetimonas sp. JH292	WP_024789023.1	WP_024789181.1	2d	4e
+Sulfurospirillum arcachonense	WP_024954007.1	WP_024953588.1	1b	4a
+Sulfurospirillum arcachonense	WP_024954007.1	WP_024955559.1	1b	4a
+Sulfurospirillum multivorans	WP_025344560.1	WP_025344558.1	1b	2d
+Sulfurospirillum multivorans	WP_025344560.1	WP_025345477.1	1b	4a
+Sulfurospirillum multivorans	WP_025344560.1	WP_025344446.1	1b	4c
+Sulfurospirillum multivorans	WP_025344558.1	WP_025345477.1	2d	4a
+Sulfurospirillum multivorans	WP_025344558.1	WP_025344446.1	2d	4c
+Sulfurospirillum multivorans	WP_025345477.1	WP_025344446.1	4a	4c
+Desulfovibrio cuneatus	WP_027188779.1	WP_027187949.1	1b	3c
+Desulfovibrio cuneatus	WP_027188779.1	WP_027187553.1	1b	4c
+Desulfovibrio cuneatus	WP_027188779.1	WP_027187946.1	1b	4e
+Desulfovibrio cuneatus	WP_027187949.1	WP_027187553.1	3c	4c
+Desulfovibrio cuneatus	WP_027187949.1	WP_027187946.1	3c	4e
+Desulfovibrio cuneatus	WP_027187553.1	WP_027187946.1	4c	4e
+Desulfovibrio putealis	WP_027191085.1	WP_027191993.1	1b	3c
+Desulfovibrio putealis	WP_027191085.1	WP_027191193.1	1b	4c
+Desulfovibrio putealis	WP_027191085.1	WP_027190463.1	1b	4e
+Desulfovibrio putealis	WP_027191993.1	WP_027191193.1	3c	4c
+Desulfovibrio putealis	WP_027191993.1	WP_027190463.1	3c	4e
+Desulfovibrio putealis	WP_027191193.1	WP_027190463.1	4c	4e
+Chrysiogenes arsenatis	WP_027390843.1	WP_027388897.1	1b	3d
+Ferrimonas futtsuensis	WP_028110915.1	WP_028108808.1	1b	4c
+Ferrimonas kyonanensis	WP_028112170.1	WP_028112273.1	1b	4c
+Desulfobacterium anilini	WP_028320012.1	WP_028322239.1	1b	3b
+Desulfonatronum lacustre	WP_028572157.1	WP_028572004.1	1b	4e
+Desulfocurvus vexinensis	WP_028586938.1	WP_028587759.1	1b	4e
+Sulfurihydrogenibium subterraneum	WP_028949938.1	WP_028949944.1	1b	2d
+Sulfurihydrogenibium subterraneum	WP_028949938.1	WP_028949840.1	1b	3b
+Sulfurihydrogenibium subterraneum	WP_028949944.1	WP_028949840.1	2d	3b
+Persephonella sp. IF05-L8	WP_029520216.1	WP_029520218.1	1b	2d
+Persephonella sp. KM09-Lau-8	WP_029523035.1	WP_029523037.1	1b	2d
+Salmonella bongori	WP_000083035.1	WP_000070977.1	1c	1d
+Salmonella bongori	WP_000083035.1	WP_020845056.1	1c	4a
+Salmonella bongori	WP_000070977.1	WP_020845056.1	1d	4a
+Shigella boydii	WP_000083052.1	WP_000107372.1	1c	1d
+Shigella boydii	WP_000083052.1	WP_001102284.1	1c	4a
+Shigella boydii	WP_000083052.1	WP_001288110.1	1c	4a
+Shigella boydii	WP_000107372.1	WP_001102284.1	1d	4a
+Shigella boydii	WP_000107372.1	WP_001288110.1	1d	4a
+Shigella sonnei	WP_000083066.1	WP_000107390.1	1c	1d
+Shigella sonnei	WP_000083066.1	WP_001288143.1	1c	4a
+Shigella sonnei	WP_000107390.1	WP_001288143.1	1d	4a
+Escherichia fergusonii	WP_000083070.1	WP_000107363.1	1c	1d
+Escherichia fergusonii	WP_000083070.1	WP_001102339.1	1c	4a
+Escherichia fergusonii	WP_000107363.1	WP_001102339.1	1d	4a
+Shigella flexneri	WP_000083081.1	WP_000107401.1	1c	1d
+Shigella flexneri	WP_000083081.1	WP_001102290.1	1c	4a
+Shigella flexneri	WP_000083081.1	WP_001288148.1	1c	4a
+Shigella flexneri	WP_000107401.1	WP_001102290.1	1d	4a
+Shigella flexneri	WP_000107401.1	WP_001288148.1	1d	4a
+Escherichia hermannii	WP_002435491.1	WP_002436255.1	1c	4a
+Shimwellia blattae	WP_002443827.1	WP_002440707.1	1c	4a
+Shimwellia blattae	WP_002443827.1	WP_002445316.1	1c	4a
+Hafnia alvei	WP_004092218.1	WP_025797024.1	1c	4a
+Hafnia alvei	WP_004092218.1	WP_025801577.1	1c	4a
+Morganella morganii	WP_004236380.1	WP_025151932.1	1c	4a
+Proteus mirabilis	WP_004248989.1	WP_004245689.1	1c	4a
+Thauera phenylacetica	WP_004378930.1	WP_004363405.1	1c	3d
+Yersinia kristensenii	WP_004389983.1	WP_004388743.1	1c	4a
+Yersinia aldovae	WP_004703021.1	WP_004699424.1	1c	4a
+Yersinia frederiksenii	WP_004711883.1	WP_004709176.1	1c	4a
+Yersinia rohdei	WP_004716848.1	WP_004713500.1	1c	4a
+Yersinia mollaretii	WP_004877367.1	WP_004877798.1	1c	4a
+Shigella dysenteriae	WP_005020299.1	WP_005028143.1	1c	1d
+Shigella dysenteriae	WP_005020299.1	WP_001102300.1	1c	4a
+Shigella dysenteriae	WP_005028143.1	WP_001102300.1	1d	4a
+Yersinia intermedia	WP_005188096.1	WP_005187619.1	1c	4a
+Yersinia bercovieri	WP_005275315.1	WP_005273806.1	1c	4a
+Edwardsiella tarda	WP_005288177.1	WP_005282283.1	1c	1d
+Edwardsiella tarda	WP_005288177.1	WP_005281999.1	1c	4a
+Edwardsiella tarda	WP_005282283.1	WP_005281999.1	1d	4a
+Aeromonas salmonicida	WP_005315108.1	WP_005315165.1	1c	4a
+Aggregatibacter actinomycetemcomitans	WP_005576256.1	WP_005542188.1	1c	4a
+Haemophilus haemolyticus	WP_005638557.1	WP_005645455.1	1c	4a
+Pasteurella bettyae	WP_005760858.1	WP_005760524.1	1c	4a
+Proteus penneri	WP_006535185.1	WP_006536160.1	1c	4a
+Providencia alcalifaciens	WP_006659162.1	WP_006658446.1	1c	4a
+Citrobacter youngae	WP_006688075.1	WP_006685852.1	1c	1d
+Citrobacter youngae	WP_006688075.1	WP_006687169.1	1c	4a
+Citrobacter youngae	WP_006685852.1	WP_006687169.1	1d	4a
+Providencia rustigianii	WP_006814152.1	WP_006814426.1	1c	4a
+Yokenella regensburgei	WP_006819763.1	WP_006818557.1	1c	4a
+Haemophilus pittmaniae	WP_007243608.1	WP_007242420.1	1c	4a
+Kosakonia radicincitans	WP_007370146.1	WP_007370513.1	1c	4a
+Kosakonia radicincitans	WP_007370146.1	WP_007370867.1	1c	4a
+Magnetospirillum sp. SO-1	WP_008620025.1	WP_008622301.1	1c	2b
+Magnetospirillum sp. SO-1	WP_008620025.1	WP_008616907.1	1c	3d
+Magnetospirillum sp. SO-1	WP_008622301.1	WP_008616907.1	2b	3d
+Providencia burhodogranariea	WP_008912430.1	WP_008912486.1	1c	4a
+Providencia sneebia	WP_008916675.1	WP_008916657.1	1c	4a
+Thiorhodovibrio sp. 970	WP_009150983.1	WP_009149949.1	1c	1d
+Thiorhodovibrio sp. 970	WP_009150983.1	WP_009147062.1	1c	1e
+Thiorhodovibrio sp. 970	WP_009150983.1	WP_009150973.1	1c	3d
+Thiorhodovibrio sp. 970	WP_009149949.1	WP_009147062.1	1d	1e
+Thiorhodovibrio sp. 970	WP_009149949.1	WP_009150973.1	1d	3d
+Thiorhodovibrio sp. 970	WP_009147062.1	WP_009150973.1	1e	3d
+Sulfuricella denitrificans	WP_009206448.1	WP_009205622.1	1c	3d
+Plesiomonas shigelloides	WP_010863700.1	WP_010863916.1	1c	1d
+Geobacter sulfurreducens	WP_010941450.1	WP_010940798.1	1c	1f
+Geobacter sulfurreducens	WP_010941450.1	WP_014551809.1	1c	3c
+Geobacter sulfurreducens	WP_010941450.1	WP_014551946.1	1c	3d
+Geobacter sulfurreducens	WP_010940798.1	WP_014551809.1	1f	3c
+Geobacter sulfurreducens	WP_010940798.1	WP_014551946.1	1f	3d
+Geobacter sulfurreducens	WP_014551809.1	WP_014551946.1	3c	3d
+Pectobacterium atrosepticum	WP_011092818.1	WP_011092831.1	1c	4a
+Dechloromonas aromatica	WP_011289692.1	WP_011289709.1	1c	1d
+Dechloromonas aromatica	WP_011289692.1	WP_011288617.1	1c	2c
+Dechloromonas aromatica	WP_011289709.1	WP_011288617.1	1d	2c
+Magnetospirillum magneticum	WP_011384056.1	WP_011384345.1	1c	2b
+Magnetospirillum magneticum	WP_011384056.1	WP_011383527.1	1c	2c
+Magnetospirillum magneticum	WP_011384056.1	WP_011385756.1	1c	3d
+Magnetospirillum magneticum	WP_011384345.1	WP_011383527.1	2b	2c
+Magnetospirillum magneticum	WP_011384345.1	WP_011385756.1	2b	3d
+Magnetospirillum magneticum	WP_011383527.1	WP_011385756.1	2c	3d
+Anaeromyxobacter dehalogenans	WP_011419537.1	WP_015935331.1	1c	3c
+Rhodoferax ferrireducens	WP_011466351.1	WP_011466381.1	1c	2b
+Rhodoferax ferrireducens	WP_011466351.1	WP_011466117.1	1c	3d
+Rhodoferax ferrireducens	WP_011466381.1	WP_011466117.1	2b	3d
+Solibacter usitatus	WP_011688559.1	WP_011688202.1	1c	1h
+Solibacter usitatus	WP_011688559.1	WP_011686721.1	1c	3d
+Solibacter usitatus	WP_011688202.1	WP_011686721.1	1h	3d
+Magnetococcus marinus	WP_011714122.1	WP_011714112.1	1c	2b
+Magnetococcus marinus	WP_011714122.1	WP_011712560.1	1c	3b
+Magnetococcus marinus	WP_011714112.1	WP_011712560.1	2b	3b
+Geobacter uraniireducens	WP_011938839.1	WP_011937483.1	1c	1f
+Geobacter uraniireducens	WP_011938839.1	WP_011938049.1	1c	3b
+Geobacter uraniireducens	WP_011938839.1	WP_011937735.1	1c	4e
+Geobacter uraniireducens	WP_011937483.1	WP_011938049.1	1f	3b
+Geobacter uraniireducens	WP_011937483.1	WP_011937735.1	1f	4e
+Geobacter uraniireducens	WP_011938049.1	WP_011937735.1	3b	4e
+Anaeromyxobacter sp. Fw109-5	WP_012098324.1	WP_012099129.1	1c	3c
+Citrobacter koseri	WP_012135127.1	WP_012134832.1	1c	4a
+Geobacter lovleyi	WP_012468242.1	WP_012470110.1	1c	1f
+Geobacter lovleyi	WP_012468242.1	WP_012469611.1	1c	3c
+Geobacter lovleyi	WP_012468242.1	WP_012470833.1	1c	3d
+Geobacter lovleyi	WP_012470110.1	WP_012469611.1	1f	3c
+Geobacter lovleyi	WP_012470110.1	WP_012470833.1	1f	3d
+Geobacter lovleyi	WP_012469611.1	WP_012470833.1	3c	3d
+Anaeromyxobacter sp. K	WP_012524582.1	WP_012528247.1	1c	3c
+Aggregatibacter aphrophilus	WP_012771488.1	WP_005703984.1	1c	4a
+Geobacter sp. M21	WP_012774796.1	WP_015837532.1	1c	3b
+Geobacter sp. M21	WP_012774796.1	WP_015839165.1	1c	3c
+Geobacter sp. M21	WP_015837532.1	WP_015839165.1	3b	3c
+Citrobacter rodentium	WP_012907588.1	WP_012907207.1	1c	4a
+Dickeya dadantii	WP_013318689.1	WP_013317233.1	1c	4a
+Enterobacter lignolyticus	WP_013366452.1	WP_013365010.1	1c	4a
+Thermovibrio ammonificans	WP_013537874.1	WP_013537869.1	1c	3a
+Thermovibrio ammonificans	WP_013537874.1	WP_013537242.1	1c	3b
+Thermovibrio ammonificans	WP_013537874.1	WP_013537236.1	1c	4e
+Thermovibrio ammonificans	WP_013537869.1	WP_013537242.1	3a	3b
+Thermovibrio ammonificans	WP_013537869.1	WP_013537236.1	3a	4e
+Thermovibrio ammonificans	WP_013537242.1	WP_013537236.1	3b	4e
+Desulfurobacterium thermolithotrophum	WP_013638066.1	WP_013638061.1	1c	3a
+Desulfurobacterium thermolithotrophum	WP_013638066.1	WP_013638346.1	1c	3b
+Desulfurobacterium thermolithotrophum	WP_013638066.1	WP_013637988.1	1c	3c
+Desulfurobacterium thermolithotrophum	WP_013638066.1	WP_013638341.1	1c	4e
+Desulfurobacterium thermolithotrophum	WP_013638061.1	WP_013638346.1	3a	3b
+Desulfurobacterium thermolithotrophum	WP_013638061.1	WP_013637988.1	3a	3c
+Desulfurobacterium thermolithotrophum	WP_013638061.1	WP_013638341.1	3a	4e
+Desulfurobacterium thermolithotrophum	WP_013638346.1	WP_013637988.1	3b	3c
+Desulfurobacterium thermolithotrophum	WP_013638346.1	WP_013638341.1	3b	4e
+Desulfurobacterium thermolithotrophum	WP_013637988.1	WP_013638341.1	3c	4e
+Yersinia enterocolitica	WP_013650389.1	WP_005162305.1	1c	4a
+Thermodesulfatator indicus	WP_013906919.1	WP_013908379.1	1c	3c
+Haemophilus parainfluenzae	WP_014064532.1	WP_014065500.1	1c	4a
+Azospira oryzae	WP_014238024.1	WP_014238042.1	1c	3d
+Thiocystis violascens	WP_014780162.1	WP_014779996.1	1c	1d
+Thiocystis violascens	WP_014780162.1	WP_014777800.1	1c	1e
+Thiocystis violascens	WP_014780162.1	WP_014779054.1	1c	1e
+Thiocystis violascens	WP_014780162.1	WP_014777645.1	1c	3d
+Thiocystis violascens	WP_014780162.1	WP_014777057.1	1c	4e
+Thiocystis violascens	WP_014779996.1	WP_014777800.1	1d	1e
+Thiocystis violascens	WP_014779996.1	WP_014779054.1	1d	1e
+Thiocystis violascens	WP_014779996.1	WP_014777645.1	1d	3d
+Thiocystis violascens	WP_014779996.1	WP_014777057.1	1d	4e
+Thiocystis violascens	WP_014777800.1	WP_014777645.1	1e	3d
+Thiocystis violascens	WP_014777800.1	WP_014777057.1	1e	4e
+Thiocystis violascens	WP_014779054.1	WP_014777645.1	1e	3d
+Thiocystis violascens	WP_014779054.1	WP_014777057.1	1e	4e
+Thiocystis violascens	WP_014777645.1	WP_014777057.1	3d	4e
+Desulfocapsa sulfexigens	WP_015403419.1	WP_015403594.1	1c	3b
+Azoarcus sp. KH32C	WP_015437386.1	WP_015437371.1	1c	2b
+Azoarcus sp. KH32C	WP_015437386.1	WP_015436644.1	1c	3d
+Azoarcus sp. KH32C	WP_015437371.1	WP_015436644.1	2b	3d
+Geobacter sp. M18	WP_015721386.1	WP_015718812.1	1c	1f
+Geobacter sp. M18	WP_015721386.1	WP_015720565.1	1c	3b
+Geobacter sp. M18	WP_015721386.1	WP_015720170.1	1c	4e
+Geobacter sp. M18	WP_015718812.1	WP_015720565.1	1f	3b
+Geobacter sp. M18	WP_015718812.1	WP_015720170.1	1f	4e
+Geobacter sp. M18	WP_015720565.1	WP_015720170.1	3b	4e
+Desulfobulbus propionicus	WP_015725977.1	WP_015724478.1	1c	2c
+Desulfobulbus propionicus	WP_015725977.1	WP_015722755.1	1c	3c
+Desulfobulbus propionicus	WP_015725977.1	WP_015724435.1	1c	3c
+Desulfobulbus propionicus	WP_015725977.1	WP_015724758.1	1c	3d
+Desulfobulbus propionicus	WP_015724478.1	WP_015722755.1	2c	3c
+Desulfobulbus propionicus	WP_015724478.1	WP_015724435.1	2c	3c
+Desulfobulbus propionicus	WP_015724478.1	WP_015724758.1	2c	3d
+Desulfobulbus propionicus	WP_015722755.1	WP_015724758.1	3c	3d
+Desulfobulbus propionicus	WP_015724435.1	WP_015724758.1	3c	3d
+Accumulibacter phosphatis	WP_015766767.1	WP_015765571.1	1c	3d
+Edwardsiella ictaluri	WP_015871932.1	WP_015872618.1	1c	1d
+Edwardsiella ictaluri	WP_015871932.1	WP_015872494.1	1c	4a
+Edwardsiella ictaluri	WP_015872618.1	WP_015872494.1	1d	4a
+Dickeya zeae	WP_016941064.1	WP_019844844.1	1c	4a
+Aeromonas hydrophila	WP_017778886.1	WP_017781337.1	1c	4a
+Aeromonas veronii	WP_021230237.1	WP_005333319.1	1c	4a
+Escherichia coli	WP_021568771.1	WP_021522685.1	1c	1d
+Escherichia coli	WP_021568771.1	WP_014639275.1	1c	4a
+Escherichia coli	WP_021568771.1	WP_014641051.1	1c	4a
+Escherichia coli	WP_021522685.1	WP_014639275.1	1d	4a
+Escherichia coli	WP_021522685.1	WP_014641051.1	1d	4a
+Dickeya solani	WP_022634172.1	WP_022632933.1	1c	4a
+Desulfurobacterium sp. TC5-1	WP_022846122.1	WP_022846160.1	1c	3a
+Geovibrio sp. L21-Ace-BES	WP_022851983.1	WP_022851572.1	1c	1f
+Thermodesulfatator atlanticus	WP_022854121.1	WP_022853555.1	1c	3c
+Salmonella enterica	WP_023228387.1	WP_023226188.1	1c	1d
+Salmonella enterica	WP_023228387.1	WP_023228007.1	1c	1d
+Salmonella enterica	WP_023228387.1	WP_023227550.1	1c	4a
+Salmonella enterica	WP_023226188.1	WP_023227550.1	1d	4a
+Salmonella enterica	WP_023228007.1	WP_023227550.1	1d	4a
+Desulfofustis sp. PB-SRB1	WP_023408348.1	WP_023408290.1	1c	3c
+Magnetospirillum gryphiswaldense	WP_024080419.1	WP_024080410.1	1c	2b
+Magnetospirillum gryphiswaldense	WP_024080419.1	WP_024079550.1	1c	3b
+Magnetospirillum gryphiswaldense	WP_024080410.1	WP_024079550.1	2b	3b
+Dickeya dianthicola	WP_024106579.1	WP_024105256.1	1c	4a
+Edwardsiella hoshinae	WP_024522506.1	WP_024524424.1	1c	1d
+Edwardsiella hoshinae	WP_024522506.1	WP_024524460.1	1c	4a
+Edwardsiella hoshinae	WP_024524424.1	WP_024524460.1	1d	4a
+Serratia fonticola	WP_024528473.1	WP_021804850.1	1c	4a
+Lamprocystis purpurea	WP_026199142.1	WP_020502968.1	1c	1d
+Lamprocystis purpurea	WP_026199142.1	WP_020503980.1	1c	1e
+Lamprocystis purpurea	WP_026199142.1	WP_020508075.1	1c	1e
+Lamprocystis purpurea	WP_026199142.1	WP_020503142.1	1c	2b
+Lamprocystis purpurea	WP_026199142.1	WP_020504162.1	1c	3d
+Lamprocystis purpurea	WP_026199142.1	WP_020504783.1	1c	3d
+Lamprocystis purpurea	WP_026199142.1	WP_020505780.1	1c	4b
+Lamprocystis purpurea	WP_020502968.1	WP_020503980.1	1d	1e
+Lamprocystis purpurea	WP_020502968.1	WP_020508075.1	1d	1e
+Lamprocystis purpurea	WP_020502968.1	WP_020503142.1	1d	2b
+Lamprocystis purpurea	WP_020502968.1	WP_020504162.1	1d	3d
+Lamprocystis purpurea	WP_020502968.1	WP_020504783.1	1d	3d
+Lamprocystis purpurea	WP_020502968.1	WP_020505780.1	1d	4b
+Lamprocystis purpurea	WP_020503980.1	WP_020503142.1	1e	2b
+Lamprocystis purpurea	WP_020503980.1	WP_020504162.1	1e	3d
+Lamprocystis purpurea	WP_020503980.1	WP_020504783.1	1e	3d
+Lamprocystis purpurea	WP_020503980.1	WP_020505780.1	1e	4b
+Lamprocystis purpurea	WP_020508075.1	WP_020503142.1	1e	2b
+Lamprocystis purpurea	WP_020508075.1	WP_020504162.1	1e	3d
+Lamprocystis purpurea	WP_020508075.1	WP_020504783.1	1e	3d
+Lamprocystis purpurea	WP_020508075.1	WP_020505780.1	1e	4b
+Lamprocystis purpurea	WP_020503142.1	WP_020504162.1	2b	3d
+Lamprocystis purpurea	WP_020503142.1	WP_020504783.1	2b	3d
+Lamprocystis purpurea	WP_020503142.1	WP_020505780.1	2b	4b
+Lamprocystis purpurea	WP_020504162.1	WP_020505780.1	3d	4b
+Lamprocystis purpurea	WP_020504783.1	WP_020505780.1	3d	4b
+Leminorella grimontii	WP_027275754.1	WP_027275601.1	1c	4a
+Desulfovermiculus halophilus	WP_027371077.1	WP_027371047.1	1c	3c
+Dechloromonas agitata	WP_027457220.1	WP_027457230.1	1c	2b
+Dechloromonas agitata	WP_027457220.1	WP_027457859.1	1c	3d
+Dechloromonas agitata	WP_027457230.1	WP_027457859.1	2b	3d
+Erwinia chrysanthemi	WP_027711563.1	WP_027712521.1	1c	4a
+Desulfobulbus japonicus	WP_028579802.1	WP_028580860.1	1c	3c
+Desulfobulbus japonicus	WP_028579802.1	WP_028580885.1	1c	3c
+Desulfobulbus japonicus	WP_028579802.1	WP_028582678.1	1c	3d
+Desulfobulbus japonicus	WP_028581743.1	WP_028580860.1	1c	3c
+Desulfobulbus japonicus	WP_028581743.1	WP_028580885.1	1c	3c
+Desulfobulbus japonicus	WP_028581743.1	WP_028582678.1	1c	3d
+Desulfobulbus japonicus	WP_028580860.1	WP_028582678.1	3c	3d
+Desulfobulbus japonicus	WP_028580885.1	WP_028582678.1	3c	3d
+Desulfobulbus mediterraneus	WP_028583198.1	WP_028584585.1	1c	2c
+Desulfobulbus mediterraneus	WP_028583198.1	WP_028583859.1	1c	3c
+Desulfobulbus mediterraneus	WP_028583198.1	WP_028584591.1	1c	3c
+Desulfobulbus mediterraneus	WP_028583198.1	WP_028585846.1	1c	3d
+Desulfobulbus mediterraneus	WP_028584585.1	WP_028583859.1	2c	3c
+Desulfobulbus mediterraneus	WP_028584585.1	WP_028584591.1	2c	3c
+Desulfobulbus mediterraneus	WP_028584585.1	WP_028585846.1	2c	3d
+Desulfobulbus mediterraneus	WP_028583859.1	WP_028585846.1	3c	3d
+Desulfobulbus mediterraneus	WP_028584591.1	WP_028585846.1	3c	3d
+Thermodesulfobacterium hveragerdense	WP_028840815.1	WP_028840908.1	1c	3c
+Thermodesulfobacterium hveragerdense	WP_028840815.1	WP_028841464.1	1c	4g
+Thermodesulfobacterium hveragerdense	WP_028840908.1	WP_028841464.1	3c	4g
+Azospirillum halopraeferens	WP_029009764.1	WP_029009006.1	1c	1d
+Azospirillum halopraeferens	WP_029009764.1	WP_029009282.1	1c	2b
+Azospirillum halopraeferens	WP_029009764.1	WP_029008300.1	1c	3b
+Azospirillum halopraeferens	WP_029009764.1	WP_029010114.1	1c	4a
+Azospirillum halopraeferens	WP_029009764.1	WP_029009221.1	1c	4g
+Azospirillum halopraeferens	WP_029009006.1	WP_029009282.1	1d	2b
+Azospirillum halopraeferens	WP_029009006.1	WP_029008300.1	1d	3b
+Azospirillum halopraeferens	WP_029009006.1	WP_029010114.1	1d	4a
+Azospirillum halopraeferens	WP_029009006.1	WP_029009221.1	1d	4g
+Azospirillum halopraeferens	WP_029009282.1	WP_029008300.1	2b	3b
+Azospirillum halopraeferens	WP_029009282.1	WP_029010114.1	2b	4a
+Azospirillum halopraeferens	WP_029009282.1	WP_029009221.1	2b	4g
+Azospirillum halopraeferens	WP_029008300.1	WP_029010114.1	3b	4a
+Azospirillum halopraeferens	WP_029008300.1	WP_029009221.1	3b	4g
+Azospirillum halopraeferens	WP_029010114.1	WP_029009221.1	4a	4g
+Budvicia aquatica	WP_029095540.1	WP_029095340.1	1c	4a
+Sedimenticola selenatireducens	WP_029132834.1	WP_029133715.1	1c	1e
+Sedimenticola selenatireducens	WP_029132834.1	WP_029133296.1	1c	3d
+Sedimenticola selenatireducens	WP_029133715.1	WP_029133296.1	1e	3d
+Thiocapsa roseopersicina	AAA27410.1	AAC38282.1	1d	1e
+Thiocapsa roseopersicina	AAA27410.1	AAX40740.1	1d	2b
+Thiocapsa roseopersicina	AAA27410.1	AAP50523.1	1d	3d
+Thiocapsa roseopersicina	AAA27410.1	ADK12981.1	1d	3d
+Thiocapsa roseopersicina	AAC38282.1	AAX40740.1	1e	2b
+Thiocapsa roseopersicina	AAC38282.1	AAP50523.1	1e	3d
+Thiocapsa roseopersicina	AAC38282.1	ADK12981.1	1e	3d
+Thiocapsa roseopersicina	AAX40740.1	AAP50523.1	2b	3d
+Thiocapsa roseopersicina	AAX40740.1	ADK12981.1	2b	3d
+Alcaligenes hydrogenophilus	AAB25780.1	AAB49361.1	1d	2b
+Kryptonium thompsoni	CUU03002.1	CUU06124.1	1d	3b
+Escherichia albertii	WP_000107397.1	WP_002461475.1	1d	4a
+Beggiatoa alba	WP_002683184.1	WP_002684413.1	1d	1e
+Beggiatoa alba	WP_002683184.1	WP_002691721.1	1d	3b
+Beggiatoa alba	WP_002684413.1	WP_002691721.1	1e	3b
+Thiothrix nivea	WP_002706872.1	WP_002706902.1	1d	1e
+Thiothrix nivea	WP_002706872.1	WP_002706876.1	1d	2b
+Thiothrix nivea	WP_002706872.1	WP_002708355.1	1d	3b
+Thiothrix nivea	WP_002706902.1	WP_002706876.1	1e	2b
+Thiothrix nivea	WP_002706902.1	WP_002708355.1	1e	3b
+Thiothrix nivea	WP_002706876.1	WP_002708355.1	2b	3b
+Rhodobacter sphaeroides	WP_002720659.1	WP_002720656.1	1d	2b
+Anoxybacillus flavithermus	WP_003397243.1	WP_006323220.1	1d	4f
+Methylosinus trichosporium	WP_003612200.1	WP_003612931.1	1d	1h
+Methylosinus trichosporium	WP_003612200.1	WP_003612204.1	1d	2b
+Methylosinus trichosporium	WP_003612200.1	WP_003611589.1	1d	3b
+Methylosinus trichosporium	WP_003612931.1	WP_003612204.1	1h	2b
+Methylosinus trichosporium	WP_003612931.1	WP_003611589.1	1h	3b
+Methylosinus trichosporium	WP_003612204.1	WP_003611589.1	2b	3b
+Acetonema longum	WP_004573252.1	WP_004094701.1	1d	4f
+Sagittula stellata	WP_005863657.1	WP_005863651.1	1d	2b
+Chlorobium ferrooxidans	WP_006366944.1	WP_006366269.1	1d	3b
+Caldithrix abyssi	WP_006930451.1	WP_006926982.1	1d	3b
+Caldithrix abyssi	WP_006930451.1	WP_006930005.1	1d	3c
+Caldithrix abyssi	WP_006926982.1	WP_006930005.1	3b	3c
+Labrenzia aggregata	WP_006939138.1	WP_006931831.1	1d	3d
+Neptuniibacter caesariensis	WP_007019929.1	WP_007019558.1	1d	2c
+Neptuniibacter caesariensis	WP_007019929.1	WP_007021942.1	1d	3b
+Neptuniibacter caesariensis	WP_007019558.1	WP_007021942.1	2c	3b
+Thiorhodococcus drewsii	WP_007039718.1	WP_007039027.1	1d	1e
+Thiorhodococcus drewsii	WP_007039718.1	WP_007039064.1	1d	1e
+Thiorhodococcus drewsii	WP_007039718.1	WP_007041639.1	1d	2b
+Thiorhodococcus drewsii	WP_007039718.1	WP_007041459.1	1d	2c
+Thiorhodococcus drewsii	WP_007039718.1	WP_007042613.1	1d	3d
+Thiorhodococcus drewsii	WP_007039027.1	WP_007041639.1	1e	2b
+Thiorhodococcus drewsii	WP_007039027.1	WP_007041459.1	1e	2c
+Thiorhodococcus drewsii	WP_007039027.1	WP_007042613.1	1e	3d
+Thiorhodococcus drewsii	WP_007039064.1	WP_007041639.1	1e	2b
+Thiorhodococcus drewsii	WP_007039064.1	WP_007041459.1	1e	2c
+Thiorhodococcus drewsii	WP_007039064.1	WP_007042613.1	1e	3d
+Thiorhodococcus drewsii	WP_007041639.1	WP_007041459.1	2b	2c
+Thiorhodococcus drewsii	WP_007041639.1	WP_007042613.1	2b	3d
+Thiorhodococcus drewsii	WP_007041459.1	WP_007042613.1	2c	3d
+Thiocapsa marina	WP_007190983.1	WP_007191025.1	1d	1e
+Thiocapsa marina	WP_007190983.1	WP_007194465.1	1d	2b
+Thiocapsa marina	WP_007190983.1	WP_007191642.1	1d	3d
+Thiocapsa marina	WP_007190983.1	WP_007191859.1	1d	3d
+Thiocapsa marina	WP_007191025.1	WP_007194465.1	1e	2b
+Thiocapsa marina	WP_007191025.1	WP_007191642.1	1e	3d
+Thiocapsa marina	WP_007191025.1	WP_007191859.1	1e	3d
+Thiocapsa marina	WP_007194465.1	WP_007191642.1	2b	3d
+Thiocapsa marina	WP_007194465.1	WP_007191859.1	2b	3d
+Pelagibaca bermudensis	WP_007796504.1	WP_007796497.1	1d	2b
+Rhodobacter sp. SW2	WP_008030831.1	WP_008030254.1	1d	1e
+Rhodobacter sp. SW2	WP_008030831.1	WP_008030826.1	1d	2b
+Rhodobacter sp. SW2	WP_008030254.1	WP_008030826.1	1e	2b
+Methyloversatilis universalis	WP_008063479.1	WP_020162849.1	1d	2b
+Methyloversatilis universalis	WP_008063479.1	WP_020162845.1	1d	3d
+Methyloversatilis universalis	WP_020162849.1	WP_020162845.1	2b	3d
+Novosphingobium nitrogenifigens	WP_008068262.1	WP_008068222.1	1d	2b
+Roseovarius sp. TM1035	WP_008282509.1	WP_008282513.1	1d	2b
+Hydrogenivirga sp. 128-5-R1-1	WP_008286892.1	WP_008287448.1	1d	1e
+Hydrogenivirga sp. 128-5-R1-1	WP_008286892.1	WP_008286852.1	1d	2d
+Hydrogenivirga sp. 128-5-R1-1	WP_008286892.1	WP_008286766.1	1d	3b
+Hydrogenivirga sp. 128-5-R1-1	WP_008287448.1	WP_008286852.1	1e	2d
+Hydrogenivirga sp. 128-5-R1-1	WP_008287448.1	WP_008286766.1	1e	3b
+Hydrogenivirga sp. 128-5-R1-1	WP_008286852.1	WP_008286766.1	2d	3b
+Citreicella sp. SE45	WP_008886699.1	WP_008886444.1	1d	2b
+Citreicella sp. SE45	WP_008886699.1	WP_008887819.1	1d	3b
+Citreicella sp. SE45	WP_008886444.1	WP_008887819.1	2b	3b
+Methylacidiphilum fumariolicum	WP_009059758.1	WP_009061231.1	1d	1h
+Methylacidiphilum fumariolicum	WP_009059758.1	WP_009061764.1	1d	3b
+Methylacidiphilum fumariolicum	WP_009061231.1	WP_009061764.1	1h	3b
+Citreicella sp. 357	WP_009505608.1	WP_009505605.1	1d	2b
+Caenispirillum salinarum	WP_009540200.1	WP_009540223.1	1d	3b
+Pseudomonas extremaustralis	WP_010563027.1	WP_010563032.1	1d	2b
+Aquifex aeolicus	WP_010880393.1	WP_010880593.1	1d	1e
+Aquifex aeolicus	WP_010880393.1	WP_010880487.1	1d	2d
+Aquifex aeolicus	WP_010880593.1	WP_010880487.1	1e	2d
+Ralstonia eutropha	WP_011153927.1	WP_011153987.1	1d	1h
+Ralstonia eutropha	WP_011153927.1	WP_011153946.1	1d	2b
+Ralstonia eutropha	WP_011153927.1	WP_011154013.1	1d	3d
+Ralstonia eutropha	WP_011153987.1	WP_011153946.1	1h	2b
+Ralstonia eutropha	WP_011153987.1	WP_011154013.1	1h	3d
+Ralstonia eutropha	WP_011153946.1	WP_011154013.1	2b	3d
+Rhodopseudomonas palustris	WP_011156496.1	WP_011662668.1	1d	2b
+Rhodopseudomonas palustris	WP_011156496.1	WP_011474970.1	1d	4a
+Rhodopseudomonas palustris	WP_011156496.1	WP_011474902.1	1d	4c
+Rhodopseudomonas palustris	WP_011662668.1	WP_011474970.1	2b	4a
+Rhodopseudomonas palustris	WP_011662668.1	WP_011474902.1	2b	4c
+Rhodopseudomonas palustris	WP_011474970.1	WP_011474902.1	4a	4c
+Rhodospirillum rubrum	WP_011388917.1	WP_011388069.1	1d	4b
+Rhodospirillum rubrum	WP_011388917.1	WP_011389179.1	1d	4c
+Rhodospirillum rubrum	WP_011388069.1	WP_011389179.1	4b	4c
+Cupriavidus metallidurans	WP_011516064.1	WP_011516268.1	1d	3d
+Alkalilimnicola ehrlichii	WP_011629764.1	WP_011629746.1	1d	2b
+Chlorobium phaeobacteroides	WP_011744848.1	WP_011745973.1	1d	3b
+Azoarcus sp. BH72	WP_011767509.1	WP_011767530.1	1d	2b
+Azoarcus sp. BH72	WP_011767509.1	WP_011765148.1	1d	3d
+Azoarcus sp. BH72	WP_011767530.1	WP_011765148.1	2b	3d
+Polaromonas naphthalenivorans	WP_011801364.1	WP_011801344.1	1d	2b
+Methylibium petroleiphilum	WP_011830409.1	WP_011830389.1	1d	2b
+Xanthobacter autotrophicus	WP_012114202.1	WP_011996000.1	1d	2b
+Azorhizobium caulinodans	WP_012169130.1	WP_012169127.1	1d	2b
+Beijerinckia indica	WP_012384150.1	WP_012384146.1	1d	2b
+Beijerinckia indica	WP_012384150.1	WP_012383518.1	1d	3b
+Beijerinckia indica	WP_012384146.1	WP_012383518.1	2b	3b
+Methylacidiphilum infernorum	WP_012463656.1	WP_012464725.1	1d	3b
+Chlorobium limicola	WP_012465814.1	WP_012466994.1	1d	3b
+Chloroherpeton thalassium	WP_012501193.1	WP_012498899.1	1d	3b
+Chlorobaculum parvum	WP_012502532.1	WP_012501574.1	1d	3b
+Prosthecochloris aestuarii	WP_012505437.1	WP_012506474.1	1d	3b
+Pelodictyon phaeoclathratiforme	WP_012508571.1	WP_012509156.1	1d	3b
+Hydrogenobaculum sp. Y04AAS1	WP_012513102.1	WP_012514441.1	1d	2d
+Azotobacter vinelandii	WP_012703499.1	WP_012699124.1	1d	3b
+Hydrogenobacter thermophilus	WP_012963651.1	WP_012962745.1	1d	1e
+Hydrogenobacter thermophilus	WP_012963651.1	WP_012963102.1	1d	2a
+Hydrogenobacter thermophilus	WP_012963651.1	WP_012963643.1	1d	2d
+Hydrogenobacter thermophilus	WP_012963651.1	WP_012963143.1	1d	3b
+Hydrogenobacter thermophilus	WP_012962745.1	WP_012963102.1	1e	2a
+Hydrogenobacter thermophilus	WP_012962745.1	WP_012963643.1	1e	2d
+Hydrogenobacter thermophilus	WP_012962745.1	WP_012963143.1	1e	3b
+Hydrogenobacter thermophilus	WP_012963102.1	WP_012963643.1	2a	2d
+Hydrogenobacter thermophilus	WP_012963102.1	WP_012963143.1	2a	3b
+Hydrogenobacter thermophilus	WP_012963643.1	WP_012963143.1	2d	3b
+Thermocrinis albus	WP_012992146.1	WP_012992451.1	1d	1e
+Thermocrinis albus	WP_012992146.1	WP_012992443.1	1d	2a
+Thermocrinis albus	WP_012992146.1	WP_012992449.1	1d	2d
+Thermocrinis albus	WP_012992451.1	WP_012992443.1	1e	2a
+Thermocrinis albus	WP_012992451.1	WP_012992449.1	1e	2d
+Thermocrinis albus	WP_012992443.1	WP_012992449.1	2a	2d
+Thiomonas intermedia	WP_013124489.1	WP_013124503.1	1d	2b
+Geobacillus sp. Y4.1MC1	WP_013400922.1	WP_013400781.1	1d	4a
+Rhodomicrobium vannielii	WP_013418645.1	WP_013418661.1	1d	2b
+Methylomonas methanica	WP_013818449.1	WP_013818241.1	1d	2c
+Methylomonas methanica	WP_013818449.1	WP_013816969.1	1d	3d
+Methylomonas methanica	WP_013818241.1	WP_013816969.1	2c	3d
+Geobacillus thermoglucosidasius	WP_013876989.1	WP_003250668.1	1d	2a
+Geobacillus thermoglucosidasius	WP_013876989.1	WP_013876883.1	1d	4a
+Geobacillus thermoglucosidasius	WP_003250668.1	WP_013876883.1	2a	4a
+Oligotropha carboxidovorans	WP_013913761.1	WP_013913763.1	1d	2b
+Azospirillum lipoferum	WP_014249365.1	WP_012976476.1	1d	2b
+Azospirillum lipoferum	WP_014249365.1	WP_014249328.1	1d	4a
+Azospirillum lipoferum	WP_012976476.1	WP_014249328.1	2b	4a
+Rubrivivax gelatinosus	WP_014429772.1	WP_014429792.1	1d	2b
+Methylocystis sp. SC2	WP_014891816.1	WP_014892893.1	1d	1h
+Methylocystis sp. SC2	WP_014891816.1	WP_014891818.1	1d	2b
+Methylocystis sp. SC2	WP_014891816.1	WP_014890330.1	1d	3b
+Methylocystis sp. SC2	WP_014892893.1	WP_014891818.1	1h	2b
+Methylocystis sp. SC2	WP_014892893.1	WP_014890330.1	1h	3b
+Methylocystis sp. SC2	WP_014891818.1	WP_014890330.1	2b	3b
+Thioflavicoccus mobilis	WP_015282042.1	WP_015279763.1	1d	1e
+Thioflavicoccus mobilis	WP_015282042.1	WP_015282140.1	1d	1e
+Thioflavicoccus mobilis	WP_015282042.1	WP_015281226.1	1d	3d
+Thioflavicoccus mobilis	WP_015282042.1	WP_015282154.1	1d	4e
+Thioflavicoccus mobilis	WP_015279763.1	WP_015281226.1	1e	3d
+Thioflavicoccus mobilis	WP_015279763.1	WP_015282154.1	1e	4e
+Thioflavicoccus mobilis	WP_015282140.1	WP_015281226.1	1e	3d
+Thioflavicoccus mobilis	WP_015282140.1	WP_015282154.1	1e	4e
+Thioflavicoccus mobilis	WP_015281226.1	WP_015282154.1	3d	4e
+Bacillus sp. 1NLA3E	WP_015594636.1	WP_015594087.1	1d	4c
+Hyphomicrobium denitrificans	WP_015597373.1	WP_015597392.1	1d	2b
+Bradyrhizobium oligotrophicum	WP_015668917.1	WP_015668919.1	1d	2b
+Methylocystis parvus	WP_016919626.1	WP_016920676.1	1d	1h
+Methylocystis parvus	WP_016919626.1	WP_016920195.1	1d	3b
+Methylocystis parvus	WP_016920676.1	WP_016920195.1	1h	3b
+Methylococcus capsulatus	WP_017366017.1	WP_010959484.1	1d	3d
+Pseudomonas veronii	WP_017845591.1	WP_017845586.1	1d	2b
+Methylosinus sp. LW4	WP_018266919.1	WP_018266917.1	1d	2b
+Methylosinus sp. LW4	WP_018266919.1	WP_018265836.1	1d	3b
+Methylosinus sp. LW4	WP_018266917.1	WP_018265836.1	2b	3b
+Ancylobacter sp. FA202	WP_018391449.1	WP_018391446.1	1d	2b
+Anaeromusa acidaminophila	WP_018702099.1	WP_018702624.1	1d	4f
+Variovorax paradoxus	WP_018904264.1	WP_018904285.1	1d	2b
+Zymophilus raffinosivorans	WP_019554568.1	WP_019553945.1	1d	4f
+Methylovulum miyakonense	WP_019865813.1	WP_019867142.1	1d	2c
+Methylovulum miyakonense	WP_019865813.1	WP_019865758.1	1d	3d
+Methylovulum miyakonense	WP_019867142.1	WP_019865758.1	2c	3d
+Salipiger mucosus	WP_020041893.1	WP_020043467.1	1d	2b
+Methylobacter marinus	WP_020157432.1	WP_020158180.1	1d	3d
+Thiothrix disciformis	WP_020394857.1	WP_020394871.1	1d	2b
+Thiothrix disciformis	WP_020394857.1	WP_020393771.1	1d	3d
+Thiothrix disciformis	WP_020394871.1	WP_020393771.1	2b	3d
+Methylomonas sp. MK1	WP_020483431.1	WP_020482704.1	1d	3d
+Alteromonas macleodii	WP_020745479.1	WP_015066016.1	1d	1e
+Alteromonas macleodii	WP_020745479.1	WP_020745474.1	1d	2b
+Alteromonas macleodii	WP_015066016.1	WP_020745474.1	1e	2b
+Rhodopseudomonas sp. B29	WP_022723664.1	WP_022723662.1	1d	2b
+Ideonella sp. B508-1	WP_022981892.1	WP_022980127.1	1d	2c
+Pseudomonas aeruginosa	WP_023105852.1	WP_023105857.1	1d	2b
+Rhodobacter sp. CACIA14H1	WP_023664202.1	WP_023664198.1	1d	2b
+Xanthobacter sp. 126	WP_024276826.1	WP_024281261.1	1d	2b
+Pseudomonas nitroreducens	WP_024762404.1	WP_024762399.1	1d	2b
+Methylosinus sp. LW3	WP_024878508.1	WP_024878510.1	1d	2b
+Methylosinus sp. LW3	WP_024878508.1	WP_024879702.1	1d	3b
+Methylosinus sp. LW3	WP_024878510.1	WP_024879702.1	2b	3b
+Thermocrinis ruber	WP_025306136.1	WP_025306143.1	1d	2d
+Acetobacter okinawensis	WP_025825897.1	WP_025825893.1	1d	2b
+Methyloversatilis sp. NVD	WP_026224841.1	WP_018412518.1	1d	2b
+Methyloversatilis sp. NVD	WP_026224841.1	WP_018412521.1	1d	3d
+Methyloversatilis sp. NVD	WP_018412518.1	WP_018412521.1	2b	3d
+Acidovorax sp. JHL-9	WP_026436975.1	WP_026436955.1	1d	2b
+Methylocystis sp. LW5	WP_026600032.1	WP_026600034.1	1d	2b
+Methylocystis sp. LW5	WP_026600032.1	WP_026598467.1	1d	3b
+Methylocystis sp. LW5	WP_026600034.1	WP_026598467.1	2b	3b
+Methylomonas sp. 11b	WP_026603256.1	WP_026601561.1	1d	3d
+Methylocaldum szegediense	WP_026610556.1	WP_026610481.1	1d	3b
+Azovibrio restrictus	WP_026685892.1	WP_026685912.1	1d	2b
+Azovibrio restrictus	WP_026685892.1	WP_026687097.1	1d	3d
+Azovibrio restrictus	WP_026685912.1	WP_026687097.1	2b	3d
+Pleomorphomonas koreensis	WP_026783388.1	WP_026783288.1	1d	4c
+Pleomorphomonas oryzae	WP_026790280.1	WP_026790609.1	1d	4c
+Methylobacter tundripaludum	WP_027149878.1	WP_027150633.1	1d	2c
+Methylobacter tundripaludum	WP_027149878.1	WP_027148209.1	1d	3d
+Methylobacter tundripaludum	WP_027150633.1	WP_027148209.1	2c	3d
+Methylobacter luteus	WP_027157817.1	WP_027159095.1	1d	3d
+Aneurinibacillus terranovensis	WP_027414715.1	WP_027417151.1	1d	2a
+Marinobacterium litorale	WP_027853880.1	WP_027854268.1	1d	2b
+Marinobacterium litorale	WP_027853880.1	WP_027854910.1	1d	3b
+Marinobacterium litorale	WP_027854268.1	WP_027854910.1	2b	3b
+Marinobacterium jannaschii	WP_027859843.1	WP_027856391.1	1d	2b
+Marinobacterium jannaschii	WP_027859843.1	WP_027856531.1	1d	3d
+Marinobacterium jannaschii	WP_027856391.1	WP_027856531.1	2b	3d
+Anaeroarcus burkinensis	WP_027937761.1	WP_027938372.1	1d	4f
+Bradyrhizobium japonicum	WP_028135606.1	WP_028135604.1	1d	2b
+Burkholderia mimosarum	WP_028215130.1	WP_028214587.1	1d	3b
+Oceanobacter kriegii	WP_028293254.1	WP_028293252.1	1d	2b
+Oceanospirillum beijerinckii	WP_028302021.1	WP_028302096.1	1d	2b
+Oceanospirillum beijerinckii	WP_028302021.1	WP_028300037.1	1d	3b
+Oceanospirillum beijerinckii	WP_028302096.1	WP_028300037.1	2b	3b
+Derxia gummosa	WP_028309978.1	WP_028309992.1	1d	2b
+Paracoccus sp. J55	WP_028714011.1	WP_028714014.1	1d	2b
+Paracoccus yeei	WP_028717753.1	WP_028717756.1	1d	2b
+Rhizobium selenitireducens	WP_028738633.1	WP_028738631.1	1d	2b
+Terasakiella pusilla	WP_028877918.1	WP_028877931.1	1d	2b
+Azonexus hydrophilus	WP_028993715.1	WP_028993698.1	1d	2b
+Azonexus hydrophilus	WP_028993715.1	WP_028994701.1	1d	3d
+Azonexus hydrophilus	WP_028993698.1	WP_028994701.1	2b	3d
+Azohydromonas australica	WP_028999751.1	WP_028999766.1	1d	2b
+Azorhizobium doebereinerae	WP_029004862.1	WP_029004859.1	1d	2b
+Bosea sp. 117	WP_029356678.1	WP_029356684.1	1d	2b
+Xanthobacter sp. 91	WP_029556065.1	WP_029556474.1	1d	2b
+Thiorhodospira sibirica	WP_006786088.1	WP_006786889.1	1e	3b
+Acidithiobacillus ferrooxidans	WP_012537694.1	WP_012536298.1	1e	2a
+Acidithiobacillus ferrooxidans	WP_012537694.1	WP_012536449.1	1e	3b
+Acidithiobacillus ferrooxidans	WP_012537694.1	WP_012606689.1	1e	3b
+Acidithiobacillus ferrooxidans	WP_012536298.1	WP_012536449.1	2a	3b
+Acidithiobacillus ferrooxidans	WP_012536298.1	WP_012606689.1	2a	3b
+Thioalkalivibrio sulfidiphilus	WP_012637835.1	WP_012637708.1	1e	3b
+Allochromatium vinosum	WP_012971230.1	WP_012970030.1	1e	3b
+Allochromatium vinosum	WP_012971230.1	WP_012971066.1	1e	3d
+Allochromatium vinosum	WP_012971230.1	WP_012969568.1	1e	4e
+Allochromatium vinosum	WP_012970030.1	WP_012971066.1	3b	3d
+Allochromatium vinosum	WP_012970030.1	WP_012969568.1	3b	4e
+Allochromatium vinosum	WP_012971066.1	WP_012969568.1	3d	4e
+Sideroxydans lithotrophicus	WP_013029748.1	WP_013029742.1	1e	3d
+Thioalkalivibrio nitratireducens	WP_015258842.1	WP_015258948.1	1e	3b
+Thiobacillus denitrificans	WP_018077111.1	WP_011311775.1	1e	3b
+Thiobacillus thioparus	WP_018508052.1	WP_018508430.1	1e	3b
+Uliginosibacterium gangwonense	WP_018610610.1	WP_018608874.1	1e	3b
+Uliginosibacterium gangwonense	WP_018610610.1	WP_018609272.1	1e	4a
+Uliginosibacterium gangwonense	WP_018610610.1	WP_018606884.1	1e	4c
+Uliginosibacterium gangwonense	WP_018608874.1	WP_018609272.1	3b	4a
+Uliginosibacterium gangwonense	WP_018608874.1	WP_018606884.1	3b	4c
+Uliginosibacterium gangwonense	WP_018609272.1	WP_018606884.1	4a	4c
+Thiothrix lacustris	WP_028490337.1	WP_028490240.1	1e	3b
+Geobacter metallireducens	WP_004512555.1	WP_004512544.1	1f	3c
+Geobacter metallireducens	WP_004512555.1	WP_004513769.1	1f	3d
+Geobacter metallireducens	WP_004512544.1	WP_004513769.1	3c	3d
+Frankia sp. EUN1f	WP_006544185.1	WP_006543203.1	1f	1h
+Oscillochloris trichoides	WP_006562194.1	WP_006562473.1	1f	3d
+Roseiflexus sp. RS-1	WP_011957045.1	WP_011958239.1	1f	3d
+Roseiflexus castenholzii	WP_012121625.1	WP_012122267.1	1f	2a
+Roseiflexus castenholzii	WP_012121625.1	WP_012119893.1	1f	3d
+Roseiflexus castenholzii	WP_012122267.1	WP_012119893.1	2a	3d
+Geobacter bemidjiensis	WP_012529798.1	WP_012530401.1	1f	3b
+Geobacter bemidjiensis	WP_012529798.1	WP_012532312.1	1f	3c
+Geobacter bemidjiensis	WP_012529798.1	WP_012528510.1	1f	4c
+Geobacter bemidjiensis	WP_012530401.1	WP_012532312.1	3b	3c
+Geobacter bemidjiensis	WP_012530401.1	WP_012528510.1	3b	4c
+Geobacter bemidjiensis	WP_012532312.1	WP_012528510.1	3c	4c
+Thermodesulfovibrio yellowstonii	WP_012546172.1	WP_012544964.1	1f	3b
+Thermodesulfovibrio yellowstonii	WP_012546172.1	WP_012545782.1	1f	3c
+Thermodesulfovibrio yellowstonii	WP_012546172.1	WP_012545774.1	1f	4b
+Thermodesulfovibrio yellowstonii	WP_012544964.1	WP_012545782.1	3b	3c
+Thermodesulfovibrio yellowstonii	WP_012544964.1	WP_012545774.1	3b	4b
+Thermodesulfovibrio yellowstonii	WP_012545782.1	WP_012545774.1	3c	4b
+Calditerrivibrio nitroreducens	WP_013450229.1	WP_013451671.1	1f	3d
+Frankia sp. BCU110501	WP_018502767.1	WP_018502886.1	1f	1h
+Frankia sp. BMG5.12	WP_018637732.1	WP_026311168.1	1f	3b
+Frankia sp. EAN1pec	WP_020460947.1	WP_020460087.1	1f	1h
+Geobacter bremensis	WP_026840074.1	WP_026841827.1	1f	3b
+Geobacter bremensis	WP_026840074.1	WP_026842872.1	1f	4c
+Geobacter bremensis	WP_026841827.1	WP_026842872.1	3b	4c
+Desulfuromonas sp. TF	WP_027713781.1	WP_027716793.1	1f	3b
+Desulfuromonas sp. TF	WP_027713781.1	WP_027716617.1	1f	4e
+Desulfuromonas sp. TF	WP_027716793.1	WP_027716617.1	3b	4e
+Thermodesulfovibrio islandicus	WP_028842875.1	WP_028842337.1	1f	3b
+Thermodesulfovibrio islandicus	WP_028842875.1	WP_028842781.1	1f	4b
+Thermodesulfovibrio islandicus	WP_028842337.1	WP_028842781.1	3b	4b
+Thermodesulfovibrio thiophilus	WP_028845527.1	WP_028844226.1	1f	3b
+Thermodesulfovibrio thiophilus	WP_028845527.1	WP_028845048.1	1f	4b
+Thermodesulfovibrio thiophilus	WP_028844226.1	WP_028845048.1	3b	4b
+Thermofilum pendens	WP_011752262.1	WP_011751858.1	1g	4a
+Thermofilum pendens	WP_011752262.1	WP_011752735.1	1g	4g
+Thermofilum pendens	WP_011751858.1	WP_011752735.1	4a	4g
+Thermofilum sp. 1910b	WP_020962524.1	WP_020962956.1	1g	4g
+Acidianus copahuensis	WP_048100713.1	WP_048100378.1	1g	1h
+Acidianus copahuensis	WP_048100713.1	WP_048100359.1	1g	2e
+Acidianus copahuensis	WP_048100721.1	WP_048100378.1	1g	1h
+Acidianus copahuensis	WP_048100721.1	WP_048100359.1	1g	2e
+Acidianus copahuensis	WP_048100378.1	WP_048100359.1	1h	2e
+Mycobacterium smegmatis	WP_003894103.1	WP_003893634.1	1h	2a
+Mycobacterium smegmatis	WP_003894103.1	WP_003895383.1	1h	3b
+Mycobacterium smegmatis	WP_003893634.1	WP_003895383.1	2a	3b
+Mycobacterium xenopi	WP_003922139.1	WP_003918688.1	1h	3b
+Mycobacterium thermoresistibile	WP_003926809.1	WP_003925668.1	1h	2a
+Mycobacterium thermoresistibile	WP_003926809.1	WP_003924002.1	1h	3b
+Mycobacterium thermoresistibile	WP_003925668.1	WP_003924002.1	2a	3b
+Rhodococcus ruber	WP_003935326.1	WP_003938391.1	1h	3b
+Streptomyces griseoflavus	WP_004921512.1	WP_004936990.1	1h	3b
+Mycobacterium rhodesiae	WP_005141693.1	WP_014208491.1	1h	3d
+Streptomyces bottropensis	WP_005474054.1	WP_005476263.1	1h	2a
+Rhodococcus equi	WP_005517441.1	WP_005514364.1	1h	3b
+Mycobacterium tusciae	WP_006242884.1	WP_006242868.1	1h	2a
+Gordonia rhizosphera	WP_006334825.1	WP_006335051.1	1h	2a
+Gordonia rhizosphera	WP_006334825.1	WP_006331106.1	1h	3b
+Gordonia rhizosphera	WP_006335051.1	WP_006331106.1	2a	3b
+Amycolatopsis decaplanina	WP_007034607.1	WP_007033070.1	1h	3b
+Mycobacterium parascrofulaceum	WP_007171456.1	WP_007168195.1	1h	3b
+Rhodococcus imtechensis	WP_007300863.1	WP_007298856.1	1h	3b
+Frankia sp. CN3	WP_007516725.1	WP_027140596.1	1h	3b
+Frankia sp. QA3	WP_009739394.1	WP_009739903.1	1h	2a
+Schlesneria paludicola	WP_010587703.1	WP_010585297.1	1h	3b
+Rhodococcus jostii	WP_011596968.1	WP_011593368.1	1h	3b
+Frankia alni	WP_011603554.1	WP_011603008.1	1h	2a
+Rhodococcus opacus	WP_012691719.1	WP_005257894.1	1h	3b
+Streptosporangium roseum	WP_012890477.1	WP_012891383.1	1h	3b
+Streptomyces scabiei	WP_013006069.1	WP_012998941.1	1h	3b
+Thermobispora bispora	WP_013132859.1	WP_013133447.1	1h	2a
+Thermobispora bispora	WP_013132859.1	WP_013132103.1	1h	3b
+Thermobispora bispora	WP_013133447.1	WP_013132103.1	2a	3b
+Sulfolobus islandicus	WP_014512387.1	WP_016729728.1	1h	2e
+Streptomyces hygroscopicus	WP_014670577.1	WP_014677317.1	1h	3b
+Mycobacterium chubuense	WP_014815377.1	WP_014814971.1	1h	3b
+Streptomyces davawensis	WP_015655687.1	WP_015662841.1	1h	3b
+Smaragdicoccus niigatensis	WP_018161883.1	WP_018160400.1	1h	3b
+Streptomyces canus	WP_020124082.1	WP_020123404.1	1h	3b
+Nonomuraea coxensis	WP_020540932.1	WP_026214329.1	1h	3b
+Mycobacterium marinum	WP_020728307.1	WP_020730473.1	1h	3b
+Rhodococcus erythropolis	WP_020907450.1	WP_021333622.1	1h	3b
+Mycobacterium kansasii	WP_023372393.1	WP_023365427.1	1h	3b
+Streptomyces roseochromogenes	WP_023553242.1	WP_023544405.1	1h	3b
+Actinomadura rifamycini	WP_026402909.1	WP_026405334.1	1h	3b
+Pseudonocardia asaccharolytica	WP_028930304.1	WP_028931752.1	1h	2a
+Slackia exigua	WP_006361856.1	WP_006362270.1	1i	4a
+Slackia exigua	WP_006361856.1	WP_006361427.1	1i	4e
+Slackia exigua	WP_006362270.1	WP_006361427.1	4a	4e
+Slackia sp. CM382	WP_009077692.1	WP_009077323.1	1i	4a
+Slackia sp. CM382	WP_009077692.1	WP_009078628.1	1i	4e
+Slackia sp. CM382	WP_009077323.1	WP_009078628.1	4a	4e
+Slackia piriformis	WP_009139069.1	WP_009139266.1	1i	3b
+Slackia piriformis	WP_009139069.1	WP_009138996.1	1i	4e
+Slackia piriformis	WP_009139266.1	WP_009138996.1	3b	4e
+Collinsella tanakaei	WP_009141216.1	WP_009142078.1	1i	4e
+Eggerthella lenta	WP_009304598.1	WP_015760489.1	1i	3b
+Eggerthella lenta	WP_009304598.1	WP_015760641.1	1i	4e
+Eggerthella lenta	WP_015760489.1	WP_015760641.1	3b	4e
+Slackia heliotrinireducens	WP_012798421.1	WP_012798463.1	1i	4e
+Cryptobacterium curtum	WP_012803243.1	WP_012802521.1	1i	4a
+Cryptobacterium curtum	WP_012803243.1	WP_012803120.1	1i	4e
+Cryptobacterium curtum	WP_012802521.1	WP_012803120.1	4a	4e
+Eggerthella sp. YY7918	WP_013979648.1	WP_013979629.1	1i	3b
+Eggerthella sp. YY7918	WP_013979648.1	WP_013979777.1	1i	4e
+Eggerthella sp. YY7918	WP_013979629.1	WP_013979777.1	3b	4e
+Enterorhabdus caecimuris	WP_016308995.1	WP_016308610.1	1i	3b
+Enterorhabdus caecimuris	WP_016308995.1	WP_016310471.1	1i	4a
+Enterorhabdus caecimuris	WP_016308995.1	WP_016308760.1	1i	4e
+Enterorhabdus caecimuris	WP_016308610.1	WP_016310471.1	3b	4a
+Enterorhabdus caecimuris	WP_016308610.1	WP_016308760.1	3b	4e
+Enterorhabdus caecimuris	WP_016310471.1	WP_016308760.1	4a	4e
+Eggerthella sp. CAG:1427	WP_021900186.1	WP_021900040.1	1i	4e
+Eggerthella sp. CAG:209	WP_022184401.1	WP_022184688.1	1i	4e
+Eggerthella sp. CAG:298	WP_022363273.1	WP_022363293.1	1i	3b
+Eggerthella sp. CAG:298	WP_022363273.1	WP_022363091.1	1i	4e
+Eggerthella sp. CAG:298	WP_022363293.1	WP_022363091.1	3b	4e
+Cryptobacterium sp. CAG:338	WP_022379409.1	WP_022379545.1	1i	4e
+Adlercreutzia equolifaciens	WP_022740096.1	WP_022739737.1	1i	3b
+Adlercreutzia equolifaciens	WP_022740096.1	WP_022739022.1	1i	4a
+Adlercreutzia equolifaciens	WP_022740096.1	WP_022739883.1	1i	4e
+Adlercreutzia equolifaciens	WP_022739737.1	WP_022739022.1	3b	4a
+Adlercreutzia equolifaciens	WP_022739737.1	WP_022739883.1	3b	4e
+Adlercreutzia equolifaciens	WP_022739022.1	WP_022739883.1	4a	4e
+Enterorhabdus mucosicola	WP_028026422.1	WP_028027114.1	1i	3b
+Enterorhabdus mucosicola	WP_028026422.1	WP_028027490.1	1i	4a
+Enterorhabdus mucosicola	WP_028026422.1	WP_028026344.1	1i	4e
+Enterorhabdus mucosicola	WP_028027114.1	WP_028027490.1	3b	4a
+Enterorhabdus mucosicola	WP_028027114.1	WP_028026344.1	3b	4e
+Enterorhabdus mucosicola	WP_028027490.1	WP_028026344.1	4a	4e
+Archaeoglobus fulgidus	WP_010878877.1	WP_010878869.1	1j	3c
+Ferroglobus placidus	WP_012965344.1	WP_012965352.1	1j	3c
+Archaeoglobus veneficus	WP_013682857.1	WP_013684228.1	1j	3c
+Archaeoglobus sulfaticallidus	WP_015591799.1	WP_015590675.1	1j	3c
+Methanosarcina acetivorans	WP_011021166.1	WP_011021012.1	1k	3a
+Methanosarcina acetivorans	WP_011021171.1	WP_011021012.1	1k	3a
+Methanosarcina mazei	WP_011034101.1	WP_011034943.1	1k	3a
+Methanosarcina mazei	WP_011034101.1	WP_011034248.1	1k	4e
+Methanosarcina mazei	WP_011034107.1	WP_011034943.1	1k	3a
+Methanosarcina mazei	WP_011034107.1	WP_011034248.1	1k	4e
+Methanosarcina mazei	WP_011034237.1	WP_011034943.1	1k	3a
+Methanosarcina mazei	WP_011034237.1	WP_011034248.1	1k	4e
+Methanosarcina mazei	WP_011034943.1	WP_011034248.1	3a	4e
+Methanosarcina barkeri	WP_011306827.1	WP_011305486.1	1k	3a
+Methanosarcina barkeri	WP_011306827.1	WP_011307257.1	1k	3a
+Methanosarcina barkeri	WP_011306827.1	WP_011305188.1	1k	4e
+Methanosarcina barkeri	WP_011306833.1	WP_011305486.1	1k	3a
+Methanosarcina barkeri	WP_011306833.1	WP_011307257.1	1k	3a
+Methanosarcina barkeri	WP_011306833.1	WP_011305188.1	1k	4e
+Methanosarcina barkeri	WP_011305486.1	WP_011305188.1	3a	4e
+Methanosarcina barkeri	WP_011307257.1	WP_011305188.1	3a	4e
+Methanocella arvoryzae	WP_012036281.1	WP_012035102.1	1k	3a
+Methanocella arvoryzae	WP_012036281.1	WP_012035310.1	1k	3a
+Methanocella arvoryzae	WP_012036281.1	WP_012036509.1	1k	3c
+Methanocella arvoryzae	WP_012036281.1	WP_012036601.1	1k	3c
+Methanocella arvoryzae	WP_012036281.1	WP_012035507.1	1k	4e
+Methanocella arvoryzae	WP_012035102.1	WP_012036509.1	3a	3c
+Methanocella arvoryzae	WP_012035102.1	WP_012036601.1	3a	3c
+Methanocella arvoryzae	WP_012035102.1	WP_012035507.1	3a	4e
+Methanocella arvoryzae	WP_012035310.1	WP_012036509.1	3a	3c
+Methanocella arvoryzae	WP_012035310.1	WP_012036601.1	3a	3c
+Methanocella arvoryzae	WP_012035310.1	WP_012035507.1	3a	4e
+Methanocella arvoryzae	WP_012036509.1	WP_012035507.1	3c	4e
+Methanocella arvoryzae	WP_012036601.1	WP_012035507.1	3c	4e
+Methanocella paludicola	WP_012901677.1	WP_012901155.1	1k	3a
+Methanocella paludicola	WP_012901677.1	WP_012901198.1	1k	3a
+Methanocella paludicola	WP_012901677.1	WP_012901238.1	1k	3c
+Methanocella paludicola	WP_012901677.1	WP_012901516.1	1k	3c
+Methanocella paludicola	WP_012901677.1	WP_012899230.1	1k	4e
+Methanocella paludicola	WP_012901677.1	WP_012899275.1	1k	4e
+Methanocella paludicola	WP_012901155.1	WP_012901238.1	3a	3c
+Methanocella paludicola	WP_012901155.1	WP_012901516.1	3a	3c
+Methanocella paludicola	WP_012901155.1	WP_012899230.1	3a	4e
+Methanocella paludicola	WP_012901155.1	WP_012899275.1	3a	4e
+Methanocella paludicola	WP_012901198.1	WP_012901238.1	3a	3c
+Methanocella paludicola	WP_012901198.1	WP_012901516.1	3a	3c
+Methanocella paludicola	WP_012901198.1	WP_012899230.1	3a	4e
+Methanocella paludicola	WP_012901198.1	WP_012899275.1	3a	4e
+Methanocella paludicola	WP_012901238.1	WP_012899230.1	3c	4e
+Methanocella paludicola	WP_012901238.1	WP_012899275.1	3c	4e
+Methanocella paludicola	WP_012901516.1	WP_012899230.1	3c	4e
+Methanocella paludicola	WP_012901516.1	WP_012899275.1	3c	4e
+Methanocella conradii	WP_014405075.1	WP_014405594.1	1k	3a
+Methanocella conradii	WP_014405075.1	WP_014404721.1	1k	3c
+Methanocella conradii	WP_014405075.1	WP_014407035.1	1k	3c
+Methanocella conradii	WP_014405075.1	WP_014405402.1	1k	4e
+Methanocella conradii	WP_014405594.1	WP_014404721.1	3a	3c
+Methanocella conradii	WP_014405594.1	WP_014407035.1	3a	3c
+Methanocella conradii	WP_014405594.1	WP_014405402.1	3a	4e
+Methanocella conradii	WP_014404721.1	WP_014405402.1	3c	4e
+Methanocella conradii	WP_014407035.1	WP_014405402.1	3c	4e
+Nodularia spumigena	WP_006194531.1	WP_006195766.1	2a	3d
+Cylindrospermopsis raciborskii	WP_006278427.1	WP_006276675.1	2a	3d
+Cyanothece sp. CCY0110	WP_008275259.1	WP_008273694.1	2a	3d
+Lyngbya sp. PCC 8106	WP_009782476.1	WP_009785505.1	2a	3d
+Nostoc sp. PCC 7120	WP_010994852.1	WP_010994940.1	2a	3d
+Anabaena variabilis	WP_011321261.1	WP_011321324.1	2a	3d
+Mycobacterium vanbaalenii	WP_011779592.1	WP_011781268.1	2a	3d
+Methylocella silvestris	WP_012592713.1	WP_012591738.1	2a	3d
+Cyanothece sp. PCC 7424	WP_012599193.1	WP_015956115.1	2a	3d
+Chloroflexus aggregans	WP_012615778.1	WP_015941206.1	2a	3d
+Cyanothece sp. PCC 7822	WP_013321766.1	WP_013323481.1	2a	3d
+Anabaena sp. 90	WP_015079360.1	WP_015079811.1	2a	3d
+Nostoc sp. PCC 7107	WP_015115410.1	WP_015113185.1	2a	3d
+Nostoc sp. PCC 7524	WP_015137522.1	WP_015138057.1	2a	3d
+Fischerella muscicola	WP_016860569.1	WP_016860165.1	2a	3d
+Chlorogloeopsis fritschii	WP_016875640.1	WP_016874926.1	2a	3d
+Oscillatoria sp. PCC 10802	WP_017716714.1	WP_017715405.1	2a	3d
+Methyloferula stellata	WP_020176873.1	WP_020174963.1	2a	3d
+Lyngbya aestuarii	WP_023069054.1	WP_023067990.1	2a	3d
+Mycobacterium iranicum	WP_024444663.1	WP_024444559.1	2a	3b
+Fischerella sp. PCC 9605	WP_026731079.1	WP_026735631.1	2a	3d
+Mastigocoleus testarum	WP_027846705.1	WP_027844918.1	2a	3b
+Chloroflexus sp. Y-396-1	WP_028460308.1	WP_028457902.1	2a	3d
+Thermicanus aegyptius	WP_028986316.1	WP_028986298.1	2a	4f
+Rhodovulum sp. PH10	WP_008386856.1	WP_008384205.1	2b	3d
+Rhodovulum sp. PH10	WP_008386856.1	WP_008384313.1	2b	4a
+Rhodovulum sp. PH10	WP_008386856.1	WP_008388614.1	2b	4c
+Rhodovulum sp. PH10	WP_008384205.1	WP_008384313.1	3d	4a
+Rhodovulum sp. PH10	WP_008384205.1	WP_008388614.1	3d	4c
+Rhodovulum sp. PH10	WP_008384313.1	WP_008388614.1	4a	4c
+Methylomicrobium album	WP_005373434.1	WP_005370476.1	2c	3d
+Grimontia hollisae	WP_005505415.1	WP_005505390.1	2c	3d
+Desulfonatronospira thiodismutans	WP_008870999.1	WP_008869690.1	2c	3c
+Desulfonatronospira thiodismutans	WP_008870999.1	WP_008870928.1	2c	3c
+Leptothrix cholodnii	WP_012346378.1	WP_012346489.1	2c	3d
+Methylomicrobium alcaliphilum	WP_014150136.1	WP_014147789.1	2c	3d
+Methylomicrobium buryatense	WP_017841795.1	WP_017839865.1	2c	3d
+Sulfuricurvum sp. RIFRC-1	WP_015654358.1	WP_015654365.1	2d	4e
+Methanobacterium formicicum	WP_004029354.1	WP_004031311.1	3a	3c
+Methanobacterium formicicum	WP_004029354.1	WP_004032005.1	3a	3c
+Methanobacterium formicicum	WP_004029354.1	WP_004031618.1	3a	4h
+Methanobacterium formicicum	WP_004029354.1	WP_004029221.1	3a	4i
+Methanobacterium formicicum	WP_004031311.1	WP_004031618.1	3c	4h
+Methanobacterium formicicum	WP_004031311.1	WP_004029221.1	3c	4i
+Methanobacterium formicicum	WP_004032005.1	WP_004031618.1	3c	4h
+Methanobacterium formicicum	WP_004032005.1	WP_004029221.1	3c	4i
+Methanobacterium formicicum	WP_004031618.1	WP_004029221.1	4h	4i
+Methanofollis liminatans	WP_004037261.1	WP_004039570.1	3a	3c
+Methanofollis liminatans	WP_004037261.1	WP_004038443.1	3a	4d
+Methanofollis liminatans	WP_004037261.1	WP_004039320.1	3a	4e
+Methanofollis liminatans	WP_004037261.1	WP_004038499.1	3a	4h
+Methanofollis liminatans	WP_004039570.1	WP_004038443.1	3c	4d
+Methanofollis liminatans	WP_004039570.1	WP_004039320.1	3c	4e
+Methanofollis liminatans	WP_004039570.1	WP_004038499.1	3c	4h
+Methanofollis liminatans	WP_004038443.1	WP_004039320.1	4d	4e
+Methanofollis liminatans	WP_004038443.1	WP_004038499.1	4d	4h
+Methanofollis liminatans	WP_004039320.1	WP_004038499.1	4e	4h
+Methanoplanus limicola	WP_004076756.1	WP_004077410.1	3a	4d
+Methanoplanus limicola	WP_004076756.1	WP_004077817.1	3a	4e
+Methanoplanus limicola	WP_004076756.1	WP_004076146.1	3a	4h
+Methanoplanus limicola	WP_004077410.1	WP_004077817.1	4d	4e
+Methanoplanus limicola	WP_004077410.1	WP_004076146.1	4d	4h
+Methanoplanus limicola	WP_004077817.1	WP_004076146.1	4e	4h
+Methanocaldococcus villosus	WP_004591340.1	WP_004589824.1	3a	3c
+Methanocaldococcus villosus	WP_004591340.1	WP_004592818.1	3a	4h
+Methanocaldococcus villosus	WP_004591340.1	WP_004590220.1	3a	4i
+Methanocaldococcus villosus	WP_004589824.1	WP_004592818.1	3c	4h
+Methanocaldococcus villosus	WP_004589824.1	WP_004590220.1	3c	4i
+Methanocaldococcus villosus	WP_004592818.1	WP_004590220.1	4h	4i
+Methanotorris formicicus	WP_007043840.1	WP_007043614.1	3a	3c
+Methanotorris formicicus	WP_007043840.1	WP_007044701.1	3a	3c
+Methanotorris formicicus	WP_007043840.1	WP_007045054.1	3a	4h
+Methanotorris formicicus	WP_007043840.1	WP_007044316.1	3a	4i
+Methanotorris formicicus	WP_007044698.1	WP_007043614.1	3a	3c
+Methanotorris formicicus	WP_007044698.1	WP_007044701.1	3a	3c
+Methanotorris formicicus	WP_007044698.1	WP_007045054.1	3a	4h
+Methanotorris formicicus	WP_007044698.1	WP_007044316.1	3a	4i
+Methanotorris formicicus	WP_007043614.1	WP_007045054.1	3c	4h
+Methanotorris formicicus	WP_007043614.1	WP_007044316.1	3c	4i
+Methanotorris formicicus	WP_007044701.1	WP_007045054.1	3c	4h
+Methanotorris formicicus	WP_007044701.1	WP_007044316.1	3c	4i
+Methanotorris formicicus	WP_007045054.1	WP_007044316.1	4h	4i
+Methanothermobacter thermautotrophicus	WP_010876915.1	WP_010876037.1	3a	4h
+Methanothermobacter thermautotrophicus	WP_010876915.1	WP_010876862.1	3a	4i
+Methanothermobacter thermautotrophicus	WP_010876037.1	WP_010876862.1	4h	4i
+Methanopyrus kandleri	WP_011019299.1	WP_011018550.1	3a	3c
+Methanopyrus kandleri	WP_011019299.1	WP_011018638.1	3a	3c
+Methanopyrus kandleri	WP_011019299.1	WP_011018833.1	3a	4h
+Methanopyrus kandleri	WP_011018550.1	WP_011018833.1	3c	4h
+Methanopyrus kandleri	WP_011018638.1	WP_011018833.1	3c	4h
+Methanococcus maripaludis	WP_011170764.1	WP_011170767.1	3a	3c
+Methanococcus maripaludis	WP_011170764.1	WP_011171638.1	3a	3c
+Methanococcus maripaludis	WP_011170764.1	WP_012193964.1	3a	4h
+Methanococcus maripaludis	WP_011170764.1	WP_012194251.1	3a	4i
+Methanococcus maripaludis	WP_011171326.1	WP_011170767.1	3a	3c
+Methanococcus maripaludis	WP_011171326.1	WP_011171638.1	3a	3c
+Methanococcus maripaludis	WP_011171326.1	WP_012193964.1	3a	4h
+Methanococcus maripaludis	WP_011171326.1	WP_012194251.1	3a	4i
+Methanococcus maripaludis	WP_011170767.1	WP_012193964.1	3c	4h
+Methanococcus maripaludis	WP_011170767.1	WP_012194251.1	3c	4i
+Methanococcus maripaludis	WP_011171638.1	WP_012193964.1	3c	4h
+Methanococcus maripaludis	WP_011171638.1	WP_012194251.1	3c	4i
+Methanococcus maripaludis	WP_012193964.1	WP_012194251.1	4h	4i
+Methanosphaera stadtmanae	WP_011406878.1	WP_011405926.1	3a	3c
+Methanosphaera stadtmanae	WP_011406878.1	WP_011407013.1	3a	4i
+Methanosphaera stadtmanae	WP_011405926.1	WP_011407013.1	3c	4i
+Methanospirillum hungatei	WP_011449294.1	WP_011449544.1	3a	4d
+Methanospirillum hungatei	WP_011449294.1	WP_011448732.1	3a	4e
+Methanospirillum hungatei	WP_011449294.1	WP_011449071.1	3a	4h
+Methanospirillum hungatei	WP_011449544.1	WP_011448732.1	4d	4e
+Methanospirillum hungatei	WP_011449544.1	WP_011449071.1	4d	4h
+Methanospirillum hungatei	WP_011448732.1	WP_011449071.1	4e	4h
+Methanocorpusculum labreanum	WP_011832394.1	WP_011833332.1	3a	4d
+Methanocorpusculum labreanum	WP_011832394.1	WP_011832947.1	3a	4h
+Methanocorpusculum labreanum	WP_011833332.1	WP_011832947.1	4d	4h
+Methanoculleus marisnigri	WP_011845006.1	WP_011843851.1	3a	3c
+Methanoculleus marisnigri	WP_011845006.1	WP_011843203.1	3a	4e
+Methanoculleus marisnigri	WP_011845006.1	WP_011844026.1	3a	4h
+Methanoculleus marisnigri	WP_011843851.1	WP_011843203.1	3c	4e
+Methanoculleus marisnigri	WP_011843851.1	WP_011844026.1	3c	4h
+Methanoculleus marisnigri	WP_011843203.1	WP_011844026.1	4e	4h
+Methanococcus vannielii	WP_011971891.1	WP_011971888.1	3a	3c
+Methanococcus vannielii	WP_011971891.1	WP_012065828.1	3a	3c
+Methanococcus vannielii	WP_011971891.1	WP_011972581.1	3a	4h
+Methanococcus vannielii	WP_011971891.1	WP_011972283.1	3a	4i
+Methanococcus vannielii	WP_011972500.1	WP_011971888.1	3a	3c
+Methanococcus vannielii	WP_011972500.1	WP_012065828.1	3a	3c
+Methanococcus vannielii	WP_011972500.1	WP_011972581.1	3a	4h
+Methanococcus vannielii	WP_011972500.1	WP_011972283.1	3a	4i
+Methanococcus vannielii	WP_011971888.1	WP_011972581.1	3c	4h
+Methanococcus vannielii	WP_011971888.1	WP_011972283.1	3c	4i
+Methanococcus vannielii	WP_012065828.1	WP_011972581.1	3c	4h
+Methanococcus vannielii	WP_012065828.1	WP_011972283.1	3c	4i
+Methanococcus vannielii	WP_011972581.1	WP_011972283.1	4h	4i
+Methanococcus aeolicus	WP_011973755.1	WP_011972821.1	3a	3c
+Methanococcus aeolicus	WP_011973755.1	WP_011973924.1	3a	3c
+Methanococcus aeolicus	WP_011973755.1	WP_011973090.1	3a	4h
+Methanococcus aeolicus	WP_011973755.1	WP_011973026.1	3a	4i
+Methanococcus aeolicus	WP_011972821.1	WP_011973090.1	3c	4h
+Methanococcus aeolicus	WP_011972821.1	WP_011973026.1	3c	4i
+Methanococcus aeolicus	WP_011973924.1	WP_011973090.1	3c	4h
+Methanococcus aeolicus	WP_011973924.1	WP_011973026.1	3c	4i
+Methanococcus aeolicus	WP_011973090.1	WP_011973026.1	4h	4i
+Methanoregula boonei	WP_012106016.1	WP_011991040.1	3a	4e
+Methanoregula boonei	WP_012107592.1	WP_011991040.1	3a	4e
+Thermococcus onnurineus	WP_012572521.1	WP_012571009.1	3a	3b
+Thermococcus onnurineus	WP_012572521.1	WP_012571493.1	3a	3b
+Thermococcus onnurineus	WP_012572521.1	WP_012571234.1	3a	4b
+Thermococcus onnurineus	WP_012572521.1	WP_012571983.1	3a	4b
+Thermococcus onnurineus	WP_012572521.1	WP_012572531.1	3a	4b
+Thermococcus onnurineus	WP_012572521.1	WP_012572555.1	3a	4d
+Thermococcus onnurineus	WP_012571009.1	WP_012571234.1	3b	4b
+Thermococcus onnurineus	WP_012571009.1	WP_012571983.1	3b	4b
+Thermococcus onnurineus	WP_012571009.1	WP_012572531.1	3b	4b
+Thermococcus onnurineus	WP_012571009.1	WP_012572555.1	3b	4d
+Thermococcus onnurineus	WP_012571493.1	WP_012571234.1	3b	4b
+Thermococcus onnurineus	WP_012571493.1	WP_012571983.1	3b	4b
+Thermococcus onnurineus	WP_012571493.1	WP_012572531.1	3b	4b
+Thermococcus onnurineus	WP_012571493.1	WP_012572555.1	3b	4d
+Thermococcus onnurineus	WP_012571234.1	WP_012572555.1	4b	4d
+Thermococcus onnurineus	WP_012571983.1	WP_012572555.1	4b	4d
+Thermococcus onnurineus	WP_012572531.1	WP_012572555.1	4b	4d
+Methanosphaerula palustris	WP_012616797.1	WP_012619310.1	3a	4e
+Methanobrevibacter ruminantium	WP_012956862.1	WP_012956704.1	3a	3c
+Methanobrevibacter ruminantium	WP_012956862.1	WP_012956197.1	3a	4h
+Methanobrevibacter ruminantium	WP_012956862.1	WP_012956799.1	3a	4i
+Methanobrevibacter ruminantium	WP_012956704.1	WP_012956197.1	3c	4h
+Methanobrevibacter ruminantium	WP_012956704.1	WP_012956799.1	3c	4i
+Methanobrevibacter ruminantium	WP_012956197.1	WP_012956799.1	4h	4i
+Methanocaldococcus sp. FS406-22	WP_012980540.1	WP_012979819.1	3a	3c
+Methanocaldococcus sp. FS406-22	WP_012980540.1	WP_012980416.1	3a	3c
+Methanocaldococcus sp. FS406-22	WP_012980540.1	WP_012981217.1	3a	4i
+Methanocaldococcus sp. FS406-22	WP_012979819.1	WP_012981217.1	3c	4i
+Methanocaldococcus sp. FS406-22	WP_012980416.1	WP_012981217.1	3c	4i
+Methanocaldococcus infernus	WP_013099931.1	WP_013099800.1	3a	3c
+Methanocaldococcus infernus	WP_013099931.1	WP_013100690.1	3a	4h
+Methanocaldococcus infernus	WP_013099931.1	WP_013099747.1	3a	4i
+Methanocaldococcus infernus	WP_013099800.1	WP_013100690.1	3c	4h
+Methanocaldococcus infernus	WP_013099800.1	WP_013099747.1	3c	4i
+Methanocaldococcus infernus	WP_013100690.1	WP_013099747.1	4h	4i
+Methanococcus voltae	WP_013179974.1	WP_013179971.1	3a	3c
+Methanococcus voltae	WP_013179974.1	WP_013180651.1	3a	3c
+Methanococcus voltae	WP_013179974.1	WP_013180984.1	3a	4h
+Methanococcus voltae	WP_013179974.1	WP_013180047.1	3a	4i
+Methanococcus voltae	WP_013180376.1	WP_013179971.1	3a	3c
+Methanococcus voltae	WP_013180376.1	WP_013180651.1	3a	3c
+Methanococcus voltae	WP_013180376.1	WP_013180984.1	3a	4h
+Methanococcus voltae	WP_013180376.1	WP_013180047.1	3a	4i
+Methanococcus voltae	WP_013179971.1	WP_013180984.1	3c	4h
+Methanococcus voltae	WP_013179971.1	WP_013180047.1	3c	4i
+Methanococcus voltae	WP_013180651.1	WP_013180984.1	3c	4h
+Methanococcus voltae	WP_013180651.1	WP_013180047.1	3c	4i
+Methanococcus voltae	WP_013180984.1	WP_013180047.1	4h	4i
+Methanothermobacter marburgensis	WP_013296467.1	WP_013296307.1	3a	3c
+Methanothermobacter marburgensis	WP_013296467.1	WP_013295617.1	3a	4h
+Methanothermobacter marburgensis	WP_013296467.1	WP_013296415.1	3a	4i
+Methanothermobacter marburgensis	WP_013296307.1	WP_013295617.1	3c	4h
+Methanothermobacter marburgensis	WP_013296307.1	WP_013296415.1	3c	4i
+Methanothermobacter marburgensis	WP_013295617.1	WP_013296415.1	4h	4i
+Methanoplanus petrolearius	WP_013328542.1	WP_013330634.1	3a	3c
+Methanoplanus petrolearius	WP_013328542.1	WP_013329507.1	3a	4d
+Methanoplanus petrolearius	WP_013328542.1	WP_013328417.1	3a	4e
+Methanoplanus petrolearius	WP_013328542.1	WP_013329140.1	3a	4h
+Methanoplanus petrolearius	WP_013330634.1	WP_013329507.1	3c	4d
+Methanoplanus petrolearius	WP_013330634.1	WP_013328417.1	3c	4e
+Methanoplanus petrolearius	WP_013330634.1	WP_013329140.1	3c	4h
+Methanoplanus petrolearius	WP_013329507.1	WP_013328417.1	4d	4e
+Methanoplanus petrolearius	WP_013329507.1	WP_013329140.1	4d	4h
+Methanoplanus petrolearius	WP_013328417.1	WP_013329140.1	4e	4h
+Methanothermus fervidus	WP_013414105.1	WP_013413806.1	3a	3c
+Methanothermus fervidus	WP_013414105.1	WP_013413704.1	3a	4g
+Methanothermus fervidus	WP_013413806.1	WP_013413704.1	3c	4g
+Methanobacterium lacus	WP_013643821.1	WP_013643973.1	3a	3c
+Methanobacterium lacus	WP_013643821.1	WP_013644241.1	3a	3c
+Methanobacterium lacus	WP_013643821.1	WP_013644869.1	3a	4h
+Methanobacterium lacus	WP_013643821.1	WP_013643876.1	3a	4i
+Methanobacterium lacus	WP_013643973.1	WP_013644869.1	3c	4h
+Methanobacterium lacus	WP_013643973.1	WP_013643876.1	3c	4i
+Methanobacterium lacus	WP_013644241.1	WP_013644869.1	3c	4h
+Methanobacterium lacus	WP_013644241.1	WP_013643876.1	3c	4i
+Methanobacterium lacus	WP_013644869.1	WP_013643876.1	4h	4i
+Methanotorris igneus	WP_013799337.1	WP_013799074.1	3a	3c
+Methanotorris igneus	WP_013799337.1	WP_013799334.1	3a	3c
+Methanotorris igneus	WP_013799337.1	WP_013799750.1	3a	4h
+Methanotorris igneus	WP_013799337.1	WP_013798188.1	3a	4i
+Methanotorris igneus	WP_013799916.1	WP_013799074.1	3a	3c
+Methanotorris igneus	WP_013799916.1	WP_013799334.1	3a	3c
+Methanotorris igneus	WP_013799916.1	WP_013799750.1	3a	4h
+Methanotorris igneus	WP_013799916.1	WP_013798188.1	3a	4i
+Methanotorris igneus	WP_013799074.1	WP_013799750.1	3c	4h
+Methanotorris igneus	WP_013799074.1	WP_013798188.1	3c	4i
+Methanotorris igneus	WP_013799334.1	WP_013799750.1	3c	4h
+Methanotorris igneus	WP_013799334.1	WP_013798188.1	3c	4i
+Methanotorris igneus	WP_013799750.1	WP_013798188.1	4h	4i
+Methanobacterium paludis	WP_013826770.1	WP_013826227.1	3a	3c
+Methanobacterium paludis	WP_013826770.1	WP_013826546.1	3a	3c
+Methanobacterium paludis	WP_013826770.1	WP_013825480.1	3a	4h
+Methanobacterium paludis	WP_013826770.1	WP_013826680.1	3a	4i
+Methanobacterium paludis	WP_013826227.1	WP_013825480.1	3c	4h
+Methanobacterium paludis	WP_013826227.1	WP_013826680.1	3c	4i
+Methanobacterium paludis	WP_013826546.1	WP_013825480.1	3c	4h
+Methanobacterium paludis	WP_013826546.1	WP_013826680.1	3c	4i
+Methanobacterium paludis	WP_013825480.1	WP_013826680.1	4h	4i
+Methanothermococcus okinawensis	WP_013866359.1	WP_013866362.1	3a	3c
+Methanothermococcus okinawensis	WP_013866359.1	WP_013866983.1	3a	3c
+Methanothermococcus okinawensis	WP_013866359.1	WP_013867209.1	3a	4h
+Methanothermococcus okinawensis	WP_013866359.1	WP_013866214.1	3a	4i
+Methanothermococcus okinawensis	WP_013867054.1	WP_013866362.1	3a	3c
+Methanothermococcus okinawensis	WP_013867054.1	WP_013866983.1	3a	3c
+Methanothermococcus okinawensis	WP_013867054.1	WP_013867209.1	3a	4h
+Methanothermococcus okinawensis	WP_013867054.1	WP_013866214.1	3a	4i
+Methanothermococcus okinawensis	WP_013866362.1	WP_013867209.1	3c	4h
+Methanothermococcus okinawensis	WP_013866362.1	WP_013866214.1	3c	4i
+Methanothermococcus okinawensis	WP_013866983.1	WP_013867209.1	3c	4h
+Methanothermococcus okinawensis	WP_013866983.1	WP_013866214.1	3c	4i
+Methanothermococcus okinawensis	WP_013867209.1	WP_013866214.1	4h	4i
+Pyrococcus yayanosii	WP_013905833.1	WP_013904776.1	3a	3b
+Pyrococcus yayanosii	WP_013905833.1	WP_013905579.1	3a	3b
+Pyrococcus yayanosii	WP_013905833.1	WP_013905846.1	3a	4b
+Pyrococcus yayanosii	WP_013905833.1	WP_013905871.1	3a	4d
+Pyrococcus yayanosii	WP_013904776.1	WP_013905846.1	3b	4b
+Pyrococcus yayanosii	WP_013904776.1	WP_013905871.1	3b	4d
+Pyrococcus yayanosii	WP_013905579.1	WP_013905846.1	3b	4b
+Pyrococcus yayanosii	WP_013905579.1	WP_013905871.1	3b	4d
+Pyrococcus yayanosii	WP_013905846.1	WP_013905871.1	4b	4d
+Thermococcus sp. 4557	WP_014012057.1	WP_014012081.1	3a	3b
+Thermococcus sp. 4557	WP_014012057.1	WP_014012582.1	3a	3b
+Thermococcus sp. 4557	WP_014012057.1	WP_014012072.1	3a	4b
+Thermococcus sp. 4557	WP_014012057.1	WP_014013072.1	3a	4d
+Thermococcus sp. 4557	WP_014012057.1	WP_014013086.1	3a	4d
+Thermococcus sp. 4557	WP_014012081.1	WP_014012072.1	3b	4b
+Thermococcus sp. 4557	WP_014012081.1	WP_014013072.1	3b	4d
+Thermococcus sp. 4557	WP_014012081.1	WP_014013086.1	3b	4d
+Thermococcus sp. 4557	WP_014012582.1	WP_014012072.1	3b	4b
+Thermococcus sp. 4557	WP_014012582.1	WP_014013072.1	3b	4d
+Thermococcus sp. 4557	WP_014012582.1	WP_014013086.1	3b	4d
+Thermococcus sp. 4557	WP_014012072.1	WP_014013072.1	4b	4d
+Thermococcus sp. 4557	WP_014012072.1	WP_014013086.1	4b	4d
+Thermococcus sp. CL1	WP_014788989.1	WP_014788000.1	3a	3b
+Thermococcus sp. CL1	WP_014788989.1	WP_014788486.1	3a	3b
+Methanoculleus bourgensis	WP_014867277.1	WP_014867732.1	3a	3c
+Methanoculleus bourgensis	WP_014867277.1	WP_014867437.1	3a	4e
+Methanoculleus bourgensis	WP_014867277.1	WP_014867151.1	3a	4h
+Methanoculleus bourgensis	WP_014867732.1	WP_014867437.1	3c	4e
+Methanoculleus bourgensis	WP_014867732.1	WP_014867151.1	3c	4h
+Methanoculleus bourgensis	WP_014867437.1	WP_014867151.1	4e	4h
+Methanoregula formicica	WP_015286660.1	WP_015284201.1	3a	4e
+Methanoregula formicica	WP_015286660.1	WP_015284192.1	3a	4g
+Methanoregula formicica	WP_015284201.1	WP_015284192.1	4e	4g
+Methanocaldococcus vulcanius	WP_015733355.1	WP_015732794.1	3a	3c
+Methanocaldococcus vulcanius	WP_015733355.1	WP_015733560.1	3a	3c
+Methanocaldococcus vulcanius	WP_015733355.1	WP_015732568.1	3a	4h
+Methanocaldococcus vulcanius	WP_015733355.1	WP_015732720.1	3a	4i
+Methanocaldococcus vulcanius	WP_015732794.1	WP_015732568.1	3c	4h
+Methanocaldococcus vulcanius	WP_015732794.1	WP_015732720.1	3c	4i
+Methanocaldococcus vulcanius	WP_015733560.1	WP_015732568.1	3c	4h
+Methanocaldococcus vulcanius	WP_015733560.1	WP_015732720.1	3c	4i
+Methanocaldococcus vulcanius	WP_015732568.1	WP_015732720.1	4h	4i
+Methanocaldococcus fervens	WP_015791787.1	WP_015790819.1	3a	3c
+Methanocaldococcus fervens	WP_015791787.1	WP_015790909.1	3a	4h
+Methanocaldococcus fervens	WP_015791787.1	WP_012794989.1	3a	4i
+Methanocaldococcus fervens	WP_015790819.1	WP_015790909.1	3c	4h
+Methanocaldococcus fervens	WP_015790819.1	WP_012794989.1	3c	4i
+Methanocaldococcus fervens	WP_015790909.1	WP_012794989.1	4h	4i
+Thermococcus gammatolerans	WP_015857693.1	WP_015857684.1	3a	4b
+Thermococcus gammatolerans	WP_015857693.1	WP_015857865.1	3a	4b
+Thermococcus gammatolerans	WP_015857693.1	WP_012751197.1	3a	4d
+Thermococcus gammatolerans	WP_015857684.1	WP_012751197.1	4b	4d
+Thermococcus gammatolerans	WP_015857865.1	WP_012751197.1	4b	4d
+Methanobrevibacter sp. AbM4	WP_016359193.1	WP_016359076.1	3a	3c
+Methanobrevibacter sp. AbM4	WP_016359193.1	WP_016358530.1	3a	4h
+Methanobrevibacter sp. AbM4	WP_016359193.1	WP_016359143.1	3a	4i
+Methanobrevibacter sp. AbM4	WP_016359076.1	WP_016358530.1	3c	4h
+Methanobrevibacter sp. AbM4	WP_016359076.1	WP_016359143.1	3c	4i
+Methanobrevibacter sp. AbM4	WP_016358530.1	WP_016359143.1	4h	4i
+Methanothermococcus thermolithotrophicus	WP_018154259.1	WP_018154225.1	3a	3c
+Methanothermococcus thermolithotrophicus	WP_018154259.1	WP_018154262.1	3a	3c
+Methanothermococcus thermolithotrophicus	WP_018154259.1	WP_018154556.1	3a	4h
+Methanothermococcus thermolithotrophicus	WP_018154259.1	WP_018154032.1	3a	4i
+Methanothermococcus thermolithotrophicus	WP_018154655.1	WP_018154225.1	3a	3c
+Methanothermococcus thermolithotrophicus	WP_018154655.1	WP_018154262.1	3a	3c
+Methanothermococcus thermolithotrophicus	WP_018154655.1	WP_018154556.1	3a	4h
+Methanothermococcus thermolithotrophicus	WP_018154655.1	WP_018154032.1	3a	4i
+Methanothermococcus thermolithotrophicus	WP_018154225.1	WP_018154556.1	3c	4h
+Methanothermococcus thermolithotrophicus	WP_018154225.1	WP_018154032.1	3c	4i
+Methanothermococcus thermolithotrophicus	WP_018154262.1	WP_018154556.1	3c	4h
+Methanothermococcus thermolithotrophicus	WP_018154262.1	WP_018154032.1	3c	4i
+Methanothermococcus thermolithotrophicus	WP_018154556.1	WP_018154032.1	4h	4i
+Methanobrevibacter smithii	WP_019262624.1	WP_019262575.1	3a	3c
+Methanobrevibacter smithii	WP_019262624.1	WP_019264891.1	3a	3c
+Methanobrevibacter smithii	WP_019262624.1	WP_019266264.1	3a	4h
+Methanobrevibacter smithii	WP_019262624.1	WP_019262598.1	3a	4i
+Methanobrevibacter smithii	WP_019262575.1	WP_019266264.1	3c	4h
+Methanobrevibacter smithii	WP_019262575.1	WP_019262598.1	3c	4i
+Methanobrevibacter smithii	WP_019264891.1	WP_019266264.1	3c	4h
+Methanobrevibacter smithii	WP_019264891.1	WP_019262598.1	3c	4i
+Methanobrevibacter smithii	WP_019266264.1	WP_019262598.1	4h	4i
+Methanobacterium sp. MB1	WP_023993015.1	WP_023992472.1	3a	3c
+Methanobacterium sp. MB1	WP_023993015.1	WP_023992781.1	3a	3c
+Methanobacterium sp. MB1	WP_023993015.1	WP_023992259.1	3a	4h
+Methanobacterium sp. MB1	WP_023993015.1	WP_023992909.1	3a	4i
+Methanobacterium sp. MB1	WP_023992472.1	WP_023992259.1	3c	4h
+Methanobacterium sp. MB1	WP_023992472.1	WP_023992909.1	3c	4i
+Methanobacterium sp. MB1	WP_023992781.1	WP_023992259.1	3c	4h
+Methanobacterium sp. MB1	WP_023992781.1	WP_023992909.1	3c	4i
+Methanobacterium sp. MB1	WP_023992259.1	WP_023992909.1	4h	4i
+Thermococcus litoralis	WP_004069412.1	WP_004068373.1	3b	4b
+Thermococcus litoralis	WP_004069412.1	WP_004066437.1	3b	4d
+Thermococcus litoralis	WP_004069412.1	WP_004066458.1	3b	4d
+Thermococcus litoralis	WP_020953630.1	WP_004068373.1	3b	4b
+Thermococcus litoralis	WP_020953630.1	WP_004066437.1	3b	4d
+Thermococcus litoralis	WP_020953630.1	WP_004066458.1	3b	4d
+Thermococcus litoralis	WP_004068373.1	WP_004066437.1	4b	4d
+Thermococcus litoralis	WP_004068373.1	WP_004066458.1	4b	4d
+Aciduliprofundum boonei	WP_008085116.1	WP_008083483.1	3b	4d
+Halorhabdus tiamatea	WP_008526674.1	WP_008526412.1	3b	3d
+Halorhabdus tiamatea	WP_008526674.1	WP_008528233.1	3b	4g
+Halorhabdus tiamatea	WP_008526412.1	WP_008528233.1	3d	4g
+Thermococcus zilligii	WP_010479591.1	WP_010479563.1	3b	4d
+Thermococcus zilligii	WP_010479608.1	WP_010479563.1	3b	4d
+Pyrococcus abyssi	WP_010867988.1	WP_010868591.1	3b	4b
+Pyrococcus abyssi	WP_010867988.1	WP_010867842.1	3b	4d
+Pyrococcus abyssi	WP_010868072.1	WP_010868591.1	3b	4b
+Pyrococcus abyssi	WP_010868072.1	WP_010867842.1	3b	4d
+Pyrococcus abyssi	WP_010868591.1	WP_010867842.1	4b	4d
+Pyrococcus horikoshii	WP_010885378.1	WP_010885519.1	3b	4d
+Pyrococcus furiosus	WP_011012029.1	WP_011012581.1	3b	4d
+Pyrococcus furiosus	WP_011012478.1	WP_011012581.1	3b	4d
+Thermococcus kodakarensis	WP_011251019.1	WP_011251041.1	3b	4d
+Korarchaeum cryptofilum	WP_012308976.1	WP_012309762.1	3b	3c
+Cyanothece sp. PCC 7425	WP_012628086.1	WP_012629409.1	3b	3d
+Thermococcus barophilus	WP_013466346.1	WP_013467422.1	3b	4b
+Thermococcus barophilus	WP_013466346.1	WP_013467760.1	3b	4d
+Thermococcus barophilus	WP_013466811.1	WP_013467422.1	3b	4b
+Thermococcus barophilus	WP_013466811.1	WP_013467760.1	3b	4d
+Thermococcus barophilus	WP_013467422.1	WP_013467760.1	4b	4d
+Pyrococcus sp. NA2	WP_013749017.1	WP_013747503.1	3b	4d
+Pyrococcus sp. NA2	WP_013749130.1	WP_013747503.1	3b	4d
+Thermococcus sp. AM4	WP_014122569.1	WP_014122941.1	3b	4b
+Thermococcus sp. AM4	WP_014122569.1	WP_014123101.1	3b	4b
+Thermococcus sp. AM4	WP_014122569.1	WP_014122750.1	3b	4d
+Thermococcus sp. AM4	WP_014122941.1	WP_014122750.1	4b	4d
+Thermococcus sp. AM4	WP_014123101.1	WP_014122750.1	4b	4d
+Caldilinea aerophila	WP_014433201.1	WP_014434113.1	3b	3d
+Fervidicoccus fontis	WP_014558156.1	WP_014558423.1	3b	4a
+Pyrococcus sp. ST04	WP_014734005.1	WP_014734412.1	3b	4d
+Pyrococcus sp. ST04	WP_014734228.1	WP_014734412.1	3b	4d
+Thermogladius cellulolyticus	WP_014737726.1	WP_014737671.1	3b	4b
+Thermogladius cellulolyticus	WP_014737726.1	WP_014737566.1	3b	4g
+Thermogladius cellulolyticus	WP_014737671.1	WP_014737566.1	4b	4g
+Aciduliprofundum sp. MAR08-339	WP_015283468.1	WP_015283654.1	3b	4d
+Halorhabdus utahensis	WP_015790329.1	WP_015789840.1	3b	3d
+Halorhabdus utahensis	WP_015790329.1	WP_015789964.1	3b	4g
+Halorhabdus utahensis	WP_015789840.1	WP_015789964.1	3d	4g
+Thermococcus sibiricus	WP_015848571.1	WP_015849571.1	3b	4d
+Thermococcus sibiricus	WP_015849791.1	WP_015849571.1	3b	4d
+Methanocaldococcus jannaschii	WP_010870705.1	WP_010870018.1	3c	4h
+Methanocaldococcus jannaschii	WP_010870705.1	WP_010870540.1	3c	4i
+Methanocaldococcus jannaschii	WP_010870018.1	WP_010870540.1	4h	4i
+Desulforudis audaxviator	WP_012302733.1	WP_012302199.1	3c	4e
+Opitutus terrae	WP_012376486.1	WP_012376920.1	3c	4e
+Methanomassiliicoccus luminyensis	WP_019177457.1	WP_019176382.1	3c	4e
+Methanomassiliicoccus intestinalis	WP_020448391.1	WP_020449518.1	3c	4e
+Symbiobacter mobilis	WP_022775381.1	WP_022771893.1	3c	3d
+Desulfobulbus elongatus	WP_028317553.1	WP_028317309.1	3c	3d
+Desulfobulbus elongatus	WP_028318776.1	WP_028317309.1	3c	3d
+Dethiosulfovibrio peptidovorans	WP_005661842.1	WP_005662523.1	3d	4d
+Anaerobaculum hydrogeniformans	WP_009200281.1	WP_009200527.1	3d	4d
+Aminobacterium colombiense	WP_013048933.1	WP_013048648.1	3d	4d
+Anaerolinea thermophila	WP_013559391.1	WP_013560598.1	3d	4g
+Anaerolinea thermophila	WP_013559677.1	WP_013560598.1	3d	4g
+Thermovirga lienii	WP_014163745.1	WP_014163350.1	3d	4d
+Anaerobaculum mobile	WP_014807493.1	WP_014807277.1	3d	4d
+Aminobacterium mobile	WP_024821667.1	WP_024821984.1	3d	4d
+Chitinilyticum aquatile	WP_028451929.1	WP_028451288.1	3d	4b
+Aminiphilus circumscriptus	WP_029165455.1	WP_029166411.1	3d	4d
+Collinsella aerofaciens	WP_006234109.1	WP_006235754.1	4a	4e
+Photobacterium sp. AK15	WP_007469705.1	WP_007468176.1	4a	4c
+Collinsella sp. CAG:166	WP_022095197.1	WP_022094158.1	4a	4e
+Caldanaerobacter subterraneus	WP_022587809.1	WP_011024634.1	4a	4e
+Paludibacterium yongneupense	WP_028536385.1	WP_028535106.1	4a	4c
+Thermosphaera aggregans	WP_013128928.1	WP_013129492.1	4b	4g
+Desulfovibrio sp. A2	WP_007527819.1	WP_007524167.1	4c	4e
+Clostridium celatum	WP_005213155.1	WP_005210163.1	4e	4g
+Syntrophobotulus glycolicus	WP_013625216.1	WP_013623369.1	4e	4f
+Coprothermobacter platensis	WP_018962513.1	WP_018963227.1	4e	4g

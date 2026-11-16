@@ -1,0 +1,28 @@
+gene_id	family	description
+mmg:MTBMA_c15170	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; F420-non-reducing hydrogenase, subunit A
+mwo:MWSIV6_1526	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; F420-non-reducing hydrogenase subunit A
+mst:Msp_0316	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; MvhA
+mru:mru_1906	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; methyl viologen-reducing hydrogenase alpha subunit MvhA
+msi:Msm_0999	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) methyl viologen-reducing hydrogenase, alpha subunit, MvhA
+meb:Abm4_1510	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; methyl viologen-reducing hydrogenase alpha subunit MvhA
+mmil:sm9_2011	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; methyl viologen-reducing hydrogenase alpha subunit MvhA
+mol:YLM1_1362	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) methyl viologen-reducing hydrogenase alpha subunit MvhA
+meth:MBMB1_1340	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA1; F420-non-reducing hydrogenase subunit A
+meth:MBMB1_1661	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA3; F420-non-reducing hydrogenase subunit A
+mfc:BRM9_0563	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA1; methyl viologen-reducing hydrogenase alpha subunit MvhA1
+mfc:BRM9_0913	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA2; methyl viologen-reducing hydrogenase alpha subunit MvhA2
+mfi:DSM1535_0881	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; F420-non-reducing hydrogenase subunit A
+mcub:MCBB_1966	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; F420-non-reducing hydrogenase subunit A
+meer:NKF70_05145	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | mvhA; (GenBank) F420-non-reducing hydrogenase subunit MvhA
+meac:ACBM69_05250	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | mvhA; (GenBank) F420-non-reducing hydrogenase subunit MvhA
+msoc:JCM10723_04300	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | mvhA; (GenBank) F420-non-reducing hydrogenase subunit MvhA
+gac:GACE_0711	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) methylviologen-reducing hydrogenase, subunit alpha (MvhA)
+mbg:BN140_1835	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; F420-non-reducing hydrogenase subunit A
+mpd:MCP_2492	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA-1; F420-non-reducing hydrogenase subunit A
+mpd:MCP_2774	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA-2; F420-non-reducing hydrogenase subunit A
+mez:Mtc_0109	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA-1; coenzyme F420-non-reducing hydrogenase (methyl viologen-reducing hydrogenase), alpha subunit
+mez:Mtc_2479	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA-2; coenzyme F420-non-reducing hydrogenase (methyl viologen-reducing hydrogenase), alpha subunit
+rci:RCIX590	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA-2; coenzyme F420-non-reducing hydrogenase (methyl viologen-reducing hydrogenase), alpha subunit
+rci:RCIX473	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA-1; coenzyme F420-non-reducing hydrogenase (methyl viologen-reducing hydrogenase), alpha subunit
+mear:Mpt1_c10550	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) mvhA; F420-non-reducing hydrogenase iron-sulfur subunit A
+marc:AR505_1476	MvhA	K14126 F420-non-reducing hydrogenase large subunit [EC:1.12.99.- 1.8.98.5] | (GenBank) methyl viologen-reducing hydrogenase alpha subunit MvhA

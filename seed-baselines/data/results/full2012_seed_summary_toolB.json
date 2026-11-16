@@ -1,0 +1,66 @@
+{
+  "k-mer (BLAST+)": {
+    "method_key": "kmer",
+    "n_queries": 2012,
+    "fp_n": 1261,
+    "fp_rate": 0.6267395626242545,
+    "fn_n": 0,
+    "fn_rate": 0.0
+  },
+  "k-mer (DIAMOND)": {
+    "method_key": "kmer_diamond",
+    "n_queries": 2012,
+    "fp_n": 139,
+    "fp_rate": 0.06908548707753479,
+    "fn_n": 2,
+    "fn_rate": 0.0009940357852882703
+  },
+  "Minimizer": {
+    "method_key": "minimizer",
+    "n_queries": 2012,
+    "fp_n": 195,
+    "fp_rate": 0.09691848906560636,
+    "fn_n": 2,
+    "fn_rate": 0.0009940357852882703
+  },
+  "Syncmer": {
+    "method_key": "syncmer",
+    "n_queries": 2012,
+    "fp_n": 411,
+    "fp_rate": 0.20427435387673956,
+    "fn_n": 0,
+    "fn_rate": 0.0
+  },
+  "Strobemer": {
+    "method_key": "strobemer",
+    "n_queries": 2012,
+    "fp_n": 26,
+    "fp_rate": 0.012922465208747515,
+    "fn_n": 148,
+    "fn_rate": 0.073558648111332
+  },
+  "SubseqHash2": {
+    "method_key": "subseqhash2",
+    "n_queries": 2012,
+    "fp_n": 188,
+    "fp_rate": 0.09343936381709742,
+    "fn_n": 1,
+    "fn_rate": 0.0004970178926441351
+  },
+  "Chainmer": {
+    "method_key": "chainmer",
+    "n_queries": 2012,
+    "fp_n": 295,
+    "fp_rate": 0.1466202783300199,
+    "fn_n": 0,
+    "fn_rate": 0.0
+  },
+  "Chainmer-op1": {
+    "method_key": "chainmer3",
+    "n_queries": 2012,
+    "fp_n": 165,
+    "fp_rate": 0.08200795228628231,
+    "fn_n": 1,
+    "fn_rate": 0.0004970178926441351
+  }
+}
