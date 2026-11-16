@@ -1,0 +1,27 @@
+[package]
+name = "seed-baselines"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.85"
+authors = ["Shijie Ren"]
+description = "Scalar, SIMD-free Rust implementations of six baseline protein seed algorithms (k-mer BLAST+/DIAMOND, Minimizer, Syncmer, Strobemer, SubseqHash2) with byte-exact parity to the Chainmer seed benchmark paper"
+license = "MIT"
+readme = "README.md"
+keywords = ["bioinformatics", "protein", "homology", "seed", "sequence"]
+categories = ["science", "command-line-utilities"]
+
+[lib]
+name = "seed_baselines"
+path = "src/lib.rs"
+
+[[bin]]
+name = "seed-baselines"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
