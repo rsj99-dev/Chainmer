@@ -1,4 +1,4 @@
-use crate::seeds::{clean_protein, encode, hash_kmer, to_class_string, SecPolicy};
+use crate::seeds::{clean_protein, encode, hash_kmer, spaced_kmers_stride, to_class_string, SecPolicy};
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -26,6 +26,9 @@ pub struct PositionedSeed {
     pub track: SeedTrack,
 }
 
+/// 密度混合通道：两个 10-11 位间距掩码（同 kmer_diamond 口径）。
+// 常量已上移至 ChainmerParams 之前。
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(default)]
 pub struct ChainmerParams {
@@ -42,6 +45,12 @@ pub struct ChainmerParams {
     pub max_pairs_per_anchor: usize,
     pub chain_band: usize,
     pub sec_policy: String,
+    /// 密度混合通道掩码；空 = 关闭（v1.1.0 起默认开启）。
+    pub dense_masks: Vec<String>,
+    /// 间距掩码步长（1 = 全位置采样；预分析实测 stride=1 达标）。
+    pub dense_stride: usize,
+    /// 是否叠加替换等价类轨道的间距键。
+    pub dense_class: bool,
 }
 
 impl Default for ChainmerParams {
@@ -60,6 +69,9 @@ impl Default for ChainmerParams {
             max_pairs_per_anchor: 12,
             chain_band: 30,
             sec_policy: "C".into(),
+            dense_masks: DENSE_MASKS.iter().map(|s| s.to_string()).collect(),
+            dense_stride: 1,
+            dense_class: true,
         }
     }
 }
@@ -80,6 +92,19 @@ impl ChainmerParams {
         }
         if !matches!(self.sec_policy.as_str(), "C" | "X") {
             bail!("sec_policy 仅支持 C 或 X");
+        }
+        if !self.dense_masks.is_empty() {
+            if self.dense_stride == 0 {
+                bail!("dense_stride 必须为正数");
+            }
+            for mask in &self.dense_masks {
+                if mask.is_empty()
+                    || !mask.bytes().all(|b| b == b'0' || b == b'1')
+                    || !mask.contains('1')
+                {
+                    bail!("dense_masks 必须是含 1 的非空 0/1 字符串");
+                }
+            }
         }
         Ok(())
     }
@@ -237,7 +262,92 @@ pub fn chainmer_seeds(seq: &str, params: &ChainmerParams) -> Result<BTreeSet<Pos
     Ok(out)
 }
 
+/// 密度混合通道：两个 10-11 位间距掩码（同 kmer_diamond 口径），默认步长 2。
+pub const DENSE_MASKS: [&str; 2] = ["111101110111", "111011010010111"];
+
+/// 间距 k-mer 加密键（raw 残基或替换等价类轨道）。
+pub fn dense_spaced_keys_track(
+    seq: &str,
+    masks: &[&str],
+    stride: usize,
+    class_track: bool,
+) -> Result<BTreeSet<u128>> {
+    let cleaned = clean_protein(seq, SecPolicy::C);
+    let transformed = if class_track {
+        to_class_string(&cleaned)
+    } else {
+        cleaned
+    };
+    let salt = if class_track { 0x0C1A55 } else { 0x0DE25E };
+    let mut out = BTreeSet::new();
+    for mask in masks {
+        let k = mask.bytes().filter(|b| *b == b'1').count();
+        for (_, h) in spaced_kmers_stride(&transformed, mask, k, stride)? {
+            out.insert(hash_kmer(&[(h & u64::MAX as u128) as u64], salt));
+        }
+    }
+    Ok(out)
+}
+
+pub fn dense_spaced_keys(
+    seq: &str,
+    masks: &[&str],
+    stride: usize,
+) -> Result<BTreeSet<u128>> {
+    dense_spaced_keys_track(seq, masks, stride, false)
+}
+
+/// 仅间距加密键（不含锚点对键）；索引 v7 的 per-target dense 表用它。
+pub fn chainmer_dense_keys(seq: &str, params: &ChainmerParams) -> Result<BTreeSet<u128>> {
+    if params.dense_masks.is_empty() {
+        return Ok(BTreeSet::new());
+    }
+    let masks: Vec<&str> = params.dense_masks.iter().map(|s| s.as_str()).collect();
+    let stride = params.dense_stride.max(1);
+    let mut out = dense_spaced_keys_track(seq, &masks, stride, false)?;
+    if params.dense_class {
+        out.extend(dense_spaced_keys_track(seq, &masks, stride, true)?);
+    }
+    Ok(out)
+}
+
+/// 双通道锚点对键 ∪ 间距加密键（密度混合默认路径）。
+pub fn chainmer_keys_dense(seq: &str, params: &ChainmerParams) -> Result<BTreeSet<u128>> {
+    chainmer_keys_dense_full(seq, params, 1, true)
+}
+
 pub fn chainmer_keys(seq: &str, params: &ChainmerParams) -> Result<BTreeSet<u128>> {
+    chainmer_keys_dense_full(
+        seq,
+        params,
+        params.dense_stride.max(1),
+        params.dense_class,
+    )
+}
+
+/// 双通道锚点对键 ∪ 间距加密键；stride/class 可显式覆盖（消融与环境变量调参用）。
+pub fn chainmer_keys_dense_full(
+    seq: &str,
+    params: &ChainmerParams,
+    stride: usize,
+    class_dense: bool,
+) -> Result<BTreeSet<u128>> {
+    let mut out: BTreeSet<u128> = chainmer_seeds(seq, params)?
+        .into_iter()
+        .map(|seed| seed.key)
+        .collect();
+    if !params.dense_masks.is_empty() {
+        let masks: Vec<&str> = params.dense_masks.iter().map(|s| s.as_str()).collect();
+        out.extend(dense_spaced_keys_track(seq, &masks, stride, false)?);
+        if class_dense {
+            out.extend(dense_spaced_keys_track(seq, &masks, stride, true)?);
+        }
+    }
+    Ok(out)
+}
+
+/// 仅锚点对键（v1.0.x 口径），保留作消融对照。
+pub fn chainmer_pair_keys(seq: &str, params: &ChainmerParams) -> Result<BTreeSet<u128>> {
     Ok(chainmer_seeds(seq, params)?
         .into_iter()
         .map(|seed| seed.key)

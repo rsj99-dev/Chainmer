@@ -2,11 +2,11 @@
   <img src="Chainmer_Logo.png" alt="Chainmer Logo" width="420">
 </p>
 
-# Chainmer v1.0.2
+# Chainmer v1.0.3
 
 **Language:** English | [中文](README_CN.md)
 
-Chainmer is a Rust library and command-line tool for **protein homology candidate retrieval and prefiltering**. v1.0.0 replaced the former single-track class-equivalence key count with **raw/class dual-track positional seeds, database-calibrated IDF, and collinear chain scoring**. **v1.0.2 changes the default gap-bin width `delta` from 15 to 5** (3× finer gap binning, fewer chance paralog matches); the rest of the pipeline is unchanged from v1.0.1. Legacy count and SWPN interfaces remain as ablation controls.
+Chainmer is a Rust library and command-line tool for **protein homology candidate retrieval and prefiltering**. v1.0.0 replaced the former single-track class-equivalence key count with **raw/class dual-track positional seeds, database-calibrated IDF, and collinear chain scoring**. **v1.0.2 changes the default gap-bin width `delta` from 15 to 5** (3× finer gap binning, fewer chance paralog matches). **v1.0.3 makes regime-adaptive discriminative ranking the default `search` path** (the index embeds the discriminative layer; `--native` restores the original collinear-chain scoring) **and adds a density-mixing channel to the default key set**: spaced k-mer keys (two 10-11-position masks, raw + substitution-class tracks) are unioned with the anchor-pair keys, lifting the 14-family gene-pair benchmark Top-1 to 0.821 while cutting FN to 0.024 (index format `chainmer-index/7`). See CHANGELOG for measured gains and honest per-family costs. Legacy count and SWPN interfaces remain as ablation controls.
 
 > A Seed Hit only indicates that candidates share a seed; it does not establish homology or orthology. Orthology requires downstream analyses such as gene tree–species tree reconciliation. HydDB subgroup labels are not equivalent to orthologous groups.
 
@@ -79,7 +79,7 @@ Based on the ABCk orders, forward/reverse DP, and pivot-merging concepts of the 
 
 ## Hashing and compatibility
 
-Hashes are stored as `u128` but the effective state is at most 64 bits; no 128-bit entropy claim. Current index format `chainmer-index/5` (compact binary CSR); older indexes must be rebuilt. `chainmer_keys_legacy` retains only the v0.4 single-track key output for historical comparison.
+Hashes are stored as `u128` but the effective state is at most 64 bits; no 128-bit entropy claim. Current index format `chainmer-index/7` (compact binary CSR + adaptive layer + per-target dense spaced-key table); older indexes must be rebuilt. `chainmer_keys_legacy` retains only the v0.4 single-track key output for historical comparison.
 
 ## License
 

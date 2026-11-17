@@ -1,3 +1,6 @@
+use crate::adaptive::{
+    adaptive_core, family_divergent, subset_keys, AdaptiveParams, AdaptiveQueryResult,
+};
 use crate::core::{chainmer_keys, chainmer_seeds, ChainmerParams, SeedTrack};
 use crate::index::SeedIndex;
 use crate::scoring::{reject_score, weighted_score};
@@ -277,6 +280,88 @@ pub fn search(
             .then_with(|| a.id.cmp(&b.id))
     });
     Ok(hits)
+}
+
+/// 体制自适应判别检索（v6 默认底层路径）。
+///
+/// 召回门与原生一致：共线键 IDF-Jaccard `Jc > 0`（等价于至少共享一个链键，
+/// `min_shared` 可进一步收紧）。排序得分由家族体制门控：分歧体制用 Jc；
+/// 保守体制叠加诊断子序列通道 Js，高旁系风险再叠加背景扣除 Jbg。
+/// 判别层数据（链键表/子序列键表/架构直方图）全部来自索引，无需额外输入文件。
+///
+/// 与暴力路径 adaptive_search 共用 adaptive_core，数值完全一致；平局裁决
+/// 按索引 catalog（ID 升序）而非 FASTA 文件序。查询 ID 在库中时排除自身。
+pub fn search_adaptive(
+    query: &str,
+    query_id: &str,
+    index: &SeedIndex,
+    params: &ChainmerParams,
+    ap: &AdaptiveParams,
+    min_shared: usize,
+) -> Result<AdaptiveQueryResult> {
+    validate_min_shared(min_shared)?;
+    if params != &index.meta.params {
+        bail!("查询参数与索引元数据不一致");
+    }
+    if !ap.lambda.is_finite() || !ap.beta.is_finite() || !ap.div_threshold.is_finite() {
+        bail!("lambda、beta 与 div_threshold 必须为有限数值");
+    }
+    let q_tid = index.targets.iter().position(|record| record.id == query_id);
+    let (qk, qsk) = match q_tid {
+        Some(tid) => (
+            index.chain_keys[tid]
+                .iter()
+                .chain(index.dense_keys[tid].iter())
+                .copied()
+                .collect::<BTreeSet<u128>>(),
+            index.subset_keys[tid]
+                .iter()
+                .map(|&k| k as u128)
+                .collect::<BTreeSet<u128>>(),
+        ),
+        None => (chainmer_keys(query, params)?, subset_keys(query)),
+    };
+    // 候选库视图：排除查询自身；catalog 序即平局裁决序。
+    let mut db_ids: Vec<String> = Vec::with_capacity(index.targets.len());
+    let mut db_ck: Vec<BTreeSet<u128>> = Vec::with_capacity(index.targets.len());
+    let mut db_sk: Vec<BTreeSet<u128>> = Vec::with_capacity(index.targets.len());
+    for (tid, record) in index.targets.iter().enumerate() {
+        if Some(tid) == q_tid {
+            continue;
+        }
+        db_ids.push(record.id.clone());
+        db_ck.push(
+            index.chain_keys[tid]
+                .iter()
+                .chain(index.dense_keys[tid].iter())
+                .copied()
+                .collect(),
+        );
+        db_sk.push(index.subset_keys[tid].iter().map(|&k| k as u128).collect());
+    }
+    // 家族门控：阈值与建索引时一致则直接用 meta 标记，否则按直方图重算。
+    let fam_divergent = if ap.div_threshold == index.meta.div_threshold {
+        index.meta.fam_divergent
+    } else {
+        family_divergent(&index.hists, ap.div_threshold)
+    };
+    let mut result = adaptive_core(query_id, &qk, &qsk, &db_ids, &db_ck, &db_sk, fam_divergent, ap);
+    if min_shared > 1 {
+        result.hits.retain(|hit| {
+            let tid = index
+                .targets
+                .iter()
+                .position(|record| record.id == hit.id)
+                .expect("adaptive 命中必在 catalog 中");
+            let target_keys: BTreeSet<u128> = index.chain_keys[tid]
+                .iter()
+                .chain(index.dense_keys[tid].iter())
+                .copied()
+                .collect();
+            qk.intersection(&target_keys).count() >= min_shared
+        });
+    }
+    Ok(result)
 }
 
 /// 旧式唯一共享键计数，保留作消融对照；默认 CLI 不再使用。

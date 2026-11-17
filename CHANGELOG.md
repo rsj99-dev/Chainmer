@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.3 — 体制自适应判别为 search 默认（索引内置判别层）＋密度混合种子通道并入默认键集（索引 v7）
+
+- **体制自适应判别（adaptive）为 `search` 默认路径（`--native` 回退原生）：** 召回门不变（共线键 IDF-Jaccard Jc>0，`min_shared` 可收紧），仅对已召回候选重排 `score = Jc + β·Js − λ·Jbg`；体制门控（RAW 锚点间距直方图最小两两余弦 <0.8 判分歧体制、退回 Jc；保守体制叠加子序列通道 Js；高旁系风险再扣背景 Jbg；λ=β=1）；`--lambda/--beta/--div-threshold` 旋钮；`adaptive` 子命令为全排序导出（FASTA 文件序平局裁决）。索引自 v6 起内置判别层（链键表/子序列键表/间距直方图/门控 meta），检索无需额外输入文件。
+- **算法（密度混合）：** 默认键集从「RAW5+CLASS8 锚点对键」扩为「锚点对键 ∪ 两掩码间距键」（掩码 `111101110111` / `111011010010111`，raw 与替换等价类双轨、步长 1、独立盐值命名空间）；`ChainmerParams` 新增 `dense_masks` / `dense_stride` / `dense_class`（置空掩码可还原纯锚点对键集做消融）。锚点对通道与共线链打分定义不变。
+- **14 家族基因对真值实测（n=162，单协议 IDF-Jaccard）：** Top-1 0.8210（纯锚点对消融 0.7963）、FN 0.0239（纯锚点对 0.1989，为 kmer_diamond 0.275 的 1/11）、MRR 0.8902（七法第一）。对 kmer_diamond（0.827/0.275）呈「Top-1 相差 1 个查询、漏检 1/11」的取舍；McNemar 对 kmer_diamond/syncmer/subseqhash2 p=1，对 strobemer p<1e-10。单家族：GLK 1.000、MvhA 0.833、McrA 0.778（七法第一）、Mtd/Hmd/FwdA/MtrA FN 清零、ICD FN 0.439→0.152。
+- **索引格式 `chainmer-index/5` → `chainmer-index/6` → `chainmer-index/7`：** v6 内置判别层；v7 另增 per-target 间距加密键表（16 字节键，与 CSR 位置 posting 分离），索引键量约 +66%。旧索引明确拒绝并提示重建；缓存身份含格式＋版本自动失效。
+- **确定性修复：** adaptive 背景扣除「较不相似拷贝」选择在 jc 平局时改按 ID 裁决（原按遍历序），使索引路径与暴力 `adaptive` 路径逐 ID、逐分严格一致。
+- **adaptive 实测（8 家族 n=102，f64）：** 合并 Top-1 0.745→0.775、旁系多检率 0.255→0.226、漏检 0.036 不变；β-tubulin 出现 0.000→0.083 的假阳性回升，为诚实代价；对代价敏感场景用 `--native` 回退。
+- **回归：** 53 项测试全绿（v7 roundtrip、dense 表独立重算对齐、索引/暴力路径一致）；`chainmer_keys_legacy`（v0.4 golden 306 键）保持。
+- **口径说明：** 预分析阶段树为快速口径（LG+G4＋1000 UFBoot）；HdrA 使用 BLAST 强同源子集（441 全集存档）；MtaA/FwdA/AcsA/MtrA 含注释审编。论文定稿时如需 ModelFinder/全量同源集复跑，指数会小幅变动。
+
 ## v1.0.2 — 默认参数调优（delta 15→5）
 
 - **默认 `delta` 15→5（`ChainmerParams::default()` 与 CLI `--delta` 缺省值同步）：** gap 分桶 `bucket = d / delta` 细化 3 倍，键更精确地编码锚点间距，减少旁系偶然匹配。30 配置三阶段扫描（kc×class_kc 4×4、特异性旋钮 10、delta 曲线 4）中唯一弱 Pareto 优于旧默认的配置。

@@ -2,7 +2,7 @@
   <img src="Chainmer_Logo.png" alt="Chainmer Logo" width="420">
 </p>
 
-# Chainmer v1.0.2
+# Chainmer v1.0.3
 
 **语言 / Language：** 中文 | [English](README.md)
 
@@ -38,11 +38,27 @@ chainmer demo                                   # 合成序列演示，非生物
 chainmer seed -i db.faa -m chainmer             # 统计每条序列唯一种子键
 chainmer seed -i db.faa -m chainmer --keys -o chainmer.tsv   # 导出 TSV（论文键口径）
 chainmer index -d db.faa -o db.chainmer.idx --kc 5 --class-kc 8 --gmin 30 --gmax 300 --delta 5
-chainmer search -d db.faa -q query.faa -x db.chainmer.idx --top 5
+chainmer search -d db.faa -q query.faa -x db.chainmer.idx --top 5   # 默认体制自适应判别
+chainmer search -d db.faa -q query.faa --native --top 5             # 回退原生共线链打分
 chainmer compare -i db.faa -o seed_compare.tsv  # 同二进制内种子数量/提取耗时比较
 ```
 
 支持的 `seed --method`：`chainmer`、`kmer`、`spaced`、`minimizer`、`syncmer`、`strobemer`、`ckmer`、`subseqhash2`。syncmer 基线为 **Closed** 定义；spaced pattern 至少含一个 `1`；`simplified-strobemer` 为 fixed-offset anchor-pair（非标准 randstrobe/minstrobe）。
+
+## 密度混合种子通道（v1.0.3 起为默认键集）
+
+默认键集在 RAW5+CLASS8 锚点对键之上并入间距 k-mer 键：两掩码 `111101110111` / `111011010010111`，raw 与替换等价类双轨、步长 1、独立盐值命名空间。14 家族基因对真值（n=162）实测 Top-1 0.796→0.821、FN 0.199→0.024、MRR 0.861→0.890（七法第一），FP 0.41→0.46；对 kmer_diamond 呈「Top-1 差 1 查询、漏检 1/11」取舍。`ChainmerParams` 的 `dense_masks/dense_stride/dense_class` 可关闭该通道还原纯锚点对键集；索引 v7 内置 per-target 加密键表。
+
+## 体制自适应判别（v1.0.3 起为 search 底层默认）
+
+```bash
+chainmer search -d homologs.faa -q queries.faa --top 5
+# 可选旋钮：--lambda 1.0（背景扣除强度） --beta 1.0（子序列通道权重） --div-threshold 0.8
+# --native 回退原生共线链打分；--weights 加权路径不受影响
+chainmer adaptive -d homologs.faa -q queries.faa -o adaptive.tsv   # 全排序 TSV 导出（暴力参照路径）
+```
+
+链式种子召回层不变（接受门仍为共线键 IDF-Jaccard `Jc>0`），排序得分由体制门控：同源集间距直方图最小两两余弦 <0.8 判分歧体制（走原生 Jc）；保守体制叠加诊断子序列通道，高旁系风险者再叠加背景扣除（`score = Jc + β·Js − λ·Jbg`）。输入仅 FASTA（ID 约定 `species__accession`），不需要树/HMM/注释；判别层数据（链键表/子序列键表/架构直方图）内置于索引 v7，旧索引需重建。评分为 f64 精度；8 家族基因对真值实测与代价见 CHANGELOG v1.0.3（β-tubulin、ICD 存在真实回归，代价敏感场景用 `--native`）。`adaptive` 子命令保留为全排序导出（`query/regime/rank/id/score/gate`，FASTA 文件序平局裁决）；默认 search 的平局裁决按索引 catalog（ID 升序）。
 
 ## v1.0.2 默认参数
 
@@ -80,7 +96,7 @@ chainmer compare -i db.faa -o seed_compare.tsv  # 同二进制内种子数量/�
 
 ## 哈希与兼容性
 
-哈希以 `u128` 存储但有效状态最多 64 bit，不得宣称 128-bit 熵。当前索引格式 `chainmer-index/5`（紧凑二进制 CSR），旧索引必须重建。`chainmer_keys_legacy` 仅保留 v0.4 单通道键输出作历史核对。
+哈希以 `u128` 存储但有效状态最多 64 bit，不得宣称 128-bit 熵。当前索引格式 `chainmer-index/7`（紧凑二进制 CSR＋判别层＋加密键表），旧索引必须重建。`chainmer_keys_legacy` 仅保留 v0.4 单通道键输出作历史核对。
 
 ## 许可
 

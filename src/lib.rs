@@ -4,6 +4,7 @@
 //!
 //! Seed Hit 仅产生候选，不构成同源或直系同源判定。
 
+pub mod adaptive;
 pub mod cli;
 pub mod core;
 pub mod fasta;
@@ -14,14 +15,16 @@ pub mod search;
 pub mod seeds;
 pub mod subseqhash2;
 
+pub use adaptive::{adaptive_search, AdaptiveParams, AdaptiveQueryResult, FamilyContext, Regime};
 pub use core::{anchors, chainmer_keys, chainmer_seeds, ChainmerParams, PositionedSeed, SeedTrack};
 pub use index::SeedIndex;
 pub use scoring::{contrastive_weights, specificity_weights, weighted_score};
-pub use search::CandidateScore;
+pub use search::{search_adaptive, CandidateScore};
 
 /// 包版本；索引元数据与此常量保持一致。
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// 兼容历史输出：128-bit 存储宽度，但有效状态最多 64 bit。
 pub const HASH_SCHEME: &str = "dual-splitmix64/64-effective-in-u128";
-/// X 屏蔽的当前种子语义；旧索引必须重建。v5 为紧凑二进制 CSR 格式。
-pub const INDEX_FORMAT: &str = "chainmer-index/5";
+/// X 屏蔽的当前种子语义；旧索引必须重建。v7 在 v6 判别层之上新增 per-target
+/// 间距加密键表（密度混合通道，RAW5+CLASS8 锚点对键 ∪ 10-11 位间距掩码键）。
+pub const INDEX_FORMAT: &str = "chainmer-index/7";

@@ -1,8 +1,9 @@
-use crate::core::{chainmer_keys, ChainmerParams};
+use crate::adaptive::{adaptive_search, AdaptiveParams, FamilyContext};
+use crate::core::{chainmer_keys, chainmer_keys_dense_full, ChainmerParams};
 use crate::fasta::read_fasta;
 use crate::index::{database_keys, key_hex, parse_key_hex, SeedIndex};
 use crate::index_cache::{load_or_build_index, CacheOptions};
-use crate::search::{search, search_weighted_index};
+use crate::search::{search, search_adaptive, search_weighted_index};
 use crate::seeds::{
     clean_protein, kmers, minimizers, spaced_kmers, strobemers, syncmers_with_mode,
     to_class_string, SecPolicy, SyncmerMode,
@@ -20,7 +21,7 @@ use std::time::Instant;
 #[command(
     name = "chainmer",
     version,
-    about = "Chainmer v1.0.1：双通道位置种子、共线链与检索"
+    about = "Chainmer v1.0.3：双通道位置种子＋密度混合间距通道、共线链与检索；底层默认体制自适应判别（--native 回退原生）"
 )]
 pub struct Cli {
     #[command(subcommand)]
@@ -33,8 +34,10 @@ enum Command {
     Seed(SeedArgs),
     /// 构建带完整元数据的 Chainmer 倒排索引
     Index(IndexArgs),
-    /// 使用索引参数检索，并校验数据库内容摘要
+    /// 使用索引参数检索，并校验数据库内容摘要；默认体制自适应判别，--native 回退原生
     Search(SearchArgs),
+    /// 体制自适应判别全排序导出（暴力参照路径，FASTA 文件序平局裁决）
+    Adaptive(AdaptiveArgs),
     /// 在同一 FASTA 上比较种子数量和提取耗时
     Compare(CompareArgs),
     /// 运行明确标注的合成序列示例
@@ -45,6 +48,9 @@ enum Command {
 enum Method {
     #[value(name = "chainmer")]
     Chainmer,
+    /// 密度混合候选：双通道锚点对键 ∪ 间距 k-mer 加密键（stride 2）
+    #[value(name = "chainmer-dense")]
+    ChainmerDense,
     Kmer,
     Spaced,
     Minimizer,
@@ -57,7 +63,8 @@ enum Method {
 impl Method {
     fn name(self) -> &'static str {
         match self {
-            Self::Chainmer => "Chainmer",
+            Self::Chainmer => "Chainmer(RAW5+CLASS8+dense)",
+            Self::ChainmerDense => "Chainmer+dense(RAW5+CLASS8+spaced10-11/stride2)",
             Self::Kmer => "k-mer(k=5)",
             Self::Spaced => "spaced(11101101)",
             Self::Minimizer => "minimizer(k5w8)",
@@ -73,6 +80,23 @@ fn extract(method: Method, sequence: &str) -> Result<BTreeSet<u128>> {
     let cleaned = || clean_protein(sequence, SecPolicy::C);
     match method {
         Method::Chainmer => chainmer_keys(sequence, &ChainmerParams::default()),
+        Method::ChainmerDense => {
+            let stride = std::env::var("CHAINMER_DENSE_STRIDE")
+                .ok()
+                .and_then(|v| v.parse::<usize>().ok())
+                .unwrap_or(2);
+            let class_dense = std::env::var("CHAINMER_DENSE_CLASS")
+                .map(|v| v == "1")
+                .unwrap_or(false);
+            let mut p = ChainmerParams::default();
+            if let Some(n) = std::env::var("CHAINMER_DENSE_PAIRS")
+                .ok()
+                .and_then(|v| v.parse::<usize>().ok())
+            {
+                p.max_pairs_per_anchor = n;
+            }
+            chainmer_keys_dense_full(sequence, &p, stride, class_dense)
+        }
         Method::Kmer => Ok(kmers(&cleaned(), 5)?.into_iter().map(|x| x.1).collect()),
         Method::Spaced => Ok(spaced_kmers(&cleaned(), "11101101", 6)?
             .into_iter()
@@ -139,6 +163,40 @@ struct SearchArgs {
     weights: Option<PathBuf>,
     #[arg(long, default_value_t = 5)]
     top: usize,
+    /// 回退原生共线链打分（关闭体制自适应判别层）
+    #[arg(long)]
+    native: bool,
+    /// 背景扣除强度 λ（adaptive）
+    #[arg(long, default_value_t = crate::adaptive::DEFAULT_LAMBDA)]
+    lambda: f64,
+    /// 诊断子序列通道权重 β（adaptive）
+    #[arg(long, default_value_t = crate::adaptive::DEFAULT_BETA)]
+    beta: f64,
+    /// 家族级架构门控阈值（adaptive；最小两两余弦低于此值判分歧体制）
+    #[arg(long, default_value_t = crate::adaptive::DEFAULT_DIV_THRESHOLD)]
+    div_threshold: f64,
+}
+
+#[derive(Args)]
+struct AdaptiveArgs {
+    /// 同源集库 FASTA（含查询自身；ID 约定 species__accession）
+    #[arg(short, long)]
+    db: PathBuf,
+    /// 查询 FASTA（ID 必须存在于库中）
+    #[arg(short, long)]
+    query: PathBuf,
+    /// TSV 输出路径；缺省打印到 stdout
+    #[arg(short, long)]
+    output: Option<PathBuf>,
+    /// 背景扣除强度 λ
+    #[arg(long, default_value_t = crate::adaptive::DEFAULT_LAMBDA)]
+    lambda: f64,
+    /// 诊断子序列通道权重 β
+    #[arg(long, default_value_t = crate::adaptive::DEFAULT_BETA)]
+    beta: f64,
+    /// 家族级架构门控阈值（最小两两余弦低于此值判分歧体制）
+    #[arg(long, default_value_t = crate::adaptive::DEFAULT_DIV_THRESHOLD)]
+    div_threshold: f64,
 }
 
 #[derive(Args)]
@@ -218,6 +276,7 @@ pub fn run() -> Result<()> {
         Command::Seed(args) => cmd_seed(args),
         Command::Index(args) => cmd_index(args),
         Command::Search(args) => cmd_search(args),
+        Command::Adaptive(args) => cmd_adaptive(args),
         Command::Compare(args) => cmd_compare(args),
         Command::Demo => cmd_demo(),
     }
@@ -311,6 +370,17 @@ fn cmd_search(args: SearchArgs) -> Result<()> {
         },
     )?;
     let weights = args.weights.as_ref().map(read_weights).transpose()?;
+    let ap = AdaptiveParams {
+        lambda: args.lambda,
+        beta: args.beta,
+        div_threshold: args.div_threshold,
+    };
+    if !args.native && weights.is_none() {
+        eprintln!(
+            "search: adaptive (default) fam_divergent={} lambda={} beta={} div_threshold={}",
+            index.meta.fam_divergent, ap.lambda, ap.beta, ap.div_threshold
+        );
+    }
     for (qid, query) in read_fasta(&args.query)? {
         println!(">{qid}");
         if let Some(weights) = weights.as_ref() {
@@ -325,7 +395,7 @@ fn cmd_search(args: SearchArgs) -> Result<()> {
             for (id, score) in hits.into_iter().take(args.top) {
                 println!("{id}\t{score:.8}");
             }
-        } else {
+        } else if args.native {
             if args.min_score.is_some() {
                 bail!("min_score 仅适用于 --weights 加权检索");
             }
@@ -341,7 +411,88 @@ fn cmd_search(args: SearchArgs) -> Result<()> {
             for hit in hits.into_iter().take(args.top) {
                 println!("{}\t{:.8}", hit.id, hit.score);
             }
+        } else {
+            if args.min_score.is_some() {
+                bail!("min_score 仅适用于 --weights 加权检索");
+            }
+            let result = search_adaptive(
+                &query,
+                &qid,
+                &index,
+                &index.meta.params,
+                &ap,
+                args.min_shared,
+            )?;
+            eprintln!("  regime={}", result.regime.label());
+            for hit in result.hits.into_iter().take(args.top) {
+                println!("{}\t{:.8}", hit.id, hit.score);
+            }
         }
+    }
+    Ok(())
+}
+
+/// 按文件顺序提取 FASTA ID（平局裁决与物种分组顺序依赖文件序）。
+fn fasta_order(path: &PathBuf) -> Result<Vec<String>> {
+    let text = fs::read_to_string(path)?;
+    Ok(text
+        .lines()
+        .filter_map(|line| line.strip_prefix('>'))
+        .filter_map(|header| header.split_whitespace().next())
+        .map(|id| id.to_string())
+        .collect())
+}
+
+fn cmd_adaptive(args: AdaptiveArgs) -> Result<()> {
+    if !args.lambda.is_finite() || !args.beta.is_finite() || !args.div_threshold.is_finite() {
+        bail!("lambda、beta 与 div_threshold 必须为有限数值");
+    }
+    let db = read_fasta(&args.db)?;
+    let ids = fasta_order(&args.db)?;
+    let seqs: Vec<String> = ids
+        .iter()
+        .map(|id| db.get(id).cloned().context(format!("库中缺少序列：{id}")))
+        .collect::<Result<_>>()?;
+    let ap = AdaptiveParams {
+        lambda: args.lambda,
+        beta: args.beta,
+        div_threshold: args.div_threshold,
+    };
+    let cp = ChainmerParams::default();
+    let ctx = FamilyContext::build(ids, &seqs, &ap, &cp)?;
+    eprintln!(
+        "adaptive: seqs={} fam_divergent={} lambda={} beta={} div_threshold={}",
+        ctx.ids.len(),
+        ctx.fam_divergent,
+        ap.lambda,
+        ap.beta,
+        ap.div_threshold
+    );
+    let mut out: Box<dyn Write> = match &args.output {
+        Some(path) => Box::new(BufWriter::new(fs::File::create(path)?)),
+        None => Box::new(BufWriter::new(std::io::stdout())),
+    };
+    writeln!(out, "query\tregime\trank\tid\tscore\tgate")?;
+    for (qid, qseq) in read_fasta(&args.query)? {
+        if !db.contains_key(&qid) {
+            bail!("查询 {qid} 不在库中；adaptive 要求查询属于同源集");
+        }
+        let result = adaptive_search(&ctx, &qid, &qseq, &ap, &cp)?;
+        for (rank, hit) in result.hits.iter().enumerate() {
+            writeln!(
+                out,
+                "{qid}\t{}\t{}\t{}\t{:.10}\t{:.10}",
+                result.regime.label(),
+                rank + 1,
+                hit.id,
+                hit.score,
+                hit.gate
+            )?;
+        }
+    }
+    out.flush()?;
+    if let Some(path) = &args.output {
+        eprintln!("已写入 {}", path.display());
     }
     Ok(())
 }

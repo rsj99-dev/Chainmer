@@ -115,8 +115,21 @@ pub fn kmers(seq: &str, k: usize) -> Result<Vec<(usize, u128)>> {
 }
 
 pub fn spaced_kmers(seq: &str, pattern: &str, k: usize) -> Result<Vec<(usize, u128)>> {
+    spaced_kmers_stride(seq, pattern, k, 1)
+}
+
+/// 带步长的 spaced k-mer 枚举；dense 通道用 stride>1 控制键密度。
+pub fn spaced_kmers_stride(
+    seq: &str,
+    pattern: &str,
+    k: usize,
+    stride: usize,
+) -> Result<Vec<(usize, u128)>> {
     if pattern.is_empty() || !pattern.chars().all(|c| matches!(c, '0' | '1')) {
         bail!("spaced pattern 必须是非空 0/1 字符串");
+    }
+    if stride == 0 {
+        bail!("stride 必须为正数");
     }
     let ones: Vec<usize> = pattern.match_indices('1').map(|x| x.0).collect();
     if ones.is_empty() {
@@ -130,6 +143,7 @@ pub fn spaced_kmers(seq: &str, pattern: &str, k: usize) -> Result<Vec<(usize, u1
         return Ok(Vec::new());
     }
     Ok((0..=codes.len() - pattern.len())
+        .step_by(stride)
         .map(|i| {
             let part: Vec<u64> = ones.iter().map(|off| codes[i + off] as u64).collect();
             (i, hash_kmer(&part, 0xABCDEF))

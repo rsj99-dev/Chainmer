@@ -1,4 +1,5 @@
-use crate::core::{chainmer_seeds, ChainmerParams, PositionedSeed};
+use crate::adaptive::{family_divergent, spacing_hist, subset_keys, DEFAULT_DIV_THRESHOLD};
+use crate::core::{chainmer_dense_keys, chainmer_seeds, ChainmerParams, PositionedSeed};
 use crate::seeds::{class_map, clean_protein, SecPolicy};
 use crate::{HASH_SCHEME, INDEX_FORMAT, VERSION};
 use anyhow::{bail, Context, Result};
@@ -9,10 +10,10 @@ use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 
-/// v5 二进制魔数：`CHMNIDX` + 格式字节 `0x05`。
-const FORMAT_MAGIC: [u8; 8] = *b"CHMNIDX\x05";
-/// v5 尾部哨兵：`CHMNEND` + 格式字节 `0x05`。
-const TRAILER_MAGIC: [u8; 8] = *b"CHMNEND\x05";
+/// v7 二进制魔数：`CHMNIDX` + 格式字节 `0x07`。
+const FORMAT_MAGIC: [u8; 8] = *b"CHMNIDX\x07";
+/// v7 尾部哨兵：`CHMNEND` + 格式字节 `0x07`。
+const TRAILER_MAGIC: [u8; 8] = *b"CHMNEND\x07";
 /// 头部固定长度：magic(8) + n_postings(8) + n_keys(8) + n_targets(8)。
 const HEADER_LEN: u64 = 8 + 8 + 8 + 8;
 /// 单条 packing posting 字节宽度：target_id(4) + p1(4) + p2(4)，小端。
@@ -22,6 +23,10 @@ const TRAILER_LEN: u64 = 24;
 const MAX_META_BYTES: u64 = 256 * 1024 * 1024;
 /// 单条 target 记录最小字节：id_len(4) + id(>=1) + seq_len(4) + unique(4) + idf(8)。
 const MIN_TARGET_RECORD_BYTES: u64 = 4 + 1 + 4 + 4 + 8;
+/// v7 判别层每 target 最小字节：chain_count(4) + subset_count(4) + dense_count(4) + hist(55×8)。
+const MIN_ADAPTIVE_RECORD_BYTES: u64 = 4 + 4 + 4 + 55 * 8;
+/// 架构间距直方图桶数（与 adaptive::spacing_hist 一致）。
+const HIST_BINS: usize = 55;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DatabaseMeta {
@@ -29,7 +34,7 @@ pub struct DatabaseMeta {
     pub content_blake3: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct IndexMeta {
     pub format: String,
     pub algorithm: String,
@@ -38,6 +43,10 @@ pub struct IndexMeta {
     pub class_map: BTreeMap<String, String>,
     pub hash_scheme: String,
     pub db: DatabaseMeta,
+    /// 建索引时使用的家族架构门控阈值（最小两两余弦）。
+    pub div_threshold: f64,
+    /// 建索引时判定的家族体制：true ⇒ 分歧体制（adaptive 退回原生 Jc 排序）。
+    pub fam_divergent: bool,
 }
 
 /// 紧凑位置 posting：target 用整数 catalog 下标而非字符串，坐标为清洗后序列坐标。
@@ -63,12 +72,16 @@ pub struct TargetRecord {
     pub idf_weight: f64,
 }
 
-/// 紧凑 CSR 索引。
+/// 紧凑 CSR 索引（v6）。
 ///
 /// 键 `keys` 严格升序；slot 的 posting 范围是
 /// `postings[offsets[slot]..offsets[slot + 1]]`，且按 `(target_id, p1, p2)` 升序、
 /// 无重复。`document_freq[slot]` 与 `keys[slot]` 一一对应。`targets` 为按整数
 /// `target_id` 索引的 catalog，等价于旧实现的 `sequence_stats`（多了 `sequence_len`）。
+///
+/// v6 判别层新增（v7 增 dense_keys）：
+/// `chain_keys` 每 target 的升序链键表（与 CSR 唯一键一致）、`subset_keys`
+/// 诊断子序列键表、`dense_keys` 间距加密键表、`hists` 架构间距直方图。
 #[derive(Clone, Debug, PartialEq)]
 pub struct SeedIndex {
     pub meta: IndexMeta,
@@ -77,6 +90,10 @@ pub struct SeedIndex {
     pub document_freq: Vec<u32>,
     pub postings: Vec<PackedPosting>,
     pub targets: Vec<TargetRecord>,
+    pub chain_keys: Vec<Vec<u128>>,
+    pub subset_keys: Vec<Vec<u64>>,
+    pub dense_keys: Vec<Vec<u128>>,
+    pub hists: Vec<Vec<f64>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -176,7 +193,7 @@ fn validate_layout(meta_offset: u64, n_postings: u64, n_keys: u64, n_targets: u6
     }
     let catalog_bytes = meta_offset - fixed;
     let min_catalog = n_targets
-        .checked_mul(MIN_TARGET_RECORD_BYTES)
+        .checked_mul(MIN_TARGET_RECORD_BYTES + MIN_ADAPTIVE_RECORD_BYTES)
         .context("索引 target catalog 最小字节数溢出")?;
     if min_catalog > catalog_bytes {
         bail!("索引 target 数量 {n_targets} 与 catalog 区长度 {catalog_bytes} 不一致（至少需 {min_catalog} 字节）");
@@ -246,6 +263,10 @@ impl SeedIndex {
         let n = sequences.len();
         let mut records: Vec<(u128, u32, u32, u32)> = Vec::new();
         let mut targets: Vec<TargetRecord> = Vec::with_capacity(n);
+        let mut chain_keys: Vec<Vec<u128>> = Vec::with_capacity(n);
+        let mut subset_keys_per_target: Vec<Vec<u64>> = Vec::with_capacity(n);
+        let mut dense_keys_per_target: Vec<Vec<u128>> = Vec::with_capacity(n);
+        let mut hists: Vec<Vec<f64>> = Vec::with_capacity(n);
         for (tid, (id, sequence)) in sequences.iter().enumerate() {
             // 清洗后长度用于 validate_db 的坐标上界；chainmer_seeds 内部同样按此策略清洗。
             let cleaned_len = clean_protein(sequence, policy).len();
@@ -261,13 +282,21 @@ impl SeedIndex {
             let tid = tid as u32;
             // 只保留当前序列的中间种子，避免完整 database_seeds 与索引同时驻留。
             let seeds = chainmer_seeds(sequence, &params)?;
+            let mut unique: BTreeSet<u128> = BTreeSet::new();
             for seed in seeds {
                 if seed.p1 > u32::MAX as usize || seed.p2 > u32::MAX as usize {
                     bail!("序列 {id} 的种子坐标超过 u32::MAX");
                 }
                 records.push((seed.key, tid, seed.p1 as u32, seed.p2 as u32));
+                unique.insert(seed.key);
             }
+            chain_keys.push(unique.into_iter().collect());
+            // adaptive 判别层：间距加密键、诊断子序列键与架构间距直方图。
+            dense_keys_per_target.push(chainmer_dense_keys(sequence, &params)?.into_iter().collect());
+            subset_keys_per_target.push(subset_keys(sequence).into_iter().map(|k| k as u64).collect());
+            hists.push(spacing_hist(sequence));
         }
+        let fam_divergent = family_divergent(&hists, DEFAULT_DIV_THRESHOLD);
         // 全局排序：key 升序；同 key 内 (target_id, p1, p2) 升序。
         records.sort_unstable();
 
@@ -322,18 +351,24 @@ impl SeedIndex {
         Ok(Self {
             meta: IndexMeta {
                 format: INDEX_FORMAT.into(),
-                algorithm: "Chainmer-dual-chain-xmasked".into(),
+                algorithm: "Chainmer-dual-chain-xmasked+dense".into(),
                 version: VERSION.into(),
                 params,
                 class_map: class_map(),
                 hash_scheme: HASH_SCHEME.into(),
                 db: database_meta(sequences),
+                div_threshold: DEFAULT_DIV_THRESHOLD,
+                fam_divergent,
             },
             keys,
             offsets,
             document_freq,
             postings,
             targets,
+            chain_keys,
+            subset_keys: subset_keys_per_target,
+            dense_keys: dense_keys_per_target,
+            hists,
         })
     }
 
@@ -411,7 +446,7 @@ impl SeedIndex {
         if self.meta.format != INDEX_FORMAT {
             bail!("不支持的索引格式：{}", self.meta.format);
         }
-        if self.meta.algorithm != "Chainmer-dual-chain-xmasked" || self.meta.version != VERSION {
+        if self.meta.algorithm != "Chainmer-dual-chain-xmasked+dense" || self.meta.version != VERSION {
             bail!(
                 "索引算法或版本不兼容：{}/{}",
                 self.meta.algorithm,
@@ -521,10 +556,62 @@ impl SeedIndex {
                 );
             }
         }
+
+        // v6 判别层校验：长度、升序、链键表与 CSR 唯一键一致、直方图归一、门控自洽。
+        if self.chain_keys.len() != self.targets.len()
+            || self.subset_keys.len() != self.targets.len()
+            || self.dense_keys.len() != self.targets.len()
+            || self.hists.len() != self.targets.len()
+        {
+            bail!("索引判别层（chain_keys/subset_keys/dense_keys/hists）长度与 target 数不一致");
+        }
+        if !self.meta.div_threshold.is_finite() {
+            bail!("索引家族门控阈值非法");
+        }
+        for (tid, record) in self.targets.iter().enumerate() {
+            let ck = &self.chain_keys[tid];
+            if ck.len() != record.unique_key_count as usize {
+                bail!("序列 {} 的链键表长度与 unique key 统计不一致", record.id);
+            }
+            if ck.windows(2).any(|pair| pair[0] >= pair[1]) {
+                bail!("序列 {} 的链键表未严格升序", record.id);
+            }
+            for key in ck {
+                match self.postings_for(key) {
+                    Some(postings)
+                        if postings
+                            .iter()
+                            .any(|posting| posting.target_id == tid as u32) => {}
+                    _ => bail!("序列 {} 的链键表含不属于该 target 的键", record.id),
+                }
+            }
+            let sk = &self.subset_keys[tid];
+            if sk.windows(2).any(|pair| pair[0] >= pair[1]) {
+                bail!("序列 {} 的子序列键表未严格升序", record.id);
+            }
+            let dk = &self.dense_keys[tid];
+            if dk.windows(2).any(|pair| pair[0] >= pair[1]) {
+                bail!("序列 {} 的加密键表未严格升序", record.id);
+            }
+            let hist = &self.hists[tid];
+            if hist.len() != HIST_BINS {
+                bail!("序列 {} 的架构直方图桶数不是 {HIST_BINS}", record.id);
+            }
+            if hist.iter().any(|v| !v.is_finite() || *v < 0.0) {
+                bail!("序列 {} 的架构直方图含非法值", record.id);
+            }
+            let tot: f64 = hist.iter().sum();
+            if tot > 0.0 && (tot - 1.0).abs() > 1e-9 {
+                bail!("序列 {} 的架构直方图未归一化", record.id);
+            }
+        }
+        if family_divergent(&self.hists, self.meta.div_threshold) != self.meta.fam_divergent {
+            bail!("索引家族门控标记与直方图/阈值不一致");
+        }
         Ok(())
     }
 
-    /// 流式写出 v5 二进制索引：`BufWriter` 顺序写，边写边算数据区 blake3，
+    /// 流式写出 v6 二进制索引：`BufWriter` 顺序写，边写边算数据区 blake3，
     /// 完成后原子替换正式文件。
     pub fn save<P: AsRef<Path>>(&self, path: P) -> Result<()> {
         self.validate()?;
@@ -569,6 +656,27 @@ impl SeedIndex {
                 writer.write_all(&record.sequence_len.to_le_bytes())?;
                 writer.write_all(&record.unique_key_count.to_le_bytes())?;
                 writer.write_all(&record.idf_weight.to_le_bytes())?;
+            }
+            // v6 判别层（v7 增 dense_keys）：逐 target 链键表、子序列键表、加密键表、架构直方图。
+            for tid in 0..self.targets.len() {
+                let ck = &self.chain_keys[tid];
+                writer.write_all(&(ck.len() as u32).to_le_bytes())?;
+                for key in ck {
+                    writer.write_all(&key.to_le_bytes())?;
+                }
+                let sk = &self.subset_keys[tid];
+                writer.write_all(&(sk.len() as u32).to_le_bytes())?;
+                for key in sk {
+                    writer.write_all(&key.to_le_bytes())?;
+                }
+                let dk = &self.dense_keys[tid];
+                writer.write_all(&(dk.len() as u32).to_le_bytes())?;
+                for key in dk {
+                    writer.write_all(&key.to_le_bytes())?;
+                }
+                for value in &self.hists[tid] {
+                    writer.write_all(&value.to_le_bytes())?;
+                }
             }
             let meta_offset = writer.written;
             let data_blake3 = writer.hasher.clone().finalize().to_hex().to_string();
@@ -639,21 +747,21 @@ impl SeedIndex {
         Ok(())
     }
 
-    /// 读取 v5 二进制索引：先读尾部 meta，再做分配前的 section 边界校验与全程 blake3 校验，
-    /// 最后顺序读取各 section。旧 v4/JSON 索引给出明确迁移提示而非静默误读。
+    /// 读取 v6 二进制索引：先读尾部 meta，再做分配前的 section 边界校验与全程 blake3 校验，
+    /// 最后顺序读取各 section。旧 v5/v4/JSON 索引给出明确迁移提示而非静默误读。
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self> {
         let path = path.as_ref();
         let mut file =
             File::open(path).with_context(|| format!("无法读取索引文件：{}", path.display()))?;
         let len = file.metadata()?.len();
         if len < HEADER_LEN + TRAILER_LEN {
-            bail!("索引文件过短，不可能是完整的 v5 索引");
+            bail!("索引文件过短，不可能是完整的 v6 索引");
         }
         let mut magic = [0u8; 8];
         file.read_exact(&mut magic)?;
         if magic != FORMAT_MAGIC {
             bail!(
-                "索引不是 chainmer-index/5 二进制格式；旧 v4/JSON 索引需用 `chainmer index` 重建"
+                "索引不是 chainmer-index/6 二进制格式；旧 v5/v4/JSON 索引需用 `chainmer index` 重建"
             );
         }
         let n_postings = read_u64(&mut file)?;
@@ -764,9 +872,43 @@ impl SeedIndex {
                 idf_weight,
             });
         }
+        // v6 判别层（v7 增 dense_keys）：逐 target 读链键表、子序列键表、加密键表与架构直方图。
+        let mut chain_keys = Vec::with_capacity(n_targets as usize);
+        let mut subset_keys = Vec::with_capacity(n_targets as usize);
+        let mut dense_keys = Vec::with_capacity(n_targets as usize);
+        let mut hists = Vec::with_capacity(n_targets as usize);
+        for _ in 0..n_targets {
+            let n_chain = read_u32(&mut reader)? as usize;
+            let mut ck = Vec::with_capacity(n_chain);
+            for _ in 0..n_chain {
+                let mut bytes = [0u8; 16];
+                reader.read_exact(&mut bytes)?;
+                ck.push(u128::from_le_bytes(bytes));
+            }
+            chain_keys.push(ck);
+            let n_subset = read_u32(&mut reader)? as usize;
+            let mut sk = Vec::with_capacity(n_subset);
+            for _ in 0..n_subset {
+                sk.push(read_u64(&mut reader)?);
+            }
+            subset_keys.push(sk);
+            let n_dense = read_u32(&mut reader)? as usize;
+            let mut dk = Vec::with_capacity(n_dense);
+            for _ in 0..n_dense {
+                let mut bytes = [0u8; 16];
+                reader.read_exact(&mut bytes)?;
+                dk.push(u128::from_le_bytes(bytes));
+            }
+            dense_keys.push(dk);
+            let mut hist = Vec::with_capacity(HIST_BINS);
+            for _ in 0..HIST_BINS {
+                hist.push(read_f64(&mut reader)?);
+            }
+            hists.push(hist);
+        }
         let consumed = reader.stream_position()?;
         if consumed != meta_offset {
-            bail!("索引 target catalog 长度与 data_len 不一致：{consumed} != {meta_offset}");
+            bail!("索引判别层长度与 data_len 不一致：{consumed} != {meta_offset}");
         }
 
         let index = Self {
@@ -776,6 +918,10 @@ impl SeedIndex {
             document_freq,
             postings,
             targets,
+            chain_keys,
+            subset_keys,
+            dense_keys,
+            hists,
         };
         index.validate()?;
         Ok(index)
