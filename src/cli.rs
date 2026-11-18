@@ -1,14 +1,9 @@
-use crate::adaptive::{
-    adaptive_core, adaptive_search, family_divergent, spacing_hist, subset_keys, subset_keys_vec,
-    AdaptiveParams, FamilyContext, IdfJaccard,
-};
+use crate::adaptive::{family_divergent, spacing_hist, subset_keys_vec, AdaptiveParams};
 use crate::core::{
     chainmer_keys, chainmer_keys_dense_full, chainmer_keys_vec, chainmer_pair_keys, ChainmerParams,
 };
 use crate::fasta::read_fasta;
-use crate::index::{database_keys, key_hex, parse_key_hex, SeedIndex};
-use crate::index_cache::{load_or_build_index, CacheOptions};
-use crate::search::{search, search_adaptive, search_weighted_index};
+use crate::index::key_hex;
 use crate::seeds::{
     clean_protein, kmers, minimizers, spaced_kmers, strobemers, syncmers_with_mode,
     to_class_string, SecPolicy, SyncmerMode,
@@ -37,18 +32,10 @@ pub struct Cli {
 enum Command {
     /// 统计或导出每个序列的唯一种子键
     Seed(SeedArgs),
-    /// 构建带完整元数据的 Chainmer 倒排索引
-    Index(IndexArgs),
-    /// 使用索引参数检索，并校验数据库内容摘要；默认体制自适应判别，--native 回退原生
-    Search(SearchArgs),
-    /// 体制自适应判别全排序导出（暴力参照路径，FASTA 文件序平局裁决）
-    Adaptive(AdaptiveArgs),
     /// 两段式检索：k-mer 候选 + Chainmer 判别重排（实验）
     Stage2(Stage2Args),
     /// 在同一 FASTA 上比较种子数量和提取耗时
     Compare(CompareArgs),
-    /// 运行明确标注的合成序列示例
-    Demo,
 }
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
@@ -146,78 +133,6 @@ struct SeedArgs {
 }
 
 #[derive(Args)]
-struct IndexArgs {
-    #[arg(short, long)]
-    db: PathBuf,
-    #[arg(short, long)]
-    output: PathBuf,
-    #[command(flatten)]
-    params: ChainmerCliParams,
-}
-
-#[derive(Args)]
-struct SearchArgs {
-    #[arg(short, long)]
-    db: PathBuf,
-    #[arg(short, long)]
-    query: PathBuf,
-    #[arg(short = 'x', long)]
-    index: Option<PathBuf>,
-    /// 强制重建持久化索引缓存
-    #[arg(long)]
-    rebuild_index: bool,
-    /// 索引缓存目录；缺省使用平台缓存目录（可用 CHAINMER_CACHE_DIR 覆盖）
-    #[arg(long)]
-    cache_dir: Option<PathBuf>,
-    /// 一次性运行：不读取也不写入索引缓存
-    #[arg(long)]
-    no_cache: bool,
-    #[arg(long, default_value_t = 1)]
-    min_shared: usize,
-    #[arg(long)]
-    min_score: Option<f64>,
-    /// 可选 JSON：32 位十六进制键 -> 浮点权重
-    #[arg(short, long)]
-    weights: Option<PathBuf>,
-    #[arg(long, default_value_t = 5)]
-    top: usize,
-    /// 回退原生共线链打分（关闭体制自适应判别层）
-    #[arg(long)]
-    native: bool,
-    /// 背景扣除强度 λ（adaptive）
-    #[arg(long, default_value_t = crate::adaptive::DEFAULT_LAMBDA)]
-    lambda: f64,
-    /// 诊断子序列通道权重 β（adaptive）
-    #[arg(long, default_value_t = crate::adaptive::DEFAULT_BETA)]
-    beta: f64,
-    /// 家族级架构门控阈值（adaptive；最小两两余弦低于此值判分歧体制）
-    #[arg(long, default_value_t = crate::adaptive::DEFAULT_DIV_THRESHOLD)]
-    div_threshold: f64,
-}
-
-#[derive(Args)]
-struct AdaptiveArgs {
-    /// 同源集库 FASTA（含查询自身；ID 约定 species__accession）
-    #[arg(short, long)]
-    db: PathBuf,
-    /// 查询 FASTA（ID 必须存在于库中）
-    #[arg(short, long)]
-    query: PathBuf,
-    /// TSV 输出路径；缺省打印到 stdout
-    #[arg(short, long)]
-    output: Option<PathBuf>,
-    /// 背景扣除强度 λ
-    #[arg(long, default_value_t = crate::adaptive::DEFAULT_LAMBDA)]
-    lambda: f64,
-    /// 诊断子序列通道权重 β
-    #[arg(long, default_value_t = crate::adaptive::DEFAULT_BETA)]
-    beta: f64,
-    /// 家族级架构门控阈值（最小两两余弦低于此值判分歧体制）
-    #[arg(long, default_value_t = crate::adaptive::DEFAULT_DIV_THRESHOLD)]
-    div_threshold: f64,
-}
-
-#[derive(Args)]
 struct CompareArgs {
     #[arg(short, long)]
     input: PathBuf,
@@ -292,12 +207,8 @@ impl ChainmerCliParams {
 pub fn run() -> Result<()> {
     match Cli::parse().command {
         Command::Seed(args) => cmd_seed(args),
-        Command::Index(args) => cmd_index(args),
-        Command::Search(args) => cmd_search(args),
-        Command::Adaptive(args) => cmd_adaptive(args),
         Command::Stage2(args) => cmd_stage2(args),
         Command::Compare(args) => cmd_compare(args),
-        Command::Demo => cmd_demo(),
     }
 }
 
@@ -335,118 +246,6 @@ fn cmd_seed(args: SeedArgs) -> Result<()> {
             total,
             args.method.name()
         );
-    }
-    Ok(())
-}
-
-fn cmd_index(args: IndexArgs) -> Result<()> {
-    let db = read_fasta(&args.db)?;
-    let index = SeedIndex::build(&db, args.params.build())?;
-    let keys = index.postings.len();
-    index.save(&args.output)?;
-    println!(
-        "wrote {}: keys={} seqs={} version={}",
-        args.output.display(),
-        keys,
-        db.len(),
-        crate::VERSION
-    );
-    Ok(())
-}
-
-fn read_weights(path: &PathBuf) -> Result<BTreeMap<u128, f64>> {
-    let text = fs::read_to_string(path)?;
-    let raw: BTreeMap<String, f64> = serde_json::from_str(&text)?;
-    if raw.values().any(|w| !w.is_finite()) {
-        bail!("权重必须为有限数值");
-    }
-    let mut weights = BTreeMap::new();
-    for (key, value) in raw {
-        let parsed = parse_key_hex(&key)?;
-        if weights.insert(parsed, value).is_some() {
-            bail!("权重文件包含重复解析键：{key}");
-        }
-    }
-    Ok(weights)
-}
-
-fn cmd_search(args: SearchArgs) -> Result<()> {
-    if args.top == 0 {
-        bail!("top 必须 >= 1");
-    }
-    if args.min_shared == 0 {
-        bail!("min_shared 必须 >= 1");
-    }
-    let db = read_fasta(&args.db)?;
-    let index = load_or_build_index(
-        &db,
-        &ChainmerParams::default(),
-        args.index.as_deref(),
-        &CacheOptions {
-            cache_dir: args.cache_dir.clone(),
-            no_cache: args.no_cache,
-            rebuild: args.rebuild_index,
-        },
-    )?;
-    let weights = args.weights.as_ref().map(read_weights).transpose()?;
-    let ap = AdaptiveParams {
-        lambda: args.lambda,
-        beta: args.beta,
-        div_threshold: args.div_threshold,
-    };
-    if !args.native && weights.is_none() {
-        eprintln!(
-            "search: adaptive (default) fam_divergent={} lambda={} beta={} div_threshold={}",
-            index.meta.fam_divergent, ap.lambda, ap.beta, ap.div_threshold
-        );
-    }
-    for (qid, query) in read_fasta(&args.query)? {
-        println!(">{qid}");
-        if let Some(weights) = weights.as_ref() {
-            let hits = search_weighted_index(
-                &query,
-                &index,
-                &index.meta.params,
-                weights,
-                args.min_score,
-                args.min_shared,
-            )?;
-            for (id, score) in hits.into_iter().take(args.top) {
-                println!("{id}\t{score:.8}");
-            }
-        } else if args.native {
-            if args.min_score.is_some() {
-                bail!("min_score 仅适用于 --weights 加权检索");
-            }
-            let hits = search(
-                &query,
-                &index,
-                &index.meta.params,
-                args.min_shared,
-                &BTreeSet::new(),
-                0,
-                None,
-            )?;
-            for hit in hits.into_iter().take(args.top) {
-                println!("{}\t{:.8}", hit.id, hit.score);
-            }
-        } else {
-            if args.min_score.is_some() {
-                bail!("min_score 仅适用于 --weights 加权检索");
-            }
-            let result = search_adaptive(
-                &query,
-                &qid,
-                &index,
-                &index.meta.params,
-                &ap,
-                args.min_shared,
-            )?;
-            eprintln!("  regime={}", result.regime.label());
-            for hit in result.hits.into_iter().take(args.top) {
-                println!("{}\t{:.8}", hit.id, hit.score);
-            }
-        }
     }
     Ok(())
 }
@@ -1105,60 +904,6 @@ fn cmd_stage2(args: Stage2Args) -> Result<()> {
     Ok(())
 }
 
-fn cmd_adaptive(args: AdaptiveArgs) -> Result<()> {
-    if !args.lambda.is_finite() || !args.beta.is_finite() || !args.div_threshold.is_finite() {
-        bail!("lambda、beta 与 div_threshold 必须为有限数值");
-    }
-    let db = read_fasta(&args.db)?;
-    let ids = fasta_order(&args.db)?;
-    let seqs: Vec<String> = ids
-        .iter()
-        .map(|id| db.get(id).cloned().context(format!("库中缺少序列：{id}")))
-        .collect::<Result<_>>()?;
-    let ap = AdaptiveParams {
-        lambda: args.lambda,
-        beta: args.beta,
-        div_threshold: args.div_threshold,
-    };
-    let cp = ChainmerParams::default();
-    let ctx = FamilyContext::build(ids, &seqs, &ap, &cp)?;
-    eprintln!(
-        "adaptive: seqs={} fam_divergent={} lambda={} beta={} div_threshold={}",
-        ctx.ids.len(),
-        ctx.fam_divergent,
-        ap.lambda,
-        ap.beta,
-        ap.div_threshold
-    );
-    let mut out: Box<dyn Write> = match &args.output {
-        Some(path) => Box::new(BufWriter::new(fs::File::create(path)?)),
-        None => Box::new(BufWriter::new(std::io::stdout())),
-    };
-    writeln!(out, "query\tregime\trank\tid\tscore\tgate")?;
-    for (qid, qseq) in read_fasta(&args.query)? {
-        if !db.contains_key(&qid) {
-            bail!("查询 {qid} 不在库中；adaptive 要求查询属于同源集");
-        }
-        let result = adaptive_search(&ctx, &qid, &qseq, &ap, &cp)?;
-        for (rank, hit) in result.hits.iter().enumerate() {
-            writeln!(
-                out,
-                "{qid}\t{}\t{}\t{}\t{:.10}\t{:.10}",
-                result.regime.label(),
-                rank + 1,
-                hit.id,
-                hit.score,
-                hit.gate
-            )?;
-        }
-    }
-    out.flush()?;
-    if let Some(path) = &args.output {
-        eprintln!("已写入 {}", path.display());
-    }
-    Ok(())
-}
-
 fn cmd_compare(args: CompareArgs) -> Result<()> {
     let sequences = read_fasta(&args.input)?;
     let methods = [
@@ -1195,29 +940,5 @@ fn cmd_compare(args: CompareArgs) -> Result<()> {
     } else {
         print!("{text}");
     }
-    Ok(())
-}
-
-fn cmd_demo() -> Result<()> {
-    let db=BTreeMap::from([
-        ("MvhA_synthetic".into(),"MVKAVLAVLAKGGTIAAQLSPEHMPVRMRMLDNNEAAELKALGVPFGRIRLPGGQVAEPIKVDANGVITDAQSSSLIFRGFERILQHQDPRDAAFLTQRI".into()),
-        ("FrhA_synthetic".into(),"MTNKKAAAWLVGAIVGGLGMAEAKLDDKAEAKKAAKEAKKAAELKALGVPFGRIRLPGGQVAEPIKVDANGVITDAQSSSLIFRGFERILQHQDPRDAA".into()),
-    ]);
-    let index = SeedIndex::build(&db, ChainmerParams::default())?;
-    for (id, seq) in &db {
-        let hits = search(
-            seq,
-            &index,
-            &index.meta.params,
-            1,
-            &BTreeSet::new(),
-            0,
-            None,
-        )?;
-        println!("{id}: {hits:?}");
-    }
-    let keys = database_keys(&db, &ChainmerParams::default())?;
-    assert_eq!(keys.len(), 2);
-    println!("NOTE: synthetic illustrative sequences, not biological evidence.");
     Ok(())
 }
