@@ -1,8 +1,8 @@
-# Benchmark 与复现说明（Chainmer v1.0.2 主基准；v1.0.3 键集口径见下）
+# Benchmark 与复现说明（Chainmer v1.0.2 主基准；v1.0.3–v1.1.0 键集口径见下）
 
 > **v1.0.2 主基准**为 HydDB 2012 / 属水平留出 / KEGG 92 的**种子键检索**口径（统一 IDF 加权 Jaccard，论文主对比）。
 > v1.0.3 仅将检索排序默认路径改为体制自适应判别（adaptive，`--native` 回退），**种子键构造与导出零改动**，本文全部种子键口径数字对 v1.0.3 仍然成立；adaptive 的基因对水平对照（f64 口径，含诚实回归）见论文讨论节与 CHANGELOG v1.0.3。
-> **v1.0.3 起默认种子键集新增密度混合间距通道**（锚点对键 ∪ 两掩码间距键），因此本文表格的数字对应 **v1.0.2 纯锚点对键集**；复现本文表格请在 `ChainmerParams` 设 `dense_masks=[]`（或使用 v1.0.2 二进制）。v1.0.3 默认键集的 14 家族基因对基准（Top-1 0.821 / FN 0.024 / MRR 0.890）见 CHANGELOG v1.0.3。
+> **v1.1.0 起默认种子键集新增密度混合间距通道**（锚点对键 ∪ 两掩码间距键），因此本文表格的数字对应 **v1.0.x 纯锚点对键集**；复现本文表格请在 `ChainmerParams` 设 `dense_masks=[]`（或使用 v1.0.x 二进制）。v1.1.0 默认键集的 14 家族基因对基准（Top-1 0.821 / FN 0.024 / MRR 0.890）见 CHANGELOG v1.1.0。
 > v1.0.0/v1.0.1 在 177 序列上的**共线链评分** AP 结果属另一口径，仅作为历史附录保留（见文末），不得与主基准混读。
 > 数据与全部方法输出公开于 https://github.com/rsj99-dev/Chainmer/tree/main/seed-baselines （`data/hydrogenase_datasets/`、`data/results/`）。
 

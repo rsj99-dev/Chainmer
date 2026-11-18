@@ -2,11 +2,11 @@
   <img src="Chainmer_Logo.png" alt="Chainmer Logo" width="420">
 </p>
 
-# Chainmer v1.0.3
+# Chainmer v1.1.0
 
 **语言 / Language：** 中文 | [English](README.md)
 
-Chainmer 是一个用于**蛋白同源候选检索与预过滤**的 Rust 库和命令行工具。v1.0.0 将原来的"单通道类等价键计数"替换为 **raw/class 双通道位置种子、数据库 IDF 校准和共线链评分**；**v1.0.2 将默认间距桶宽 `delta` 由 15 调整为 5**（gap 分桶细化 3 倍，减少旁系偶然匹配），其余流水线与 v1.0.1 一致。旧计数与 SWPN 接口保留作消融对照。
+Chainmer 是一个用于**蛋白同源候选检索与预过滤**的 Rust 库和命令行工具。v1.0.0 将原来的“单通道类等价键计数”替换为 **raw/class 双通道位置种子、数据库 IDF 校准和共线链评分**；**v1.0.2 将默认间距桶宽 `delta` 由 15 调整为 5**（gap 分桶细化 3 倍，减少旁系偶然匹配）。**v1.0.3 将体制自适应判别（adaptive）下沉为 `search` 默认路径**（索引 `chainmer-index/6` 内嵌判别层，`--native` 回退原生共线链打分）。**v1.1.0 在默认键集中加入密度混合通道**（两掩码间距键，raw 与类别双轨；索引 `chainmer-index/7`），并新增 **`stage2` 两段式检索**：k=3 精确词倒排召回 top-N 候选，仅对候选现场生成 Chainmer 链键（u64）与 Js 子序列键，用 `adaptive_core` 判别（`Jc + β·Js − λ·Jbg` 加 k-mer 兜底分）。Chainmer 键不入全库倒排，主索引仍为 k-mer 键表（约 3.7 MB），预计算缓存为 `<db>.stage2cache`（`S2C2`）。在 710 条库 / 156 查询上，`stage2` 达到召回 0.739、假阳性 16.0%、漏检 0.6%，批查询 1.19 s（4 线程；单线程 3.08 s）、峰值内存 147 MB。旧计数与 SWPN 接口保留作消融对照。
 
 > Seed Hit 只表示候选共享种子，不构成同源或直系同源判定。直系同源需要基因树—物种树协调等后续分析；HydDB 亚群标签也不等同于直系同源群。
 
@@ -45,9 +45,9 @@ chainmer compare -i db.faa -o seed_compare.tsv  # 同二进制内种子数量/�
 
 支持的 `seed --method`：`chainmer`、`kmer`、`spaced`、`minimizer`、`syncmer`、`strobemer`、`ckmer`、`subseqhash2`。syncmer 基线为 **Closed** 定义；spaced pattern 至少含一个 `1`；`simplified-strobemer` 为 fixed-offset anchor-pair（非标准 randstrobe/minstrobe）。
 
-## 密度混合种子通道（v1.0.3 起为默认键集）
+## 密度混合种子通道（v1.1.0 起为默认键集）
 
-默认键集在 RAW5+CLASS8 锚点对键之上并入间距 k-mer 键：两掩码 `111101110111` / `111011010010111`，raw 与替换等价类双轨、步长 1、独立盐值命名空间。14 家族基因对真值（n=162）实测 Top-1 0.796→0.821、FN 0.199→0.024、MRR 0.861→0.890（七法第一），FP 0.41→0.46；对 kmer_diamond 呈「Top-1 差 1 查询、漏检 1/11」取舍。`ChainmerParams` 的 `dense_masks/dense_stride/dense_class` 可关闭该通道还原纯锚点对键集；索引 v7 内置 per-target 加密键表。
+默认键集在 RAW5+CLASS8 锚点对键之上并入间距 k-mer 键：两掩码 `111101110111` / `111011010010111`，raw 与替换等价类双轨、步长 1、独立盐值命名空间。14 家族基因对真值（n=162）实测 Top-1 0.796→0.821、FN 0.199→0.024、MRR 0.861→0.890（七法第一），FP 0.41→0.46；对 kmer_diamond 呈「Top-1 差 1 查询、漏检 1/11」取舍。`ChainmerParams` 的 `dense_masks/dense_stride/dense_class` 可关闭该通道还原 v1.0.x 键集；索引 v7 内置 per-target 加密键表。
 
 ## 体制自适应判别（v1.0.3 起为 search 底层默认）
 

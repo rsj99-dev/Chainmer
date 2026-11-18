@@ -1,15 +1,32 @@
 # Changelog
 
-## v1.0.3 — 体制自适应判别为 search 默认（索引内置判别层）＋密度混合种子通道并入默认键集（索引 v7）
+## v1.1.0 — 两段式检索、u64 键与持久化缓存（含密度混合键集）
 
-- **体制自适应判别（adaptive）为 `search` 默认路径（`--native` 回退原生）：** 召回门不变（共线键 IDF-Jaccard Jc>0，`min_shared` 可收紧），仅对已召回候选重排 `score = Jc + β·Js − λ·Jbg`；体制门控（RAW 锚点间距直方图最小两两余弦 <0.8 判分歧体制、退回 Jc；保守体制叠加子序列通道 Js；高旁系风险再扣背景 Jbg；λ=β=1）；`--lambda/--beta/--div-threshold` 旋钮；`adaptive` 子命令为全排序导出（FASTA 文件序平局裁决）。索引自 v6 起内置判别层（链键表/子序列键表/间距直方图/门控 meta），检索无需额外输入文件。
-- **算法（密度混合）：** 默认键集从「RAW5+CLASS8 锚点对键」扩为「锚点对键 ∪ 两掩码间距键」（掩码 `111101110111` / `111011010010111`，raw 与替换等价类双轨、步长 1、独立盐值命名空间）；`ChainmerParams` 新增 `dense_masks` / `dense_stride` / `dense_class`（置空掩码可还原纯锚点对键集做消融）。锚点对通道与共线链打分定义不变。
-- **14 家族基因对真值实测（n=162，单协议 IDF-Jaccard）：** Top-1 0.8210（纯锚点对消融 0.7963）、FN 0.0239（纯锚点对 0.1989，为 kmer_diamond 0.275 的 1/11）、MRR 0.8902（七法第一）。对 kmer_diamond（0.827/0.275）呈「Top-1 相差 1 个查询、漏检 1/11」的取舍；McNemar 对 kmer_diamond/syncmer/subseqhash2 p=1，对 strobemer p<1e-10。单家族：GLK 1.000、MvhA 0.833、McrA 0.778（七法第一）、Mtd/Hmd/FwdA/MtrA FN 清零、ICD FN 0.439→0.152。
-- **索引格式 `chainmer-index/5` → `chainmer-index/6` → `chainmer-index/7`：** v6 内置判别层；v7 另增 per-target 间距加密键表（16 字节键，与 CSR 位置 posting 分离），索引键量约 +66%。旧索引明确拒绝并提示重建；缓存身份含格式＋版本自动失效。
-- **确定性修复：** adaptive 背景扣除「较不相似拷贝」选择在 jc 平局时改按 ID 裁决（原按遍历序），使索引路径与暴力 `adaptive` 路径逐 ID、逐分严格一致。
-- **adaptive 实测（8 家族 n=102，f64）：** 合并 Top-1 0.745→0.775、旁系多检率 0.255→0.226、漏检 0.036 不变；β-tubulin 出现 0.000→0.083 的假阳性回升，为诚实代价；对代价敏感场景用 `--native` 回退。
-- **回归：** 53 项测试全绿（v7 roundtrip、dense 表独立重算对齐、索引/暴力路径一致）；`chainmer_keys_legacy`（v0.4 golden 306 键）保持。
+- **新增 `stage2` 两段式检索**：第一段用 k=3 精确词倒排召回 top-N 候选；第二段仅对候选现场生成 Chainmer 链键（u64）与 Js 子序列键，复用 `adaptive_core` 判别（`Jc + β·Js − λ·Jbg`，外加 k-mer 兜底分）。Chainmer 键不建全库倒排，主索引仍为 k-mer 键表（约 3.7 MB），命中预计算缓存后无需重建键表。
+- **14 家族质量（n=156，树真值）：** 召回 0.739、假阳性 16.0%、漏检 0.6%（对照：k-mer 0.740/21.2%/0%；全库 Chainmer 0.738/18.6%/1.9%）。
+- **性能（710 条库 / 156 查询，单机实测）：** 命中缓存时批查询 **1.19 s（4 线程）/ 3.08 s（1 线程）**、峰值内存 **147 MB**；同机 DIAMOND 2.2.8 为 0.38/0.59 s、211 MB，blastp 2.17 为 5.65/6.36 s、24 MB（两者为官方 SIMD 构建，Chainmer 为标量实现）。
+- **u64 键与缓存 `S2C2`：** stage2 内部键截断为 64 位（碰撞期望 ~1e-7），内存 272→147 MB；缓存文件 `<db>.stage2cache`（magic `S2C2` + db 长度 + mtime±2s 校验），命中加载 0.08 s，输出与重建逐字节一致（MD5 相同）。
+- **新增 `--threads`**（预计算与查询并行，默认 4）与实验方法 `chainmer-class`（仅 CLASS8 锚点对键，用于消融；质量 0.645/21.2%/18.7%，不建议单独使用）。
+- **无向量加速：** 全仓库为标量实现；`-C target-cpu=native` 实测零收益（1.23 s vs 1.23 s），热点为二分/HashMap/posting 指针追逐。
+
+### v1.1.0 基础：密度混合种子通道并入默认键集（索引 v7）
+
+- **算法**：默认键集从「RAW5+CLASS8 锚点对键」扩为「锚点对键 ∪ 两掩码间距键」（掩码 `111101110111` / `111011010010111`，raw 与替换等价类双轨、步长 1、独立盐值命名空间）；`ChainmerParams` 新增 `dense_masks` / `dense_stride` / `dense_class`（置空掩码可还原 v1.0.x 键集做消融）。锚点对通道、共线链打分与 adaptive 召回门（Jc>0）定义不变。
+- **14 家族基因对真值实测（n=162，单协议 IDF-Jaccard）：** Top-1 0.7963→**0.8210**、FN 0.1989→**0.0239**（kmer_diamond 0.275 的 1/11）、MRR 0.8607→**0.8902**（七法第一）、FP 0.41→0.46。对 kmer_diamond（0.827/0.275）呈「Top-1 相差 1 个查询、漏检 1/11」的取舍；McNemar 对 kmer_diamond/syncmer/subseqhash2 p=1，对 strobemer p<1e-10。单家族：GLK 1.000、MvhA 0.833、McrA 0.778（七法第一）、Mtd/Hmd/FwdA/MtrA FN 清零、ICD FN 0.439→0.152。
+- **索引格式 `chainmer-index/6` → `chainmer-index/7`：** 判别层新增 per-target 间距加密键表（16 字节键，与 CSR 位置 posting 分离）；索引键量约 +66%（键总数），建索引耗时同步上升；v6 及更旧索引明确拒绝并提示重建，缓存身份含格式＋版本自动失效。
+- **确定性修复：** adaptive 背景扣除「较不相似拷贝」选择在 jc 平局时改按 ID 裁决（原按遍历序），使索引路径与暴力 `adaptive` 路径逐 ID、逐分严格一致（MtaA 三查询 top-20 全同）。
+- **回归：** 53 项测试全绿（v7 roundtrip、dense 表独立重算对齐、索引/暴力路径一致）；`chainmer_keys_legacy`（v0.4 golden 306 键）保持；旧 v1.0.x 键集可由 `dense_masks=[]` 复现。
 - **口径说明：** 预分析阶段树为快速口径（LG+G4＋1000 UFBoot）；HdrA 使用 BLAST 强同源子集（441 全集存档）；MtaA/FwdA/AcsA/MtrA 含注释审编。论文定稿时如需 ModelFinder/全量同源集复跑，指数会小幅变动。
+
+## v1.0.3 — 体制自适应判别（adaptive）为 search 底层默认（索引 v6，--native 回退原生）
+
+- **新增 `adaptive` 模块与子命令，并下沉为 `search` 默认路径（`search_adaptive`）：** 链式种子召回层一字不改（接受门仍为共线键 IDF-Jaccard Jc>0，`min_shared` 可收紧），仅对已召回候选做判别式重排 `score = Jc + β·Js − λ·Jbg`。Js＝诊断子序列通道（span20/weight8 四掩码、步长 2、blake2b-64）；Jbg＝判别式背景扣除（背景＝每多拷贝物种中较不相似于查询的拷贝，无监督旁系代理）。不需要树/HMM/注释等额外输入，仅依赖库内序列与 species__accession 命名约定。新增 `--native` 回退原生共线链打分，`--lambda/--beta/--div-threshold` 旋钮；`--weights` 加权路径不变；`adaptive` 子命令保留为全排序导出（FASTA 文件序平局裁决）。
+- **体制门控：** 同源集 RAW 锚点间距直方图最小两两余弦 <0.8 ⇒ 分歧体制（走原生 Jc，保护 MvhA 类架构分歧甜区）；保守体制叠加 Js，再按旁系代理/top1 相似度比 >0.7 决定是否叠加背景扣除（保护饱和家族）。召回门与排序解耦，背景扣除不牺牲远缘召回（FN 不变）。判别层与暴力路径共用 `adaptive_core`，数值完全一致；默认 search 平局裁决按索引 catalog（ID 升序）。
+- **索引格式升级 `chainmer-index/5` → `chainmer-index/6`：** 在紧凑二进制 CSR 之上内置判别层数据——每 target 的升序链键表、诊断子序列键表（blake2b-64）、RAW 锚点间距直方图（55 桶 f64）；meta 新增 `div_threshold` 与 `fam_divergent`（建索引时判定）。全部随索引持久化，检索时无需额外输入文件。旧 v5/v4/JSON 索引明确拒绝并提示重建；缓存身份含格式＋版本，旧缓存自动失效。
+- **实测（8 家族基因对树真值 n=77，纯 f64 IDF-Jaccard 口径）：** 默认 search 与 Python f64 参照 77/77 查询体制标签/完整排序/得分完全一致（容差 1e-6）；合并 Top-1 0.727→0.753、fp_event 0.247→0.208、FN 0.203 不变；McrA 0.500→0.750（FP 0.500→0.250）、RecA 0.700→0.750、PG 0.556→0.667；MvhA/MtrA/GLK 持平。索引路径与暴力 adaptive 路径逐 ID 得分相同；recall@5 0.402 vs 0.413 的微差仅来自平局裁决序（文件序 vs ID 序）在同分候选间的排列，非数值差异。**诚实代价：** β-tubulin 1.000→0.917、ICD 0.917→0.833（子序列通道在部分饱和/低信号家族引入噪声）；PG recall@5 0.275→0.195。
+- **重要口径发现：** 旧基准管线 scipy float32 CSR 在小分值下有显著舍入伪影（相对误差可达数十％），早期原型报告的“全家族无回归、合并 0.779”部分来自该伪影；本版采用 f64 评分，小幅增益与“无回归”类宣称均经 f64 复核。
+- **回归保障：** 原生 seed/链式键/原生 search 函数零改动（历史 golden 键数 306 钉住）；新增 8 项 adaptive 单元测试＋4 项集成回归（原生键不变、解耦召回门、分歧体制保原生、v6 判别层 roundtrip、索引/暴力逐 ID 对齐）；全部 53 项测试通过。
+- **定位说明：** adaptive 成为产品默认是工程集成决策，定位为有代价的工程缓解而非普适修复；科学代价不变（β-tubulin、ICD 真实回归），对代价敏感的场景用 `--native` 回退。
 
 ## v1.0.2 — 默认参数调优（delta 15→5）
 

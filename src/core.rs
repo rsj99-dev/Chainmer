@@ -325,6 +325,25 @@ pub fn chainmer_keys(seq: &str, params: &ChainmerParams) -> Result<BTreeSet<u128
     )
 }
 
+/// 升序去重 Vec 版（免 BTreeSet 节点分配；检索/预计算热路径用）。
+pub fn chainmer_keys_vec(seq: &str, params: &ChainmerParams) -> Result<Vec<u128>> {
+    let mut v: Vec<u128> = chainmer_seeds(seq, params)?
+        .into_iter()
+        .map(|s| s.key)
+        .collect();
+    if !params.dense_masks.is_empty() {
+        let masks: Vec<&str> = params.dense_masks.iter().map(|s| s.as_str()).collect();
+        let stride = params.dense_stride.max(1);
+        v.extend(dense_spaced_keys_track(seq, &masks, stride, false)?);
+        if params.dense_class {
+            v.extend(dense_spaced_keys_track(seq, &masks, stride, true)?);
+        }
+    }
+    v.sort_unstable();
+    v.dedup();
+    Ok(v)
+}
+
 /// 双通道锚点对键 ∪ 间距加密键；stride/class 可显式覆盖（消融与环境变量调参用）。
 pub fn chainmer_keys_dense_full(
     seq: &str,

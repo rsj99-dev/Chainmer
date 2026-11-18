@@ -77,6 +77,31 @@ pub fn subset_keys(seq: &str) -> BTreeSet<u128> {
     out
 }
 
+/// 升序去重 Vec 版（免 BTreeSet 节点分配；检索热路径用）。
+pub fn subset_keys_vec(seq: &str) -> Vec<u128> {
+    let s = clean(seq);
+    let b = s.as_bytes();
+    let mut out: Vec<u128> = Vec::new();
+    if b.len() < SPAN {
+        return out;
+    }
+    let mut i = 0;
+    while i + SPAN <= b.len() {
+        let win = &b[i..i + SPAN];
+        for mask in &MASKS {
+            let t: Vec<u8> = mask.iter().map(|p| win[*p]).collect();
+            if t.contains(&b'X') {
+                continue;
+            }
+            out.push(hkey(&t) as u128);
+        }
+        i += STRIDE;
+    }
+    out.sort_unstable();
+    out.dedup();
+    out
+}
+
 /// RAW 通道 minimizer 锚点→锚点对间距桶直方图（架构签名，归一化）。
 ///
 /// 与原型 spacing_hist 逐项一致：k=5、w=6、d∈[30,300]、δ=5、每锚点向后
